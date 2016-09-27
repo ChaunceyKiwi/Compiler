@@ -53,7 +53,7 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		}
 	}
 
-
+	// continue finding next char until find a non-space char
 	private LocatedChar nextNonWhitespaceChar() {
 		LocatedChar ch = input.next();
 		while(ch.isWhitespace()) {
@@ -65,7 +65,7 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	
 	//////////////////////////////////////////////////////////////////////////////
 	// Integer lexical analysis	
-
+	
 	private Token scanNumber(LocatedChar firstChar) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(firstChar.getCharacter());
@@ -73,6 +73,8 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		
 		return NumberToken.make(firstChar.getLocation(), buffer.toString());
 	}
+	
+	// If next char is also digit, append it and try next until not digit
 	private void appendSubsequentDigits(StringBuffer buffer) {
 		LocatedChar c = input.next();
 		while(c.isDigit()) {

@@ -14,7 +14,8 @@ public class PikaApplication {
 		if(!correctNumArguments(args)) {
 			printUsageMessage(applicationName, "");
 		}
-
+		
+		// if the arg1 or arg2 exists, the path should exist
 		ensureSourceFileExists(args, applicationName); 			// first arg
 		ensureTargetDirectoryExists(args, applicationName);		// second (optional) arg
 	}
@@ -29,6 +30,8 @@ public class PikaApplication {
 		}
 	}
 	protected static void ensureTargetDirectoryExists(String[] args, String applicationName) {
+		// if second arguments exists
+		// replace default directory path with it
 		if(args.length > 1) {
 			outputDirectory  = args[1];
 		}
@@ -38,8 +41,6 @@ public class PikaApplication {
 		}
 		outputDirectory = ensureEndsWithSeparator(outputDirectory);
 	}
-
-
 
 	protected static String ensureEndsWithSeparator(String string) {
 		return string +
@@ -57,7 +58,6 @@ public class PikaApplication {
 		int lastSlash = filename.lastIndexOf('/');
 		int lastBackslash = filename.lastIndexOf('\\');
 		int start = Math.max(lastSlash, lastBackslash) + 1;
-
 		int end = filename.indexOf('.', start);
 		if(end == -1) {
 			return filename.substring(start);
@@ -68,7 +68,6 @@ public class PikaApplication {
 	protected static String className() {
 		return (new Throwable()).getStackTrace()[0].getClassName();
 	}
-
 
 	protected static boolean makeDirectoryIfNecessary(String directoryName) {
 		return directoryExists(directoryName) || createDirectory(directoryName);
