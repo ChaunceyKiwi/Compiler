@@ -83,7 +83,7 @@ public class PikaApplication {
 		return (new File(filePath)).mkdirs();
 	}
 
-
+	// if the number of argument is wrong, usage message is print
 	protected static void printUsageMessage(String applicationName, String errorMessage) {
 		System.err.println("usage: " + applicationName + " filename" + " [target output directory]");
 		System.err.println(errorMessage);
