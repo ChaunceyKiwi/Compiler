@@ -35,7 +35,11 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	protected Token findNextToken() {
 		LocatedChar ch = nextNonWhitespaceChar();
 		
-		if(ch.isDigit()) {
+		if(isCommentSymbol(ch)){
+			ch = nextNonCommentChar();
+			return findNextToken();
+		}
+		else if(ch.isDigit()) {
 			return scanNumber(ch);
 		}
 		else if(ch.isLowerCase()) {
@@ -52,6 +56,25 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 			return findNextToken();
 		}
 	}
+	
+	// continue finding next char until find a newline or #
+	private LocatedChar nextNonCommentChar(){
+		LocatedChar ch = input.next();
+
+		while(!isCommentSymbol(ch) && !isNewLine(ch))
+			ch = input.next();
+
+		return ch;
+	}
+	
+	public boolean isCommentSymbol(LocatedChar ch ) {
+		return (ch.getCharacter() == '#');
+	}
+
+	public boolean isNewLine(LocatedChar ch) {
+		return (ch.getCharacter() == '\n' || ch.getCharacter() == '\r');
+	}
+
 
 	// continue finding next char until find a non-space char
 	private LocatedChar nextNonWhitespaceChar() {
