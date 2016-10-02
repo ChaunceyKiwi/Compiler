@@ -39,7 +39,7 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 			ch = nextNonCommentChar();
 			return findNextToken();
 		}
-		else if(ch.isDigit()) {
+		else if(isNumberStart(ch)) {
 			return scanNumber(ch);
 		}
 		else if(ch.isLowerCase()) {
@@ -175,7 +175,16 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		char c = lc.getCharacter();
 		return isPunctuatorStartingCharacter(c);
 	}
-
+	
+	private boolean isNumberStart(LocatedChar lc){
+		return lc.isDigit() || isSignFollowedByDigit(lc);
+	}
+	
+	private boolean isSignFollowedByDigit(LocatedChar lc){
+		char c = lc.getCharacter();
+		return (c == '+' || c == '-') && input.peek().isDigit();
+	}
+	
 	private boolean isEndOfInput(LocatedChar lc) {
 		return lc == LocatedCharStream.FLAG_END_OF_INPUT;
 	}

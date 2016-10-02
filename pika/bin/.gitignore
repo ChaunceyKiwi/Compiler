@@ -2,3 +2,5 @@
 /applications/
 /asmCodeGenerator/
 /inputHandler/
+/tokens/
+/parser/
