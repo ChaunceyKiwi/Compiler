@@ -13,6 +13,7 @@ import parseTree.nodeTypes.IdentifierNode;
 import parseTree.nodeTypes.IntegerConstantNode;
 import parseTree.nodeTypes.FloatingConstantNode;
 import parseTree.nodeTypes.CharConstantNode;
+import parseTree.nodeTypes.StringConstantNode;
 import parseTree.nodeTypes.NewlineNode;
 import parseTree.nodeTypes.PrintStatementNode;
 import parseTree.nodeTypes.ProgramNode;
@@ -317,6 +318,9 @@ public class Parser {
 		if(startsChar(nowReading)){
 			return parseChar();
 		}
+		if(startsString(nowReading)){
+			return parseString();
+		}
 		if(startsIdentifier(nowReading)) {
 			return parseIdentifier();
 		}
@@ -329,6 +333,7 @@ public class Parser {
 	private boolean startsLiteral(Token token) {
 		return startsIntNumber(token) || 
 			   startsFloatingNumber(token)||
+			   startsString(token) ||
 			   startsChar(token) ||
 			   startsIdentifier(token) || 
 			   startsBooleanConstant(token);
@@ -359,6 +364,14 @@ public class Parser {
 		return new CharConstantNode(previouslyRead);
 	}
 	
+	private ParseNode parseString(){
+		if(!startsString(nowReading)){
+			return syntaxErrorNode("string constant");
+		}
+		readToken();
+		return new StringConstantNode(previouslyRead);
+	}
+	
 	
 	private boolean startsIntNumber(Token token) {
 		return token instanceof NumberToken;
@@ -370,6 +383,10 @@ public class Parser {
 	
 	private boolean startsChar(Token token){
 		return token instanceof CharToken;
+	}
+	
+	private boolean startsString(Token token){
+		return token instanceof StringToken;
 	}
 
 	// identifier (terminal)

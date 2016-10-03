@@ -1,5 +1,5 @@
 exec {
-	const target :=  ^q^.
+	const target :=  "Nice".
     
 	print target, _n_.
 }

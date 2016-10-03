@@ -16,6 +16,7 @@ import parseTree.nodeTypes.IdentifierNode;
 import parseTree.nodeTypes.IntegerConstantNode;
 import parseTree.nodeTypes.FloatingConstantNode;
 import parseTree.nodeTypes.CharConstantNode;
+import parseTree.nodeTypes.StringConstantNode;
 import parseTree.nodeTypes.NewlineNode;
 import parseTree.nodeTypes.PrintStatementNode;
 import parseTree.nodeTypes.ProgramNode;
@@ -130,6 +131,10 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	@Override
 	public void visit(CharConstantNode node) {
 		node.setType(PrimitiveType.CHARACTER);
+	}
+	@Override
+	public void visit(StringConstantNode node) {
+		node.setType(PrimitiveType.STRING);
 	}
 	@Override
 	public void visit(NewlineNode node) {

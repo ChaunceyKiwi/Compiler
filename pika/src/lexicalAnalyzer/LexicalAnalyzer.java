@@ -41,6 +41,9 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		else if(isCharStart(ch)){
 			return scanChar(ch);
 		}
+		else if(isStringStart(ch)){
+			return scanString(ch);
+		}
 		else if(ch.isLowerCase()) {
 			return scanIdentifier(ch);
 		}
@@ -140,6 +143,22 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////
+	// Character lexical analysis	
+	
+	private Token scanString(LocatedChar firstChar) {
+		StringBuffer buffer = new StringBuffer();
+		LocatedChar c = input.next();
+		while(c.getCharacter() != '"' && c.getCharacter() != '\n'){
+			buffer.append(c.getCharacter());
+			c = input.next();
+		}
+		if(c.getCharacter() == '"')
+			return StringToken.make(firstChar.getLocation(), buffer.toString());
+		else
+			throw new IllegalArgumentException("String format error");	
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////
 	// Identifier and keyword lexical analysis	
 
 	private Token scanIdentifier(LocatedChar firstChar) {
@@ -215,6 +234,12 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		char c = lc.getCharacter();
 		
 		return c == '^' && input.peek().isCharInRange(32, 126);
+	}
+	
+	private boolean isStringStart(LocatedChar lc){
+		char c = lc.getCharacter();
+		
+		return c == '"';
 	}
 	
 	private boolean isSignFollowedByDigit(LocatedChar lc){
