@@ -38,6 +38,9 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		else if(isNumberStart(ch)) {
 			return scanNumber(ch);
 		}
+		else if(isCharStart(ch)){
+			return scanChar(ch);
+		}
 		else if(ch.isLowerCase()) {
 			return scanIdentifier(ch);
 		}
@@ -125,6 +128,18 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	
 	
 	//////////////////////////////////////////////////////////////////////////////
+	// Character lexical analysis	
+	
+	private Token scanChar(LocatedChar firstChar) {
+		StringBuffer buffer = new StringBuffer();
+		LocatedChar c = input.next();
+		buffer.append(c.getCharacter());
+		input.next();
+		
+		return CharToken.make(firstChar.getLocation(), buffer.toString());
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////
 	// Identifier and keyword lexical analysis	
 
 	private Token scanIdentifier(LocatedChar firstChar) {
@@ -194,6 +209,12 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	
 	private boolean isNumberStart(LocatedChar lc){
 		return lc.isDigit() || isSignFollowedByDigit(lc);
+	}
+	
+	private boolean isCharStart(LocatedChar lc){
+		char c = lc.getCharacter();
+		
+		return c == '^' && input.peek().isCharInRange(32, 126);
 	}
 	
 	private boolean isSignFollowedByDigit(LocatedChar lc){

@@ -6,12 +6,16 @@
         DataC        100                       
         DataC        0                         
         DLabel       $print-format-floating    
-        DataC        37                        %% "%f"
-        DataC        102                       
+        DataC        37                        %% "%g"
+        DataC        103                       
         DataC        0                         
         DLabel       $print-format-boolean     
         DataC        37                        %% "%s"
         DataC        115                       
+        DataC        0                         
+        DLabel       $print-format-char        
+        DataC        37                        %% "%c"
+        DataC        99                        
         DataC        0                         
         DLabel       $print-format-newline     
         DataC        10                        %% "\n"
@@ -85,36 +89,18 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        24                        
+        DataZ        1                         
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% quarters
-        PushF        -3.143000                 
-        StoreF                                 
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% dimes
-        PushF        -4.143000                 
-        StoreF                                 
-        PushD        $global-memory-block      
-        PushI        16                        
-        Add                                    %% value
+        Add                                    %% target
+        PushI        113                       
+        StoreC                                 
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% quarters
-        LoadF                                  
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% dimes
-        LoadF                                  
-        FAdd                                   
-        StoreF                                 
-        PushD        $global-memory-block      
-        PushI        16                        
-        Add                                    %% value
-        LoadF                                  
-        PushD        $print-format-floating    
+        Add                                    %% target
+        LoadC                                  
+        PushD        $print-format-char        
         Printf                                 
         PushD        $print-format-newline     
         Printf                                 

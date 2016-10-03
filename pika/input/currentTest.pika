@@ -1,7 +1,5 @@
 exec {
-	const quarters :=  -3.143.
-	const dimes    :=  -4.143.
+	const target :=  ^q^.
     
-	const value := quarters + dimes.
-	print value, _n_.
+	print target, _n_.
 }

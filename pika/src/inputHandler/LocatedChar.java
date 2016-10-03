@@ -56,6 +56,18 @@ public class LocatedChar {
 	public boolean isDigit() {
 		return Character.isDigit(character);
 	}
+	public boolean isCharInRange(int start, int end){
+		if (end < start)
+			return false;
+		else{
+			for(int i = start; i <= end; i++){
+				if (character == (char)i)
+					return true;
+			}
+		}
+		
+		return false;
+	}
 	public boolean isWhitespace() {
 		return Character.isWhitespace(character);
 	}
