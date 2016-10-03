@@ -270,9 +270,26 @@ public class ASMCodeGenerator {
 			code.add(Label, subLabel);
 			code.add(Subtract);
 			
-			code.add(JumpPos, trueLabel);
-			code.add(Jump, falseLabel);
-
+			if(operator == Punctuator.GREATER){
+				code.add(JumpPos, trueLabel);
+				code.add(Jump, falseLabel);
+			}else if (operator == Punctuator.LESSER){
+				code.add(JumpNeg, trueLabel);
+				code.add(Jump, falseLabel);
+			}else if(operator == Punctuator.LESSEROREQUAL){
+				code.add(JumpPos, falseLabel);
+				code.add(Jump, trueLabel);
+			}else if(operator == Punctuator.EQUAL){
+				code.add(JumpFalse,trueLabel);
+				code.add(Jump, falseLabel);
+			}else if(operator == Punctuator.NOTEQUAL){
+				code.add(JumpFalse,falseLabel);
+				code.add(Jump, trueLabel);
+			}else if(operator == Punctuator.GREATEROREQUAL){
+				code.add(JumpNeg, falseLabel);
+				code.add(Jump, trueLabel);
+			}
+			
 			code.add(Label, trueLabel);
 			code.add(PushI, 1);
 			code.add(Jump, joinLabel);
@@ -280,7 +297,6 @@ public class ASMCodeGenerator {
 			code.add(PushI, 0);
 			code.add(Jump, joinLabel);
 			code.add(Label, joinLabel);
-
 		}
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);
