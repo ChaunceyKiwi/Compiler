@@ -235,10 +235,14 @@ public class ASMCodeGenerator {
 		// expressions
 		public void visitLeave(BinaryOperatorNode node) {
 			Lextant operator = node.getOperator();
-
-			if(operator == Punctuator.GREATER) {
+			
+			// Comparison Operator
+			if (operator == Punctuator.LESSER ||operator == Punctuator.LESSEROREQUAL ||
+				operator == Punctuator.NOTEQUAL ||operator == Punctuator.EQUAL ||
+				operator == Punctuator.GREATER ||	operator == Punctuator.GREATEROREQUAL) {
 				visitComparisonOperatorNode(node, operator);
 			}
+			// Arithmetic Operator
 			else {
 				visitNormalBinaryOperatorNode(node);
 			}

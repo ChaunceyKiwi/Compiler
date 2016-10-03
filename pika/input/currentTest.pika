@@ -1,6 +1,5 @@
 exec {
-	const a :=  "Nice".
-	const b :=  "Cool".
+	const a :=  3 == 2.
     
-	print c, _n_.
+	print a, _n_.
 }
