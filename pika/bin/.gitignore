@@ -4,3 +4,5 @@
 /inputHandler/
 /tokens/
 /parser/
+/parseTree/
+/semanticAnalyzer/

@@ -8,11 +8,7 @@ import inputHandler.LocatedChar;
 import inputHandler.LocatedCharStream;
 import inputHandler.PushbackCharStream;
 import inputHandler.TextLocation;
-import tokens.IdentifierToken;
-import tokens.LextantToken;
-import tokens.NullToken;
-import tokens.NumberToken;
-import tokens.Token;
+import tokens.*;
 
 import static lexicalAnalyzer.PunctuatorScanningAids.*;
 
@@ -92,19 +88,39 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	private Token scanNumber(LocatedChar firstChar) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(firstChar.getCharacter());
-		appendSubsequentDigits(buffer);
+		int flag = appendSubsequentDigits(buffer);
 		
-		return NumberToken.make(firstChar.getLocation(), buffer.toString());
+		if (flag == 0)
+			return NumberToken.make(firstChar.getLocation(), buffer.toString());
+		else
+			return FloatingToken.make(firstChar.getLocation(), buffer.toString());
 	}
 	
 	// If next char is also digit, append it and try next until not digit
-	private void appendSubsequentDigits(StringBuffer buffer) {
+	private int appendSubsequentDigits(StringBuffer buffer) {
 		LocatedChar c = input.next();
+		
 		while(c.isDigit()) {
 			buffer.append(c.getCharacter());
 			c = input.next();
 		}
+		
+		if(isDotFollowedByDigit(c)){
+			buffer.append(c.getCharacter());
+			c = input.next();
+		}else{
+			input.pushback(c);
+			return 0;
+		}
+		
+		while(c.isDigit()){
+			buffer.append(c.getCharacter());
+			c = input.next();			
+		}
+		
 		input.pushback(c);
+		
+		return 1;
 	}
 	
 	
@@ -183,6 +199,11 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	private boolean isSignFollowedByDigit(LocatedChar lc){
 		char c = lc.getCharacter();
 		return (c == '+' || c == '-') && input.peek().isDigit();
+	}
+	
+	private boolean isDotFollowedByDigit(LocatedChar lc){
+		char c = lc.getCharacter();
+		return (c == '.') && input.peek().isDigit();
 	}
 	
 	private boolean isEndOfInput(LocatedChar lc) {

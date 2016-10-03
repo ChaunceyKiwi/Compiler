@@ -13,6 +13,7 @@ import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.MainBlockNode;
 import parseTree.nodeTypes.DeclarationNode;
+import parseTree.nodeTypes.FloatingConstantNode;
 import parseTree.nodeTypes.IdentifierNode;
 import parseTree.nodeTypes.IntegerConstantNode;
 import parseTree.nodeTypes.NewlineNode;
@@ -137,11 +138,15 @@ public class ASMCodeGenerator {
 		private void turnAddressIntoValue(ASMCodeFragment code, ParseNode node) {
 			if(node.getType() == PrimitiveType.INTEGER) {
 				code.add(LoadI);
-			}	
-			else if(node.getType() == PrimitiveType.BOOLEAN) {
+			}else if(node.getType() == PrimitiveType.BOOLEAN) {
 				code.add(LoadC);
-			}	
-			else {
+			}else if(node.getType() == PrimitiveType.FLOATING){
+				code.add(LoadF);
+			}else if(node.getType() == PrimitiveType.CHARACTER){
+				code.add(LoadC);
+			}else if(node.getType() == PrimitiveType.STRING){
+				code.add(LoadI);
+			}else {
 				assert false : "node " + node;
 			}
 			code.markAsValue();
@@ -209,6 +214,15 @@ public class ASMCodeGenerator {
 			if(type == PrimitiveType.BOOLEAN) {
 				return StoreC;
 			}
+			if(type == PrimitiveType.FLOATING){
+				return StoreF;
+			}
+			if(type == PrimitiveType.CHARACTER){
+				return StoreC;
+			}
+			if(type == PrimitiveType.STRING){
+				return StoreI;
+			}
 			assert false: "Type " + type + " unimplemented in opcodeForStore()";
 			return null;
 		}
@@ -263,24 +277,41 @@ public class ASMCodeGenerator {
 		}
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);
+			Type typeOfLeftChild = node.child(0).getType();
+			Type typeOfRightChild = node.child(1).getType();
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));
 			
 			code.append(arg1);
 			code.append(arg2);
 			
-			ASMOpcode opcode = opcodeForOperator(node.getOperator());
+			ASMOpcode opcode = opcodeForOperator(node.getOperator(), typeOfLeftChild, typeOfRightChild);
 			code.add(opcode);							// type-dependent! (opcode is different for floats and for ints)
 		}
-		private ASMOpcode opcodeForOperator(Lextant lextant) {
+		private ASMOpcode opcodeForOperator(Lextant lextant, Type typeOfLeftChild, Type typeOfRightChild) {
 			assert(lextant instanceof Punctuator);
 			Punctuator punctuator = (Punctuator)lextant;
-			switch(punctuator) {
-			case ADD: 	   		return Add;				// type-dependent!
-			case MULTIPLY: 		return Multiply;		// type-dependent!
-			default:
-				assert false : "unimplemented operator in opcodeForOperator";
+			
+			if(typeOfLeftChild == PrimitiveType.INTEGER && typeOfRightChild == PrimitiveType.INTEGER ){
+				switch(punctuator) {
+				case ADD: 	   		return Add;				// type-dependent!
+				case SUBTRACT:      return Subtract;
+				case MULTIPLY: 		return Multiply;		// type-dependent!
+				case DIVIDE:        return Divide;
+				default:
+					assert false : "unimplemented operator in opcodeForOperator";
+				}
+			}else if(typeOfLeftChild == PrimitiveType.FLOATING && typeOfRightChild == PrimitiveType.FLOATING ){
+				switch(punctuator) {
+				case ADD: 	   		return FAdd;				// type-dependent!
+				case SUBTRACT:      return FSubtract;
+				case MULTIPLY: 		return FMultiply;		// type-dependent!
+				case DIVIDE:        return FDivide;
+				default:
+					assert false : "unimplemented operator in opcodeForOperator";
+				}
 			}
+			
 			return null;
 		}
 
@@ -293,13 +324,15 @@ public class ASMCodeGenerator {
 		public void visit(IdentifierNode node) {
 			newAddressCode(node);
 			Binding binding = node.getBinding();
-			
 			binding.generateAddress(code);
 		}		
 		public void visit(IntegerConstantNode node) {
 			newValueCode(node);
-			
 			code.add(PushI, node.getValue());
+		}
+		public void visit(FloatingConstantNode node){
+			newValueCode(node);
+			code.add(PushF, node.getValue());
 		}
 	}
 
