@@ -1,5 +1,6 @@
 exec {
-	const target :=  "Nice".
+	const a :=  "Nice".
+	const b :=  "Cool".
     
-	print target, _n_.
+	print c, _n_.
 }

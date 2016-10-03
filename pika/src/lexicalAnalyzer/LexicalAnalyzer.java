@@ -44,7 +44,7 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		else if(isStringStart(ch)){
 			return scanString(ch);
 		}
-		else if(ch.isLowerCase()) {
+		else if(isIdentifierStart(ch)) {
 			return scanIdentifier(ch);
 		}
 		else if(isPunctuatorStart(ch)) {
@@ -164,7 +164,7 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	private Token scanIdentifier(LocatedChar firstChar) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(firstChar.getCharacter());
-		appendSubsequentLowercase(buffer);
+		appendSubsequentLetter(buffer);
 
 		String lexeme = buffer.toString();
 		if(Keyword.isAKeyword(lexeme)) {
@@ -174,9 +174,9 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 			return IdentifierToken.make(firstChar.getLocation(), lexeme);
 		}
 	}
-	private void appendSubsequentLowercase(StringBuffer buffer) {
+	private void appendSubsequentLetter(StringBuffer buffer) {
 		LocatedChar c = input.next();
-		while(c.isLowerCase()) {
+		while(Character.isLetter(c.getCharacter()) || c.getCharacter() == '_' || c.getCharacter() == '$') {
 			buffer.append(c.getCharacter());
 			c = input.next();
 		}
@@ -240,6 +240,12 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		char c = lc.getCharacter();
 		
 		return c == '"';
+	}
+	
+	private boolean isIdentifierStart(LocatedChar lc){
+		char c = lc.getCharacter();
+		
+		return Character.isLetter(c) ||  c == '_';
 	}
 	
 	private boolean isSignFollowedByDigit(LocatedChar lc){

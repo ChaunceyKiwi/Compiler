@@ -28,6 +28,7 @@ import symbolTable.Binding;
 import symbolTable.Scope;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
+import asmCodeGenerator.codeStorage.StringStorage;
 
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
@@ -342,9 +343,16 @@ public class ASMCodeGenerator {
 		}
 		public void visit(StringConstantNode node){
 			newValueCode(node);
-
+			String value = node.getValue();
 			
-			code.add(PushI, node.getValue());
+			String label = StringStorage.getLabelFor(value);
+			if (label == null) {
+				label = StringStorage.initializeNewLabel(value);
+				code.add(DLabel, label);
+				code.add(DataS, value);
+			}
+			
+			code.add(PushD, label);
 		}
 	}
 
