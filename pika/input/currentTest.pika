@@ -1,5 +1,8 @@
 exec {
-	const a :=  [3 + 4 | floating].
-    
+	const a :=  3 + 4.
 	print a, _n_.
+	{ 
+ 		const b :=  1 + 2.
+		print b, _n_.
+	}
 }

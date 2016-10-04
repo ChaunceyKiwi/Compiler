@@ -85,6 +85,7 @@ public class Parser {
 			ParseNode statement = parseStatement();
 			blockStatement.appendChild(statement);
 		}
+		
 		expect(Punctuator.CLOSE_BRACE);
 		return blockStatement;
 	}
@@ -124,8 +125,10 @@ public class Parser {
 	}
 	
 	private boolean startsStatement(Token token) {
-		return startsPrintStatement(token) ||
-			   startsDeclaration(token);
+		return  startsDeclaration(token) || 
+//To be added	startsAssignmentStatement(token) ||   
+				startsPrintStatement(token) ||
+				startsBlockStatement(token);
 	}
 	
 	// printStmt -> PRINT printExpressionList .
