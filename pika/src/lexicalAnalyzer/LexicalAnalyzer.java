@@ -124,6 +124,19 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 			c = input.next();			
 		}
 		
+		if(c.getCharacter() == 'E'){
+			buffer.append(c.getCharacter());
+			c = input.next();
+			if(c.getCharacter() == '-' || c.getCharacter() == '+'){
+				buffer.append(c.getCharacter());
+				c = input.next();
+			}
+			while(c.isDigit()){
+				buffer.append(c.getCharacter());
+				c = input.next();			
+			}	
+		}
+		
 		input.pushback(c);
 		
 		return 1;

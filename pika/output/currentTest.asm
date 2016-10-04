@@ -123,9 +123,7 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushF        4.139000                  
-        PushF        3.234000                  
-        FAdd                                   
+        PushF        41389998080.000000        
         StoreF                                 
         PushD        $global-memory-block      
         PushI        0                         
