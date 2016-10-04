@@ -1,5 +1,4 @@
 exec {
-	var a :=  [-1 + 1|bool].
-
+	var a :=  [2|bool].
 	print a, _n_.
 }

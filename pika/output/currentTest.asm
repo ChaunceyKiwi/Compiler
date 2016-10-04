@@ -98,26 +98,24 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushI        -1                        
-        PushI        1                         
-        Add                                    
-        JumpTrue     cast-true                 
+        PushI        2                         
+        JumpTrue     -casting-1-true           
         PushI        0                         
-        Jump         cast-join                 
-        Label        cast-true                 
+        Jump         -casting-1-join           
+        Label        -casting-1-true           
         PushI        1                         
-        Label        cast-join                 
+        Label        -casting-1-join           
         StoreC                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadC                                  
-        JumpTrue     -print-boolean-1-true     
+        JumpTrue     -print-boolean-2-true     
         PushD        $boolean-false-string     
-        Jump         -print-boolean-1-join     
-        Label        -print-boolean-1-true     
+        Jump         -print-boolean-2-join     
+        Label        -print-boolean-2-true     
         PushD        $boolean-true-string      
-        Label        -print-boolean-1-join     
+        Label        -print-boolean-2-join     
         PushD        $print-format-boolean     
         Printf                                 
         PushD        $print-format-newline     

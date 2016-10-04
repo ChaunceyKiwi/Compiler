@@ -225,33 +225,46 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitLeave(TypeCastingNode node){
-			Type from = node.child(0).getType();
-			Type to = node.child(1).getType();
-			
+			Type originalType = node.child(0).getType();
+			Type targetType = node.child(1).getType();
+						
 			newValueCode(node);
-			ASMCodeFragment lvalue = removeValueCode(node.child(0));
-			code.append(lvalue);
+			ASMCodeFragment value = removeValueCode(node.child(0));
+			code.append(value);
+			Labeller labeller = new Labeller("casting");
 			
-			if (from == to) {
-				return;				
-			}
+			// Followed castings are allowed
+			// Char -> Int , Int -> Char
+			// Int -> Float , Float -> Int
+			// Int -> Bool, Char -> Bool
+			// selfType -> selfType
 			
-			if (from == PrimitiveType.INTEGER && to == PrimitiveType.BOOLEAN) {
-				String trueLabel = "cast-true";
-				String joinLabel = "cast-join";
+			if(originalType == targetType) 
+				return;
+			else if(originalType == PrimitiveType.FLOATING && targetType == PrimitiveType.INTEGER)
+				code.add(ConvertI);
+			else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.FLOATING)
+				code.add(ConvertF);
+			else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.BOOLEAN){
+				String trueLabel  = labeller.newLabel("true");
+				String joinLabel  = labeller.newLabel("join");
+				
 				code.add(JumpTrue, trueLabel);
 				code.add(PushI, 0);
 				code.add(Jump, joinLabel);
 				code.add(Label, trueLabel);
 				code.add(PushI, 1);
-				code.add(Label, joinLabel);
+				code.add(Label, joinLabel);		
+			}else if(originalType == PrimitiveType.CHARACTER && targetType == PrimitiveType.BOOLEAN){
+				String trueLabel  = labeller.newLabel("true");
+				String joinLabel  = labeller.newLabel("join");
 				
-			} else if ((from == PrimitiveType.INTEGER || from == PrimitiveType.FLOATING) && (to == PrimitiveType.INTEGER || to == PrimitiveType.FLOATING)) {
-				if (to == PrimitiveType.INTEGER) {
-					code.add(ConvertI);				
-				} else if (to == PrimitiveType.FLOATING) {
-					code.add(ConvertF);
-				}
+				code.add(JumpTrue, trueLabel);
+				code.add(PushI, 0);
+				code.add(Jump, joinLabel);
+				code.add(Label, trueLabel);
+				code.add(PushI, 1);
+				code.add(Label, joinLabel);		
 			}
 		}
 		
