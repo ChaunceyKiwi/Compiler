@@ -123,18 +123,14 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushF        4.000000                  
-        PushF        0.000000                  
-        Duplicate                              
-        JumpFZero    $$f-divide-by-zero        
-        FDivide                                
+        PushF        4.139000                  
+        PushF        3.234000                  
+        FAdd                                   
         StoreF                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadF                                  
         PushD        $print-format-floating    
-        Printf                                 
-        PushD        $print-format-newline     
         Printf                                 
         Halt                                   

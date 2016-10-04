@@ -166,7 +166,7 @@ public class Parser {
 	
 	// Separator can be SEPARATOR(',') Space(';') 
 	private boolean startsPrintSeparator(Token token) {
-		return token.isLextant(Punctuator.SEPARATOR, Punctuator.SPACE)  ;
+		return token.isLextant(Punctuator.SEPARATOR, Punctuator.SPACE);
 	}
 	
 

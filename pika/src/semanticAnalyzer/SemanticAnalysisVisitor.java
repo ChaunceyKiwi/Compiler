@@ -84,10 +84,12 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	public void visitLeave(DeclarationNode node) {
 		IdentifierNode identifier = (IdentifierNode) node.child(0);
 		ParseNode initializer = node.child(1);
+		Scope scope = identifier.getLocalScope();
 		
 		Type declarationType = initializer.getType();
 		node.setType(declarationType);
-		identifier.setType(declarationType);
+		identifier.setType(declarationType);	
+		scope.getSymbolTable().errorIfAlreadyDefined(identifier.getToken());
 
 		if(node.getToken().isLextant(Keyword.VAR))
 			addBinding(identifier, declarationType, true);

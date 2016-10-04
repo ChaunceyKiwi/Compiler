@@ -30,7 +30,7 @@ import symbolTable.Binding;
 import symbolTable.Scope;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
-import asmCodeGenerator.codeStorage.StringStorage;
+import asmCodeGenerator.codeStorage.StringHashTable;;
 
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
@@ -433,9 +433,9 @@ public class ASMCodeGenerator {
 			newValueCode(node);
 			String value = node.getValue();
 			
-			String label = StringStorage.getLabelFor(value);
+			String label = StringHashTable.getLabelFor(value);
 			if (label == null) {
-				label = StringStorage.initializeNewLabel(value);
+				label = StringHashTable.applyLabelFor(value);
 				code.add(DLabel, label);
 				code.add(DataS, value);
 			}

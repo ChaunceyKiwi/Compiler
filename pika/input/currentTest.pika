@@ -1,4 +1,4 @@
 exec {
-	var a :=  4.0 / 0.0.
-	print a, _n_.
+	var a :=  4.139 + 3.234.
+	print a.
 }

@@ -101,7 +101,6 @@ public class RunTime {
 		
 		frag.add(DLabel, floatDivideByZeroMessage);
 		frag.add(DataS, "float divide by zero");
-		
 		frag.add(Label, FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR);
 		frag.add(PushD, floatDivideByZeroMessage);
 		frag.add(Jump, GENERAL_RUNTIME_ERROR);
