@@ -13,6 +13,8 @@ import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.DeclarationNode;
 import parseTree.nodeTypes.AssignmentStatementNode;
+import parseTree.nodeTypes.TypeCastedToNode;
+import parseTree.nodeTypes.TypeCastingNode;
 import parseTree.nodeTypes.ErrorNode;
 import parseTree.nodeTypes.IdentifierNode;
 import parseTree.nodeTypes.IntegerConstantNode;
@@ -43,22 +45,26 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	public void visitEnter(ProgramNode node) {
 		enterProgramScope(node);
 	}
+	
 	public void visitLeave(ProgramNode node) {
 		leaveScope(node);
 	}
+	
 	public void visitEnter(BlockStatementNode node) {
-	}
-	public void visitLeave(BlockStatementNode node) {
+		enterSubscope(node);
 	}
 	
+	public void visitLeave(BlockStatementNode node) {
+		leaveScope(node);
+	}
 	
 	///////////////////////////////////////////////////////////////////////////
 	// helper methods for scoping.
 	private void enterProgramScope(ParseNode node) {
 		Scope scope = Scope.createProgramScope();
 		node.setScope(scope);
-	}	
-	@SuppressWarnings("unused")
+	}
+	
 	private void enterSubscope(ParseNode node) {
 		Scope baseScope = node.getLocalScope();
 		Scope scope = baseScope.createSubscope();
@@ -164,6 +170,23 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	@Override
 	public void visit(SpaceNode node) {
 	}
+	
+	@Override
+	public void visit(TypeCastedToNode node){
+		String type = node.getToken().getLexeme();
+		
+		// bool | char | string | int | float
+		switch(type){
+			case("bool"): node.setType(PrimitiveType.BOOLEAN); break;
+			case("char"): node.setType(PrimitiveType.CHARACTER); break;
+			case("string"): node.setType(PrimitiveType.STRING); break;
+			case("int"): node.setType(PrimitiveType.INTEGER); break;
+			case("float"): node.setType(PrimitiveType.FLOATING); break;
+			default:node.setType(PrimitiveType.ERROR);break;
+		}	
+	}
+	
+	
 	///////////////////////////////////////////////////////////////////////////
 	// IdentifierNodes, with helper methods
 	@Override

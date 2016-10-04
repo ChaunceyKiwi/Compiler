@@ -8,8 +8,9 @@ import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.AssignmentStatementNode;
-//import parseTree.nodeTypes.ParenthesesExpressionNode;
 import parseTree.nodeTypes.DeclarationNode;
+import parseTree.nodeTypes.TypeCastedToNode;
+import parseTree.nodeTypes.TypeCastingNode;
 import parseTree.nodeTypes.ErrorNode;
 import parseTree.nodeTypes.IdentifierNode;
 import parseTree.nodeTypes.IntegerConstantNode;
@@ -246,10 +247,6 @@ public class Parser {
 		return token.isLextant(Keyword.CONST) || token.isLextant(Keyword.VAR);
 	}
 	
-//	private boolean startsParenthesesExpression(Token token){
-//		return token.isLextant(Punctuator.OPEN_BRACKET);
-//	}
-	
 	private ParseNode parseAssignmentStatement() {
 		if(!startsAssignmentStatement(nowReading)) {
 			return syntaxErrorNode("assignment statement");
@@ -331,7 +328,7 @@ public class Parser {
 	}
 	
 	private boolean startsAdditiveExpression(Token token) {
-		return startsLiteral(token);
+		return startsMultiplicativeExpression(token);
 	}	
 
 	// multiplicativeExpression -> atomicExpression [MULT atomicExpression]*  (left-assoc)
@@ -351,6 +348,47 @@ public class Parser {
 		return left;
 	}
 	
+	private ParseNode parseTypeCastingExpression(){
+		if(!startsTypeCastingExpression(nowReading)){
+			return syntaxErrorNode("typeCastingExpression");
+		}
+		
+		expect(Punctuator.OPEN_SQUARE_BRACKET);
+		ParseNode expressionToBeCasted = parseExpression();
+		Token verticalBarToken = nowReading;
+		expect(Punctuator.VERITICAL_BAR);
+		Token typeToken = nowReading;
+		readToken();
+		expect(Punctuator.CLOSE_SQUARE_BRACKET);
+		
+		ParseNode typeNode = new TypeCastedToNode(typeToken);
+		
+		return TypeCastingNode.withChildren(verticalBarToken, expressionToBeCasted, typeNode);
+		
+	}
+	
+	private boolean startsTypeCastingExpression(Token token){
+		return token.isLextant(Punctuator.OPEN_SQUARE_BRACKET);
+	}
+	
+	private ParseNode parseParenthesesExpression(){
+		if(!startsParenthesesExpression(nowReading)) {
+			return syntaxErrorNode("parenthesesExpression");
+		}
+		
+		ParseNode expressionInParentheses;
+		
+		expect(Punctuator.OPEN_BRACKET);
+		expressionInParentheses = parseExpression();
+		expect(Punctuator.CLOSE_BRACKET);
+		
+		return expressionInParentheses;
+	}
+	
+	private boolean startsParenthesesExpression(Token token){
+		return token.isLextant(Punctuator.OPEN_BRACKET);
+	}
+	
 	private boolean startsMultiplicativeExpression(Token token) {
 		return startsAtomicExpression(token);
 	}
@@ -360,10 +398,18 @@ public class Parser {
 		if(!startsAtomicExpression(nowReading)) {
 			return syntaxErrorNode("atomic expression");
 		}
-		return parseLiteral();
+		
+		if(startsTypeCastingExpression(nowReading))
+			return parseTypeCastingExpression();
+		else if(startsParenthesesExpression(nowReading))
+			return parseParenthesesExpression();
+		else
+			return parseLiteral();
 	}
 	private boolean startsAtomicExpression(Token token) {
-		return startsLiteral(token);
+		return startsLiteral(token) ||
+			   startsTypeCastingExpression(token)||
+			   startsParenthesesExpression(token);
 	}
 	
 	// literal -> number | identifier | booleanConstant
@@ -393,13 +439,14 @@ public class Parser {
 
 		return syntaxErrorNode("literal");
 	}
+	
 	private boolean startsLiteral(Token token) {
 		return startsIntNumber(token) || 
 			   startsFloatingNumber(token)||
 			   startsBooleanConstant(token)||
 			   startsChar(token) ||
 			   startsString(token) ||
-			   startsIdentifier(token) ;
+			   startsIdentifier(token);
 	}
 
 	// number (terminal)

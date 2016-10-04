@@ -4,6 +4,8 @@ import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.AssignmentStatementNode;
+import parseTree.nodeTypes.TypeCastedToNode;
+import parseTree.nodeTypes.TypeCastingNode;
 import parseTree.nodeTypes.DeclarationNode;
 import parseTree.nodeTypes.ErrorNode;
 import parseTree.nodeTypes.IdentifierNode;
@@ -40,10 +42,14 @@ public interface ParseNodeVisitor {
 	
 	void visitEnter(ProgramNode node);
 	void visitLeave(ProgramNode node);
-
+	
+	void visitEnter(TypeCastingNode node);
+	void visitLeave(TypeCastingNode node);
+	
 
 	// leaf nodes: visitLeaf only
 	void visit(BooleanConstantNode node);
+	void visit(TypeCastedToNode node);
 	void visit(ErrorNode node);
 	void visit(IdentifierNode node);
 	void visit(IntegerConstantNode node);
@@ -105,6 +111,13 @@ public interface ParseNodeVisitor {
 			defaultVisitLeave(node);
 		}
 		
+		public void visitEnter(TypeCastingNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(TypeCastingNode node) {
+			defaultVisitLeave(node);
+		}
+		
 		public void visitEnter(ProgramNode node) {
 			defaultVisitEnter(node);
 		}
@@ -112,7 +125,6 @@ public interface ParseNodeVisitor {
 			defaultVisitLeave(node);
 		}
 		
-
 		public void visit(BooleanConstantNode node) {
 			defaultVisitForLeaf(node);
 		}
@@ -138,6 +150,9 @@ public interface ParseNodeVisitor {
 			defaultVisitForLeaf(node);
 		}	
 		public void visit(SpaceNode node) {
+			defaultVisitForLeaf(node);
+		}
+		public void visit(TypeCastedToNode node) {
 			defaultVisitForLeaf(node);
 		}
 	}

@@ -23,6 +23,7 @@ import parseTree.nodeTypes.NewlineNode;
 import parseTree.nodeTypes.PrintStatementNode;
 import parseTree.nodeTypes.ProgramNode;
 import parseTree.nodeTypes.SpaceNode;
+import parseTree.nodeTypes.TypeCastingNode;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 import symbolTable.Binding;
@@ -221,6 +222,16 @@ public class ASMCodeGenerator {
 			
 			Type type = node.getType();
 			code.add(opcodeForStore(type));
+		}
+		
+		public void visitLeave(TypeCastingNode node){
+			Type orinalType = node.child(0).getType();
+			Type targetType = node.child(1).getType();
+			
+			if(orinalType == targetType) return;
+			
+			
+			
 		}
 		
 		private ASMOpcode opcodeForStore(Type type) {

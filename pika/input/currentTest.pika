@@ -1,7 +1,3 @@
 exec {
-	var a :=  3 + 4.
-	var a :=  3 + 4.
-
-	a := 1 + 1.
-	print a, _n_.
+	var a :=  [3 + 4|float].
 }

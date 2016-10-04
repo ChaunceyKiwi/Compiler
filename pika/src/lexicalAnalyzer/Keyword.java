@@ -12,8 +12,13 @@ public enum Keyword implements Lextant {
 	TRUE("_true_"),
 	FALSE("_false_"),
 	EXEC("exec"),
-	NULL_KEYWORD("");
-
+	NULL_KEYWORD(""),
+	BOOLEAN("bool"),
+	CHARACTER("char"),
+	STRING("string"),
+	INTEGER("int"),
+	FLOATING("float");
+	
 	private String lexeme;
 	private Token prototype;
 	
