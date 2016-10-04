@@ -1,3 +1,5 @@
 exec {
-	var a :=  [3 + 4|float].
+	var a :=  [-1 + 1|bool].
+
+	print a, _n_.
 }

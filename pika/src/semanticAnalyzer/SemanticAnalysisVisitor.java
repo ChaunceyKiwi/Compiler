@@ -95,6 +95,11 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			addBinding(identifier, declarationType, false);
 	}
 	
+	@Override
+	public void visitLeave(TypeCastingNode node) {
+		node.setType(node.child(1).getType());
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	// assignment
 	@Override

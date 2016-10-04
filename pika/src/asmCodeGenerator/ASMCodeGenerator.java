@@ -225,13 +225,34 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitLeave(TypeCastingNode node){
-			Type orinalType = node.child(0).getType();
-			Type targetType = node.child(1).getType();
+			Type from = node.child(0).getType();
+			Type to = node.child(1).getType();
 			
-			if(orinalType == targetType) return;
+			newValueCode(node);
+			ASMCodeFragment lvalue = removeValueCode(node.child(0));
+			code.append(lvalue);
 			
+			if (from == to) {
+				return;				
+			}
 			
-			
+			if (from == PrimitiveType.INTEGER && to == PrimitiveType.BOOLEAN) {
+				String trueLabel = "cast-true";
+				String joinLabel = "cast-join";
+				code.add(JumpTrue, trueLabel);
+				code.add(PushI, 0);
+				code.add(Jump, joinLabel);
+				code.add(Label, trueLabel);
+				code.add(PushI, 1);
+				code.add(Label, joinLabel);
+				
+			} else if ((from == PrimitiveType.INTEGER || from == PrimitiveType.FLOATING) && (to == PrimitiveType.INTEGER || to == PrimitiveType.FLOATING)) {
+				if (to == PrimitiveType.INTEGER) {
+					code.add(ConvertI);				
+				} else if (to == PrimitiveType.FLOATING) {
+					code.add(ConvertF);
+				}
+			}
 		}
 		
 		private ASMOpcode opcodeForStore(Type type) {
