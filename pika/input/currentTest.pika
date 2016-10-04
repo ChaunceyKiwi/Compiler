@@ -1,6 +1,5 @@
 exec {
-	const a :=  "abcdef".
-
+	const a :=  [3 + 4 | floating].
     
 	print a, _n_.
 }
