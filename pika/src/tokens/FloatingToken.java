@@ -3,15 +3,15 @@ package tokens;
 import inputHandler.TextLocation;
 
 public class FloatingToken extends TokenImp {
-	protected float value;
+	protected double value;
 	
 	protected FloatingToken(TextLocation location, String lexeme) {
 		super(location, lexeme);
 	}
-	protected void setValue(float value) {
+	protected void setValue(double value) {
 		this.value = value;
 	}
-	public float getValue() {
+	public double getValue() {
 		return value;
 	}
 	

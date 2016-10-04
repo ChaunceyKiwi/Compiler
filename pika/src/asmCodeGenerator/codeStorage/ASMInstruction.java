@@ -9,6 +9,9 @@ public class ASMInstruction {
 	
 /////////////////////////////////////////////////////////////////////
 // constructors
+	public ASMOpcode getOpcode(){
+		return this.opcode;
+	}
 	
 	public ASMInstruction(ASMOpcode opcode, int argument) {
 		this(opcode, argument, "");

@@ -1,4 +1,3 @@
-        Jump         $$main                    
         DLabel       $eat-location-zero        
         DataZ        8                         
         DLabel       $print-format-integer     
@@ -60,10 +59,6 @@
         DataC        115                       
         DataC        10                        
         DataC        0                         
-        Label        $$general-runtime-error   
-        PushD        $errors-general-message   
-        Printf                                 
-        Halt                                   
         DLabel       $errors-int-divide-by-zero 
         DataC        105                       %% "integer divide by zero"
         DataC        110                       
@@ -88,9 +83,6 @@
         DataC        114                       
         DataC        111                       
         DataC        0                         
-        Label        $$i-divide-by-zero        
-        PushD        $errors-int-divide-by-zero 
-        Jump         $$general-runtime-error   
         DLabel       $errors-float-divide-by-zero 
         DataC        102                       %% "float divide by zero"
         DataC        108                       
@@ -113,22 +105,58 @@
         DataC        114                       
         DataC        111                       
         DataC        0                         
-        Label        $$f-divide-by-zero        
-        PushD        $errors-float-divide-by-zero 
-        Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
         DataZ        8                         
+        DLabel       string0                   
+        DataC        72                        %% "Hello World"
+        DataC        101                       
+        DataC        108                       
+        DataC        108                       
+        DataC        111                       
+        DataC        32                        
+        DataC        87                        
+        DataC        111                       
+        DataC        114                       
+        DataC        108                       
+        DataC        100                       
+        DataC        0                         
+        Jump         $$main                    
+        Label        $$general-runtime-error   
+        PushD        $errors-general-message   
+        Printf                                 
+        Halt                                   
+        Label        $$i-divide-by-zero        
+        PushD        $errors-int-divide-by-zero 
+        Jump         $$general-runtime-error   
+        Label        $$f-divide-by-zero        
+        PushD        $errors-float-divide-by-zero 
+        Jump         $$general-runtime-error   
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushF        41389998080.000000        
-        StoreF                                 
+        PushD        string0                   
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% b
+        PushD        string0                   
+        StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        LoadF                                  
-        PushD        $print-format-floating    
+        LoadI                                  
+        PushD        $print-format-string      
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% b
+        LoadI                                  
+        PushD        $print-format-string      
+        Printf                                 
+        PushD        $print-format-newline     
         Printf                                 
         Halt                                   

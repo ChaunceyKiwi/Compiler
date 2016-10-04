@@ -5,3 +5,5 @@
 /tokens/
 /symbolTable/
 /lexicalAnalyzer/
+/optimizer/
+/applications/

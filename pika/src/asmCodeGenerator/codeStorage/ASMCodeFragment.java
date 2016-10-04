@@ -8,7 +8,7 @@ import java.util.List;
 import logging.PikaLogger;
 
 public class ASMCodeFragment {
-	private List<ASMCodeChunk> chunks;
+	public List<ASMCodeChunk> chunks;
 	
 	// these names refer to what the code in the fragment
 	// leaves on top of the accumulator: either nothing, a value
@@ -75,6 +75,8 @@ public class ASMCodeFragment {
 	public void add(ASMOpcode opcode) {
 		lastChunk().add(opcode);
 	}
+	
+//	public void remove()
 
 	private ASMCodeChunk lastChunk() {
 		if(chunks.size() == 0) {

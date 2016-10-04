@@ -5,7 +5,7 @@ import java.util.List;
 
 // a glorified list of instructions.
 public class ASMCodeChunk {
-	List<ASMInstruction> instructions;
+	public List<ASMInstruction> instructions;
 	
 	public ASMCodeChunk() {
 		instructions = new LinkedList<ASMInstruction>();
