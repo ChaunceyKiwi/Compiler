@@ -1,4 +1,4 @@
 exec {
-	var a :=  [2|bool].
+	var a :=  4.0 / 0.0.
 	print a, _n_.
 }

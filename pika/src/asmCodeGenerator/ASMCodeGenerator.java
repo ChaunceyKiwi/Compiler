@@ -367,6 +367,16 @@ public class ASMCodeGenerator {
 			code.append(arg2);
 			
 			ASMOpcode opcode = opcodeForOperator(node.getOperator(), typeOfLeftChild, typeOfRightChild);
+			if(opcode == Divide){
+				code.add(Duplicate);
+				code.add(JumpFalse, RunTime.INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR);
+			}else if(opcode == FDivide){
+				code.add(Duplicate);
+				code.add(JumpFZero, RunTime.FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR);
+			}
+			
+			
+			
 			code.add(opcode);							// type-dependent! (opcode is different for floats and for ints)
 		}
 		private ASMOpcode opcodeForOperator(Lextant lextant, Type typeOfLeftChild, Type typeOfRightChild) {
