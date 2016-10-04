@@ -2,3 +2,5 @@
 /parser/
 /asmCodeGenerator/
 /semanticAnalyzer/
+/tokens/
+/symbolTable/

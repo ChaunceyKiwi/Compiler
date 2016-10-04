@@ -7,6 +7,7 @@ import parseTree.*;
 import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
+import parseTree.nodeTypes.AssignmentStatementNode;
 //import parseTree.nodeTypes.ParenthesesExpressionNode;
 import parseTree.nodeTypes.DeclarationNode;
 import parseTree.nodeTypes.ErrorNode;
@@ -108,10 +109,9 @@ public class Parser {
 			return parseDeclaration();
 		}
 		
-//		// Function to be added
-//		if(startsAssignmentStatement(nowReading)) {
-//			return parseAssignmentStatement();
-//		}
+		if(startsAssignmentStatement(nowReading)) {
+			return parseAssignmentStatement();
+		}
 		
 		if(startsPrintStatement(nowReading)) {
 			return parsePrintStatement();
@@ -126,7 +126,7 @@ public class Parser {
 	
 	private boolean startsStatement(Token token) {
 		return  startsDeclaration(token) || 
-//To be added	startsAssignmentStatement(token) ||   
+				startsAssignmentStatement(token) ||   
 				startsPrintStatement(token) ||
 				startsBlockStatement(token);
 	}
@@ -241,14 +241,34 @@ public class Parser {
 		
 		return DeclarationNode.withChildren(declarationToken, identifier, initializer);
 	}
+	
 	private boolean startsDeclaration(Token token) {
 		return token.isLextant(Keyword.CONST) || token.isLextant(Keyword.VAR);
 	}
 	
-	private boolean startsParenthesesExpression(Token token){
-		return token.isLextant(Punctuator.OPEN_BRACKET);
+//	private boolean startsParenthesesExpression(Token token){
+//		return token.isLextant(Punctuator.OPEN_BRACKET);
+//	}
+	
+	private ParseNode parseAssignmentStatement() {
+		if(!startsAssignmentStatement(nowReading)) {
+			return syntaxErrorNode("assignment statement");
+		}
+		Token assignmentStatementToken = nowReading;
+//		readToken();
+		
+		ParseNode identifier = parseIdentifier();
+		expect(Punctuator.ASSIGN);
+		ParseNode initializer = parseExpression();
+		expect(Punctuator.TERMINATOR);
+		
+		return AssignmentStatementNode.withChildren(assignmentStatementToken, identifier, initializer);
 	}
-
+	
+	private boolean startsAssignmentStatement(Token token) {
+		return startsIdentifier(token);
+	}
+	
 	///////////////////////////////////////////////////////////
 	// expressions
 	// expr                     -> comparisonExpression

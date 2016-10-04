@@ -3,6 +3,7 @@ package semanticAnalyzer;
 import java.util.Arrays;
 import java.util.List;
 
+import lexicalAnalyzer.Keyword;
 import lexicalAnalyzer.Lextant;
 import logging.PikaLogger;
 import parseTree.ParseNode;
@@ -11,6 +12,7 @@ import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.DeclarationNode;
+import parseTree.nodeTypes.AssignmentStatementNode;
 import parseTree.nodeTypes.ErrorNode;
 import parseTree.nodeTypes.IdentifierNode;
 import parseTree.nodeTypes.IntegerConstantNode;
@@ -71,6 +73,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	@Override
 	public void visitLeave(PrintStatementNode node) {
 	}
+	
 	@Override
 	public void visitLeave(DeclarationNode node) {
 		IdentifierNode identifier = (IdentifierNode) node.child(0);
@@ -78,10 +81,29 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		
 		Type declarationType = initializer.getType();
 		node.setType(declarationType);
-		
 		identifier.setType(declarationType);
-		addBinding(identifier, declarationType);
+
+		if(node.getToken().isLextant(Keyword.VAR))
+			addBinding(identifier, declarationType, true);
+		else
+			addBinding(identifier, declarationType, false);
 	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	// assignment
+	@Override
+	public void visitLeave(AssignmentStatementNode node) {
+		IdentifierNode identifier = (IdentifierNode) node.child(0);
+		ParseNode initializer = node.child(1);
+		Boolean ismutable = identifier.getBinding().isMutable();
+		
+		Type assignmentType = initializer.getType();
+		node.setType(assignmentType);
+		
+		identifier.setType(assignmentType);
+		addBinding(identifier, assignmentType, ismutable);
+	}
+	
 
 	///////////////////////////////////////////////////////////////////////////
 	// expressions
@@ -158,9 +180,9 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		ParseNode parent = node.getParent();
 		return (parent instanceof DeclarationNode) && (node == parent.child(0));
 	}
-	private void addBinding(IdentifierNode identifierNode, Type type) {
+	private void addBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
 		Scope scope = identifierNode.getLocalScope();
-		Binding binding = scope.createBinding(identifierNode, type);
+		Binding binding = scope.createBinding(identifierNode, type, ismutable);
 		identifierNode.setBinding(binding);
 	}
 	

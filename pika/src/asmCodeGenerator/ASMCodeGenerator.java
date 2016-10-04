@@ -13,6 +13,7 @@ import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.DeclarationNode;
+import parseTree.nodeTypes.AssignmentStatementNode;
 import parseTree.nodeTypes.FloatingConstantNode;
 import parseTree.nodeTypes.CharConstantNode;
 import parseTree.nodeTypes.StringConstantNode;
@@ -198,7 +199,6 @@ public class ASMCodeGenerator {
 			code.add(Printf);
 		}
 		
-
 		public void visitLeave(DeclarationNode node) {
 			newVoidCode(node);
 			ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
@@ -210,6 +210,19 @@ public class ASMCodeGenerator {
 			Type type = node.getType();
 			code.add(opcodeForStore(type));
 		}
+		
+		public void visitLeave(AssignmentStatementNode node) {
+			newVoidCode(node);
+			ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
+			ASMCodeFragment rvalue = removeValueCode(node.child(1));
+			
+			code.append(lvalue);
+			code.append(rvalue);
+			
+			Type type = node.getType();
+			code.add(opcodeForStore(type));
+		}
+		
 		private ASMOpcode opcodeForStore(Type type) {
 			if(type == PrimitiveType.INTEGER) {
 				return StoreI;

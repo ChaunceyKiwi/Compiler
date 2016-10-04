@@ -93,7 +93,7 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        8                         
+        DataZ        12                        
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
@@ -103,23 +103,22 @@
         Add                                    
         StoreI                                 
         PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        PushD        $print-format-integer     
-        Printf                                 
-        PushD        $print-format-newline     
-        Printf                                 
-        PushD        $global-memory-block      
         PushI        4                         
-        Add                                    %% b
-        PushI        1                         
-        PushI        2                         
+        Add                                    %% a
+        PushI        3                         
+        PushI        4                         
         Add                                    
         StoreI                                 
         PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% b
+        PushI        8                         
+        Add                                    %% a
+        PushI        1                         
+        PushI        1                         
+        Add                                    
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% a
         LoadI                                  
         PushD        $print-format-integer     
         Printf                                 

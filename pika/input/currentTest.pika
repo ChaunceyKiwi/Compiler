@@ -1,8 +1,7 @@
 exec {
-	const a :=  3 + 4.
+	var a :=  3 + 4.
+	var a :=  3 + 4.
+
+	a := 1 + 1.
 	print a, _n_.
-	{ 
- 		const b :=  1 + 2.
-		print b, _n_.
-	}
 }
