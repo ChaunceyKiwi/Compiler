@@ -18,7 +18,7 @@ public class PikaStandaloneOptimizer extends PikaApplication {
 		checkArguments(args, className());
 		
 		Tokens.setPrintLevel(Tokens.Level.FULL);
-		optimize("/Users/Chauncey/Workspace/Complier/pika/output/currentTest.asm");
+		optimize(args[0]);
 	}
 	
 	/** analyzes a file specified by filename.
