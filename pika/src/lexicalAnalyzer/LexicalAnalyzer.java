@@ -184,6 +184,8 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 			return LextantToken.make(firstChar.getLocation(), lexeme, Keyword.forLexeme(lexeme));
 		}
 		else {
+			if (lexeme.length() > 32)
+				lexicalIdentifierTooLongError(lexeme);
 			return IdentifierToken.make(firstChar.getLocation(), lexeme);
 		}
 	}
@@ -283,6 +285,11 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	private void lexicalError(LocatedChar ch) {
 		PikaLogger log = PikaLogger.getLogger("compiler.lexicalAnalyzer");
 		log.severe("Lexical error: invalid character " + ch);
+	}
+	
+	private void lexicalIdentifierTooLongError(String s) {
+		PikaLogger log = PikaLogger.getLogger("compiler.lexicalAnalyzer");
+		log.severe("Lexical error: identifier" + s + "exceeds 32 characters length");
 	}
 
 	
