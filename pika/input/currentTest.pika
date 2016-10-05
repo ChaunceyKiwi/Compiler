@@ -1,7 +1,4 @@
 exec {
-	var a :=  "Hello World".
-	var b :=  "Hello World".
-
-	print a,_n_.
-	print b,_n_.
+	var a :=  3.5 + 4.2.
+	print a.
 }

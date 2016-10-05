@@ -13,6 +13,10 @@ public class ASMInstruction {
 		return this.opcode;
 	}
 	
+	public Object getArgument(){
+		return this.argument;
+	}
+	
 	public ASMInstruction(ASMOpcode opcode, int argument) {
 		this(opcode, argument, "");
 	}

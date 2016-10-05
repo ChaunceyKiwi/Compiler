@@ -432,15 +432,22 @@ public class ASMCodeGenerator {
 		public void visit(StringConstantNode node){
 			newValueCode(node);
 			String value = node.getValue();
+			Labeller label = new Labeller("stringConstant");
 			
-			String label = StringHashTable.getLabelFor(value);
-			if (label == null) {
-				label = StringHashTable.applyLabelFor(value);
-				code.add(DLabel, label);
-				code.add(DataS, value);
-			}
+//			// My version 
+//			String label = StringHashTable.getLabelFor(value);
+//			if (label == null) {
+//				label = StringHashTable.applyLabelFor(value);
+//				code.add(DLabel, label);
+//				code.add(DataS, value);
+//			}
+//			
+//			code.add(PushD, label);
 			
-			code.add(PushD, label);
+			// Testing version
+			code.add(DLabel, label.newLabel(value));
+			code.add(DataS, value);
+			code.add(PushD, label.newLabel(value));
 		}
 	}
 

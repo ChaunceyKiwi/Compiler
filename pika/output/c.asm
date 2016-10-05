@@ -108,6 +108,20 @@
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
         DataZ        8                         
+        DLabel       -stringConstant-1-Hello World 
+        DLabel       -stringConstant-2-Hello World 
+        DataC        72                        %% "Hello World"
+        DataC        101                       
+        DataC        108                       
+        DataC        108                       
+        DataC        111                       
+        DataC        32                        
+        DataC        87                        
+        DataC        111                       
+        DataC        114                       
+        DataC        108                       
+        DataC        100                       
+        DataC        0                         
         Jump         $$main                    
         Label        $$general-runtime-error   
         PushD        $errors-general-message   
@@ -123,12 +137,27 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushF        7.700000                  
-        StoreF                                 
+        PushD        -stringConstant-1-Hello World 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% b
+        PushD        -stringConstant-2-Hello World 
+        StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        LoadF                                  
-        PushD        $print-format-floating    
+        LoadI                                  
+        PushD        $print-format-string      
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% b
+        LoadI                                  
+        PushD        $print-format-string      
+        Printf                                 
+        PushD        $print-format-newline     
         Printf                                 
         Halt                                   
