@@ -1,5 +1,5 @@
 ProgramNode (EXEC)  
-    MainBlockNode (OPEN_BRACE)  
+    BlockStatementNode (OPEN_BRACE)  
         DeclarationNode (CONST)  
             IdentifierNode (identifier, quarters)  
             IntegerConstantNode (number, 6)  

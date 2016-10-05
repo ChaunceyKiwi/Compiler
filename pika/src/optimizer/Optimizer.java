@@ -73,7 +73,7 @@ public class Optimizer {
 					if(prevprevInstr.getOpcode() == ASMOpcode.PushI &&
 					   prevInstr.getOpcode() == ASMOpcode.PushI){
 						if(Instr.getOpcode() == ASMOpcode.Add){
-							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevInstr.getArgument()) + (Integer)(prevprevInstr.getArgument()));
+							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevprevInstr.getArgument()) + (Integer)(prevInstr.getArgument()));
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 							 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
@@ -81,7 +81,7 @@ public class Optimizer {
 							 flag = false;
 							 break;
 						}else if(Instr.getOpcode() == ASMOpcode.Subtract){
-							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevInstr.getArgument()) - (Integer)(prevprevInstr.getArgument()));
+							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevprevInstr.getArgument()) - (Integer)(prevInstr.getArgument()));
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 							 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
@@ -89,7 +89,7 @@ public class Optimizer {
 							 flag = false;
 							 break;
 						}else if(Instr.getOpcode() == ASMOpcode.Multiply){
-							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevInstr.getArgument()) * (Integer)(prevprevInstr.getArgument()));
+							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevprevInstr.getArgument()) * (Integer)(prevInstr.getArgument()));
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 							 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
@@ -97,7 +97,7 @@ public class Optimizer {
 							 flag = false;
 							 break;
 						}else if(Instr.getOpcode() == ASMOpcode.Divide){
-							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevInstr.getArgument()) / (Integer)(prevprevInstr.getArgument()));
+							 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushI, (Integer)(prevprevInstr.getArgument()) / (Integer)(prevInstr.getArgument()));
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 							 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 							 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
@@ -110,7 +110,7 @@ public class Optimizer {
 					if(prevprevInstr.getOpcode() == ASMOpcode.PushF &&
 							   prevInstr.getOpcode() == ASMOpcode.PushF){
 								if(Instr.getOpcode() == ASMOpcode.FAdd){
-									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevInstr.getArgument()) + (Double)(prevprevInstr.getArgument()));
+									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevprevInstr.getArgument()) + (Double)(prevInstr.getArgument()));
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 									 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
@@ -118,7 +118,7 @@ public class Optimizer {
 									 flag = false;
 									 break;
 								}else if(Instr.getOpcode() == ASMOpcode.Subtract){
-									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevInstr.getArgument()) - (Double)(prevprevInstr.getArgument()));
+									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevprevInstr.getArgument()) - (Double)(prevInstr.getArgument()));
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 									 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
@@ -126,7 +126,7 @@ public class Optimizer {
 									 flag = false;
 									 break;
 								}else if(Instr.getOpcode() == ASMOpcode.Multiply){
-									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevInstr.getArgument()) * (Double)(prevprevInstr.getArgument()));
+									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevprevInstr.getArgument()) * (Double)(prevInstr.getArgument()));
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 									 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
@@ -134,7 +134,7 @@ public class Optimizer {
 									 flag = false;
 									 break;
 								}else if(Instr.getOpcode() == ASMOpcode.Divide){
-									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevInstr.getArgument()) / (Double)(prevprevInstr.getArgument()));
+									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevprevInstr.getArgument()) / (Double)(prevInstr.getArgument()));
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
 									 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());

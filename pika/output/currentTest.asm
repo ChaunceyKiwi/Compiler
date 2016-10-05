@@ -107,7 +107,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        8                         
+        DataZ        4                         
         Jump         $$main                    
         Label        $$general-runtime-error   
         PushD        $errors-general-message   
@@ -122,13 +122,17 @@
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% a
-        PushF        7.700000                  
-        StoreF                                 
+        Add                                    %% quarters
+        PushI        5                         
+        PushI        2                         
+        Add                                    
+        StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% a
-        LoadF                                  
-        PushD        $print-format-floating    
+        Add                                    %% quarters
+        LoadI                                  
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-newline     
         Printf                                 
         Halt                                   

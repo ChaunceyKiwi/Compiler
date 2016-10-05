@@ -1,4 +1,5 @@
 exec {
-	var a :=  3.5 + 4.2.
-	print a.
+	const quarters :=  5 + (4 - 2).
+
+	print quarters, _n_.
 }
