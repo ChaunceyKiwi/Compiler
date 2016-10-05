@@ -23,6 +23,9 @@
         DLabel       $print-format-newline     
         DataC        10                        %% "\n"
         DataC        0                         
+        DLabel       $print-format-tab         
+        DataC        9                         %% "\t"
+        DataC        0                         
         DLabel       $print-format-space       
         DataC        32                        %% " "
         DataC        0                         
@@ -107,7 +110,41 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        4                         
+        DataZ        28                        
+        DLabel       -stringConstant-1-nicenicenice 
+        DLabel       -stringConstant-7-nicenicenice 
+        DLabel       -stringConstant-6-nicenicenice 
+        DLabel       -stringConstant-5-nicenicenice 
+        DLabel       -stringConstant-2-nicenicenice 
+        DataC        110                       %% "nicenicenice"
+        DataC        105                       
+        DataC        99                        
+        DataC        101                       
+        DataC        110                       
+        DataC        105                       
+        DataC        99                        
+        DataC        101                       
+        DataC        110                       
+        DataC        105                       
+        DataC        99                        
+        DataC        101                       
+        DataC        0                         
+        DLabel       -stringConstant-3-niceniceniceB 
+        DLabel       -stringConstant-4-niceniceniceB 
+        DataC        110                       %% "niceniceniceB"
+        DataC        105                       
+        DataC        99                        
+        DataC        101                       
+        DataC        110                       
+        DataC        105                       
+        DataC        99                        
+        DataC        101                       
+        DataC        110                       
+        DataC        105                       
+        DataC        99                        
+        DataC        101                       
+        DataC        66                        
+        DataC        0                         
         Jump         $$main                    
         Label        $$general-runtime-error   
         PushD        $errors-general-message   
@@ -123,16 +160,50 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% quarters
-        PushI        5                         
-        PushI        2                         
-        Add                                    
+        PushD        -stringConstant-1-nicenicenice 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% quarters1
+        PushD        -stringConstant-2-nicenicenice 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% quarters2
+        PushD        -stringConstant-3-niceniceniceB 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        12                        
+        Add                                    %% quarters3
+        PushD        -stringConstant-4-niceniceniceB 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        16                        
+        Add                                    %% quarters4
+        PushD        -stringConstant-5-nicenicenice 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        20                        
+        Add                                    %% quarters5
+        PushD        -stringConstant-6-nicenicenice 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        24                        
+        Add                                    %% quarters6
+        PushD        -stringConstant-7-nicenicenice 
         StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% quarters
         LoadI                                  
-        PushD        $print-format-integer     
+        PushD        $print-format-string      
         Printf                                 
-        PushD        $print-format-newline     
+        PushD        $print-format-tab         
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        12                        
+        Add                                    %% quarters3
+        LoadI                                  
+        PushD        $print-format-string      
         Printf                                 
         Halt                                   

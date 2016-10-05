@@ -189,7 +189,8 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	}
 	private void appendSubsequentLetter(StringBuffer buffer) {
 		LocatedChar c = input.next();
-		while(Character.isLetter(c.getCharacter()) || c.getCharacter() == '_' || c.getCharacter() == '$') {
+		while(Character.isLetter(c.getCharacter()) || c.getCharacter() == '_' || 
+			   c.getCharacter() == '$' ||Character.isDigit(c.getCharacter())) {
 			buffer.append(c.getCharacter());
 			c = input.next();
 		}

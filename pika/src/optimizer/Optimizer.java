@@ -50,7 +50,10 @@ public class Optimizer {
 				}
 			}
 		}
-	
+		
+		boolean flag = false;
+		while(!flag){
+			flag = true;
 		
 		// Simple constant arithmetic calculations at compile time if possible
 		ASMInstruction prevprevInstr = null;
@@ -61,7 +64,6 @@ public class Optimizer {
 		Tuple<Integer, Integer> indexForPIns =  new Tuple<Integer, Integer>(0, 0);
 		Tuple<Integer, Integer> indexForIns =   new Tuple<Integer, Integer>(0, 0);
 		
-		boolean flag = true;
 		for(int i = 0; (i < fragment.chunks.size()) && flag; i++){
 			for(int j = 0; (j < fragment.chunks.get(i).instructions.size()) && flag ;j++) {
 				ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
@@ -193,6 +195,7 @@ public class Optimizer {
 				}
 
 			}
+		  }
 		}
 			
 		fragment.chunks.add(0, head);

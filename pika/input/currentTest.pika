@@ -1,5 +1,11 @@
 exec {
-	const quarters :=  5 + (4 - 2).
+	const quarters :=  "nicenicenice".
+	const quarters1 :=  "nicenicenice".
+	const quarters2 :=  "niceniceniceB".
+	const quarters3 :=  "niceniceniceB".
+	const quarters4 :=  "nicenicenice".
+	const quarters5 :=  "nicenicenice".
+	const quarters6 :=  "nicenicenice".
 
-	print quarters, _n_.
+	print quarters,_t_,quarters3.
 }
