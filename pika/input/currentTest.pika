@@ -1,11 +1,24 @@
 exec {
-	const quarters :=  "nicenicenice".
-	const quarters1 :=  "nicenicenice".
-	const quarters2 :=  "niceniceniceB".
-	const quarters3 :=  "niceniceniceB".
-	const quarters4 :=  "nicenicenice".
-	const quarters5 :=  "nicenicenice".
-	const quarters6 :=  "nicenicenice".
+	const quarters :=  5.
+	const dimes    :=  3.
+	const nickels  :=  7.
+	const pennies  := 17.
+    
+	const value := quarters * 25 +
+    			 dimes    * 10 +
+    			 nickels  *  5 +
+    			 pennies.
+	print value, _n_.
+    
+	const ncoins := quarters + dimes + nickels + pennies.
+	print ncoins, _n_.
+    
+	const moredimes := dimes > nickels.
+	print moredimes;.
 
-	print quarters,_t_,quarters3.
+	const boot := _true_.
+	const boof := _false_.
+    
+	print boot; boof, _n_.
+	print boot, boof, _n_.
 }
