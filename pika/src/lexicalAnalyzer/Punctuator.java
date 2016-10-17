@@ -3,18 +3,34 @@ package lexicalAnalyzer;
 import tokens.LextantToken;
 import tokens.Token;
 
-
+// punctuator: semi-standard term for a punctuation or operator token. 
+// typically, a punctuator is composed of non-alphanumeric characters.
 public enum Punctuator implements Lextant {
+	// Arithmetic operator 
 	ADD("+"),
 	SUBTRACT("-"),
 	MULTIPLY("*"),
 	DIVIDE("/"),
+	
+	// Comparison operator
 	LESSER("<"),
 	LESSEROREQUAL("<="),
 	EQUAL("=="),
 	NOTEQUAL("!="),
 	GREATER(">"),
 	GREATEROREQUAL(">="),
+	
+	// Boolean operator
+	AND("&&"),
+	OR("||"),
+	NEGATIVE("!"),
+	
+	// Other operator
+	two_slashes("//"),
+	three_slashes("///"),
+	four_slashes("////"),
+	
+	// Punctuation
 	ASSIGN(":="),
 	SEPARATOR(","),
 	SPACE(";"),
@@ -23,9 +39,13 @@ public enum Punctuator implements Lextant {
 	CLOSE_BRACE("}"),
 	OPEN_BRACKET("("),
 	CLOSE_BRACKET(")"),
+	
+	// Type casting punctuation
 	OPEN_SQUARE_BRACKET("["),
 	CLOSE_SQUARE_BRACKET("]"),
 	VERITICAL_BAR("|"),
+	
+	// Null punctuator
 	NULL_PUNCTUATOR("");
 
 	private String lexeme;
@@ -41,8 +61,7 @@ public enum Punctuator implements Lextant {
 	public Token prototype() {
 		return prototype;
 	}
-	
-	
+		
 	public static Punctuator forLexeme(String lexeme) {
 		for(Punctuator punctuator: values()) {
 			if(punctuator.lexeme.equals(lexeme)) {

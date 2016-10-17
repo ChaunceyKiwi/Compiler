@@ -1,11 +1,5 @@
 exec {
-	const a :=   _true_ != _false_.
-	const b :=   _true_ == _false_.
-	const c :=   _true_ != _true_.
-	const d :=   _true_ == _true_.
+	const a :=   1 + 2 + 3 + 4.
 
-	print a,_n_.
-	print b,_n_.
-	print c,_n_.
-	print d,_n_.
+	print a.
 }
