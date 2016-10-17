@@ -39,7 +39,6 @@ public class BinaryOperatorNode extends ParseNode {
 		return node;
 	}
 	
-	
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors
 			

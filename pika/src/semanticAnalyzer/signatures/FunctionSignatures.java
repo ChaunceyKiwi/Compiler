@@ -127,6 +127,10 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 				new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
 				new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
 			);
+		
+		new FunctionSignatures(Punctuator.NOT,
+				new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			);
 	}
 	
 	// First, we use the operator itself (in this case the Punctuator ADD) as the key.

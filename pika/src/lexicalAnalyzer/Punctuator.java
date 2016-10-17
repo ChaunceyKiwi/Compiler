@@ -23,7 +23,7 @@ public enum Punctuator implements Lextant {
 	// Boolean operator
 	AND("&&"),
 	OR("||"),
-	NEGATIVE("!"),
+	NOT("!"),
 	
 	// Other operator
 	two_slashes("//"),

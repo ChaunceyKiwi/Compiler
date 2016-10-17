@@ -10,6 +10,7 @@ import lexicalAnalyzer.Lextant;
 import lexicalAnalyzer.Punctuator;
 import parseTree.*;
 import parseTree.nodeTypes.BinaryOperatorNode;
+import parseTree.nodeTypes.UnaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.DeclarationNode;
@@ -311,6 +312,7 @@ public class ASMCodeGenerator {
 				visitNormalBinaryOperatorNode(node);
 			}
 		}
+		
 		private void visitComparisonOperatorNode(BinaryOperatorNode node,
 				Lextant operator) {
 
@@ -362,6 +364,7 @@ public class ASMCodeGenerator {
 			code.add(Jump, joinLabel);
 			code.add(Label, joinLabel);
 		}
+		
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);
 			Type typeOfLeftChild = node.child(0).getType();
@@ -381,10 +384,40 @@ public class ASMCodeGenerator {
 				code.add(JumpFZero, RunTime.FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR);
 			}
 			
-			
-			
 			code.add(opcode);							// type-dependent! (opcode is different for floats and for ints)
 		}
+		
+		public void visitLeave(UnaryOperatorNode node) {
+			Lextant operator = node.getOperator();
+			
+			// Comparison Operator
+			if (operator == Punctuator.NOT) {
+				visitUnaryOperatorNode(node);
+			}
+		}
+		
+		private void visitUnaryOperatorNode(UnaryOperatorNode node) {
+			newValueCode(node);
+			ASMCodeFragment arg1 = removeValueCode(node.child(0));
+			code.append(arg1);		
+			
+			Labeller labeller = new Labeller("not");
+			String trueLabel  = labeller.newLabel("true");
+			String falseLabel = labeller.newLabel("false");
+			String joinLabel  = labeller.newLabel("join");
+			
+			code.add(JumpTrue, falseLabel);
+			code.add(Jump, trueLabel);
+			code.add(Label, trueLabel);
+			code.add(PushI, 1);
+			code.add(Jump, joinLabel);
+			code.add(Label, falseLabel);
+			code.add(PushI, 0);
+			code.add(Jump, joinLabel);
+			code.add(Label, joinLabel);
+		}
+		
+
 		private ASMOpcode opcodeForOperator(Lextant lextant, Type typeOfLeftChild, Type typeOfRightChild) {
 			assert(lextant instanceof Punctuator);
 			Punctuator punctuator = (Punctuator)lextant;

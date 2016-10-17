@@ -1,5 +1,5 @@
 exec {
-	const a :=   1 + 2 + 3 + 4.
+	const a := !!!!(3 > 4).
 
-	print a.
+	print a,_n_.
 }

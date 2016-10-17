@@ -9,6 +9,7 @@ import logging.PikaLogger;
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
 import parseTree.nodeTypes.BinaryOperatorNode;
+import parseTree.nodeTypes.UnaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.DeclarationNode;
@@ -139,12 +140,38 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			node.setType(PrimitiveType.ERROR);
 		}
 	}
+	
 	private Lextant operatorFor(BinaryOperatorNode node) {
 		LextantToken token = (LextantToken) node.getToken();
 		return token.getLextant();
 	}
-
-
+	
+	///////////////////////////////////////////////////////////////////////////
+	// expressions
+	@Override
+	public void visitLeave(UnaryOperatorNode node) {
+		assert node.nChildren() == 1;
+		ParseNode right = node.child(0);
+		List<Type> childTypes = Arrays.asList(right.getType());
+		
+		Lextant operator = operatorFor(node);
+		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
+		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();
+		
+		if(signatures.accepts(childTypes)) {
+			node.setType(resultType);
+		}
+		else {
+			typeCheckError(node, childTypes);
+			node.setType(PrimitiveType.ERROR);
+		}
+	}
+	
+	private Lextant operatorFor(UnaryOperatorNode node) {
+		LextantToken token = (LextantToken) node.getToken();
+		return token.getLextant();
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	// simple leaf nodes
 	@Override
@@ -206,10 +233,12 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		}
 		// else parent DeclarationNode does the processing.
 	}
+	
 	private boolean isBeingDeclared(IdentifierNode node) {
 		ParseNode parent = node.getParent();
 		return (parent instanceof DeclarationNode) && (node == parent.child(0));
 	}
+	
 	private void addBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
 		Scope scope = identifierNode.getLocalScope();
 		Binding binding = scope.createBinding(identifierNode, type, ismutable);

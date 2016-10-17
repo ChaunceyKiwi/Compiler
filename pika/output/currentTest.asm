@@ -110,7 +110,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        4                         
+        DataZ        1                         
         Jump         $$main                    
         Label        $$general-runtime-error   
         PushD        $errors-general-message   
@@ -126,12 +126,70 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushI        10                        
-        StoreI                                 
+        Label        -compare-1-arg1           
+        PushI        3                         
+        Label        -compare-1-arg2           
+        PushI        4                         
+        Label        -compare-1-sub            
+        Subtract                               
+        JumpPos      -compare-1-true           
+        Jump         -compare-1-false          
+        Label        -compare-1-true           
+        PushI        1                         
+        Jump         -compare-1-join           
+        Label        -compare-1-false          
+        PushI        0                         
+        Jump         -compare-1-join           
+        Label        -compare-1-join           
+        JumpTrue     -not-2-false              
+        Jump         -not-2-true               
+        Label        -not-2-true               
+        PushI        1                         
+        Jump         -not-2-join               
+        Label        -not-2-false              
+        PushI        0                         
+        Jump         -not-2-join               
+        Label        -not-2-join               
+        JumpTrue     -not-3-false              
+        Jump         -not-3-true               
+        Label        -not-3-true               
+        PushI        1                         
+        Jump         -not-3-join               
+        Label        -not-3-false              
+        PushI        0                         
+        Jump         -not-3-join               
+        Label        -not-3-join               
+        JumpTrue     -not-4-false              
+        Jump         -not-4-true               
+        Label        -not-4-true               
+        PushI        1                         
+        Jump         -not-4-join               
+        Label        -not-4-false              
+        PushI        0                         
+        Jump         -not-4-join               
+        Label        -not-4-join               
+        JumpTrue     -not-5-false              
+        Jump         -not-5-true               
+        Label        -not-5-true               
+        PushI        1                         
+        Jump         -not-5-join               
+        Label        -not-5-false              
+        PushI        0                         
+        Jump         -not-5-join               
+        Label        -not-5-join               
+        StoreC                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        LoadI                                  
-        PushD        $print-format-integer     
+        LoadC                                  
+        JumpTrue     -print-boolean-6-true     
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-6-join     
+        Label        -print-boolean-6-true     
+        PushD        $boolean-true-string      
+        Label        -print-boolean-6-join     
+        PushD        $print-format-boolean     
+        Printf                                 
+        PushD        $print-format-newline     
         Printf                                 
         Halt                                   

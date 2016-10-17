@@ -5,6 +5,7 @@ import java.util.Arrays;
 import logging.PikaLogger;
 import parseTree.*;
 import parseTree.nodeTypes.BinaryOperatorNode;
+import parseTree.nodeTypes.UnaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
 import parseTree.nodeTypes.BlockStatementNode;
 import parseTree.nodeTypes.AssignmentStatementNode;
@@ -336,6 +337,7 @@ public class Parser {
 			ParseNode right = parseMultiplicativeExpression();
 			left = BinaryOperatorNode.withChildren(additiveToken, left, right);
 		}
+		
 		return left;
 	}
 	
@@ -352,19 +354,49 @@ public class Parser {
 			return syntaxErrorNode("multiplicativeExpression");
 		}
 		
-		ParseNode left = parseAtomicExpression();
+		ParseNode left = parseUnaryExpression();
 		while(nowReading.isLextant(Punctuator.MULTIPLY, Punctuator.DIVIDE)) {
 			Token multiplicativeToken = nowReading;
 			readToken();
-			ParseNode right = parseAtomicExpression();
+			ParseNode right = parseUnaryExpression();
 			left = BinaryOperatorNode.withChildren(multiplicativeToken, left, right);
 		}
+		
 		return left;
 	}
 	
 	private boolean startsMultiplicativeExpression(Token token) {
-		return startsAtomicExpression(token);
+		return startsUnaryExpression(token);
 	}
+	
+	///////////////////////////////////////////////////////////
+	// UnaryExpression
+	private ParseNode parseUnaryExpression() {
+		if(!startsUnaryExpression(nowReading)) {
+			return syntaxErrorNode("unaryExpression");
+		}
+		
+		if(startsUnaryOperator(nowReading)) {
+			Token unaryToken = nowReading;
+			readToken();
+			ParseNode right = parseUnaryExpression();
+			right = UnaryOperatorNode.withChildren(unaryToken, right);
+		
+			return right;
+		}else {
+			ParseNode right = parseAtomicExpression();
+			return right;
+		}
+	}
+	
+	private boolean startsUnaryExpression(Token token) {
+		return startsUnaryOperator(token) || startsAtomicExpression(token);
+	}
+	
+	private boolean startsUnaryOperator(Token token) {
+		return token.isLextant(Punctuator.NOT);
+	}
+	
 	
 	///////////////////////////////////////////////////////////
 	// AtomicExpression
