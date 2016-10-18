@@ -272,6 +272,9 @@ public class ASMCodeGenerator {
 				code.add(Label, trueLabel);
 				code.add(PushI, 1);
 				code.add(Label, joinLabel);		
+			}else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.CHARACTER){
+				code.add(PushI, 127);
+				code.add(BTAnd);
 			}
 		}
 		
