@@ -93,7 +93,11 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	
 	private Token scanNumber(LocatedChar firstChar) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(firstChar.getCharacter());
+		if(firstChar.getCharacter() == '.')
+			input.pushback(firstChar);
+		else
+			buffer.append(firstChar.getCharacter());
+
 		int flag = appendSubsequentDigits(buffer);
 		
 		if (flag == 0)
@@ -243,7 +247,7 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 	}
 	
 	private boolean isNumberStart(LocatedChar lc){
-		return lc.isDigit() || isSignFollowedByDigit(lc);
+		return lc.isDigit() || isSignFollowedByDigitOrDot(lc) || isDotFollowedByDigit(lc);
 	}
 	
 	private boolean isCharStart(LocatedChar lc){
@@ -264,9 +268,9 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
 		return Character.isLetter(c) ||  c == '_';
 	}
 	
-	private boolean isSignFollowedByDigit(LocatedChar lc){
+	private boolean isSignFollowedByDigitOrDot(LocatedChar lc){
 		char c = lc.getCharacter();
-		return (c == '+' || c == '-') && input.peek().isDigit();
+		return (c == '+' || c == '-') && (input.peek().isDigit() || input.peek().getCharacter() == '.');
 	}
 	
 	private boolean isDotFollowedByDigit(LocatedChar lc){
