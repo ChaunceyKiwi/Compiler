@@ -339,30 +339,48 @@ public class ASMCodeGenerator {
 			code.add(Label, subLabel);
 			if(node.child(0).getType() == PrimitiveType.FLOATING) {
 				code.add(FSubtract);
-				code.add(ConvertI);
-			}else
+				if(operator == Punctuator.GREATER){
+					code.add(JumpFPos, trueLabel);
+					code.add(Jump, falseLabel);
+				}else if (operator == Punctuator.LESSER){
+					code.add(JumpFNeg, trueLabel);
+					code.add(Jump, falseLabel);
+				}else if(operator == Punctuator.LESSEROREQUAL){
+					code.add(JumpFPos, falseLabel);
+					code.add(Jump, trueLabel);
+				}else if(operator == Punctuator.EQUAL){
+					code.add(JumpFZero,trueLabel);
+					code.add(Jump, falseLabel);
+				}else if(operator == Punctuator.NOTEQUAL){
+					code.add(JumpFZero,falseLabel);
+					code.add(Jump, trueLabel);
+				}else if(operator == Punctuator.GREATEROREQUAL){
+					code.add(JumpFNeg, falseLabel);
+					code.add(Jump, trueLabel);
+				}
+			}else{
 				code.add(Subtract);
-			
-			if(operator == Punctuator.GREATER){
-				code.add(JumpPos, trueLabel);
-				code.add(Jump, falseLabel);
-			}else if (operator == Punctuator.LESSER){
-				code.add(JumpNeg, trueLabel);
-				code.add(Jump, falseLabel);
-			}else if(operator == Punctuator.LESSEROREQUAL){
-				code.add(JumpPos, falseLabel);
-				code.add(Jump, trueLabel);
-			}else if(operator == Punctuator.EQUAL){
-				code.add(JumpFalse,trueLabel);
-				code.add(Jump, falseLabel);
-			}else if(operator == Punctuator.NOTEQUAL){
-				code.add(JumpFalse,falseLabel);
-				code.add(Jump, trueLabel);
-			}else if(operator == Punctuator.GREATEROREQUAL){
-				code.add(JumpNeg, falseLabel);
-				code.add(Jump, trueLabel);
+				if(operator == Punctuator.GREATER){
+					code.add(JumpPos, trueLabel);
+					code.add(Jump, falseLabel);
+				}else if (operator == Punctuator.LESSER){
+					code.add(JumpNeg, trueLabel);
+					code.add(Jump, falseLabel);
+				}else if(operator == Punctuator.LESSEROREQUAL){
+					code.add(JumpPos, falseLabel);
+					code.add(Jump, trueLabel);
+				}else if(operator == Punctuator.EQUAL){
+					code.add(JumpFalse,trueLabel);
+					code.add(Jump, falseLabel);
+				}else if(operator == Punctuator.NOTEQUAL){
+					code.add(JumpFalse,falseLabel);
+					code.add(Jump, trueLabel);
+				}else if(operator == Punctuator.GREATEROREQUAL){
+					code.add(JumpNeg, falseLabel);
+					code.add(Jump, trueLabel);
+				}
 			}
-			
+				
 			code.add(Label, trueLabel);
 			code.add(PushI, 1);
 			code.add(Jump, joinLabel);

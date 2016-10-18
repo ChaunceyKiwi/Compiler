@@ -112,10 +112,16 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		Boolean ismutable = identifier.getBinding().isMutable();
 		
 		Type assignmentType = initializer.getType();
-		node.setType(assignmentType);
+		Type identifierType = identifier.getType();
 		
-		identifier.setType(assignmentType);
-		addBinding(identifier, assignmentType, ismutable);
+		if(assignmentType == identifierType) {
+			node.setType(assignmentType);
+			identifier.setType(assignmentType);
+			addBinding(identifier, assignmentType, ismutable);
+		}else		
+			logError("Assignment operator := not defined for types " 
+					 + Arrays.asList(assignmentType, identifierType)
+					 + " at " + node.getToken().getLocation());	
 	}
 	
 

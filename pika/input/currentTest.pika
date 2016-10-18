@@ -1,6 +1,4 @@
 exec {
-	const v := -.2.
-    const w := +.417.
-    const x := .23.
-    print v;w;x.
+    const result := [ _true_ | char ].
+    print result, _n_.
 }
