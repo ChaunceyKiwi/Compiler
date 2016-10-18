@@ -303,18 +303,16 @@ public class Parser {
 		}
 		
 		ParseNode left = parseAdditiveExpression();
-		if(nowReading.isLextant(Punctuator.LESSER)  || nowReading.isLextant(Punctuator.LESSEROREQUAL) ||
+		while(nowReading.isLextant(Punctuator.LESSER)  || nowReading.isLextant(Punctuator.LESSEROREQUAL) ||
 		   nowReading.isLextant(Punctuator.EQUAL)   || nowReading.isLextant(Punctuator.NOTEQUAL) ||
 		   nowReading.isLextant(Punctuator.GREATER) || nowReading.isLextant(Punctuator.GREATEROREQUAL)){
 			
 			Token compareToken = nowReading;
 			readToken();
 			ParseNode right = parseAdditiveExpression();
-			
-			return BinaryOperatorNode.withChildren(compareToken, left, right);
+			left = BinaryOperatorNode.withChildren(compareToken, left, right);
 		  }
 		return left;
-
 	}
 	
 	private boolean startsComparisonExpression(Token token) {
