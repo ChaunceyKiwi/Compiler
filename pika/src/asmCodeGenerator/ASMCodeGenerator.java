@@ -337,7 +337,11 @@ public class ASMCodeGenerator {
 			code.add(Label, arg2Label);
 			code.append(arg2);
 			code.add(Label, subLabel);
-			code.add(Subtract);
+			if(node.child(0).getType() == PrimitiveType.FLOATING) {
+				code.add(FSubtract);
+				code.add(ConvertI);
+			}else
+				code.add(Subtract);
 			
 			if(operator == Punctuator.GREATER){
 				code.add(JumpPos, trueLabel);

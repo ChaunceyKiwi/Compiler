@@ -160,7 +160,7 @@ public class ASMCodeFragment {
 		return comment;
 	}
 
-	private static ASMOpcode readOpcode(String word) {
+	public static ASMOpcode readOpcode(String word) {
 		try {
 			return ASMOpcode.valueOf(word);
 		}
