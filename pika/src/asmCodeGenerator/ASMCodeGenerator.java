@@ -113,19 +113,23 @@ public class ASMCodeGenerator {
 			codeMap.remove(result);
 			return result;
 		}
+		
 	    public  ASMCodeFragment removeRootCode(ParseNode tree) {
 			return getAndRemoveCode(tree);
 		}		
+	    
 		ASMCodeFragment removeValueCode(ParseNode node) {
 			ASMCodeFragment frag = getAndRemoveCode(node);
 			makeFragmentValueCode(frag, node);
 			return frag;
 		}		
+		
 		private ASMCodeFragment removeAddressCode(ParseNode node) {
 			ASMCodeFragment frag = getAndRemoveCode(node);
 			assert frag.isAddress();
 			return frag;
-		}		
+		}	
+		
 		ASMCodeFragment removeVoidCode(ParseNode node) {
 			ASMCodeFragment frag = getAndRemoveCode(node);
 			assert frag.isVoid();
@@ -141,6 +145,7 @@ public class ASMCodeGenerator {
 				turnAddressIntoValue(code, node);
 			}	
 		}
+		
 		private void turnAddressIntoValue(ASMCodeFragment code, ParseNode node) {
 			if(node.getType() == PrimitiveType.INTEGER) {
 				code.add(LoadI);
@@ -163,8 +168,6 @@ public class ASMCodeGenerator {
 		public void visitLeave(ParseNode node) {
 			assert false : "node " + node + " not handled in ASMCodeGenerator";
 		}
-		
-		
 		
 		///////////////////////////////////////////////////////////////////////////
 		// constructs larger than statements
@@ -304,11 +307,19 @@ public class ASMCodeGenerator {
 			Lextant operator = node.getOperator();
 			
 			// Comparison Operator
-			if (operator == Punctuator.LESSER ||operator == Punctuator.LESSEROREQUAL ||
-				operator == Punctuator.NOTEQUAL ||operator == Punctuator.EQUAL ||
-				operator == Punctuator.GREATER ||	operator == Punctuator.GREATEROREQUAL) {
-				visitComparisonOperatorNode(node, operator);
-			}
+			if (operator == Punctuator.LESSER ||
+				operator == Punctuator.LESSEROREQUAL ||
+				operator == Punctuator.NOTEQUAL ||
+				operator == Punctuator.EQUAL ||
+				operator == Punctuator.GREATER ||	
+				operator == Punctuator.GREATEROREQUAL
+			) visitComparisonOperatorNode(node, operator);
+			
+			// Boolean Operator
+			else if (operator == Punctuator.AND ||
+					 operator == Punctuator.OR
+			) visitBooleanOperatorNode(node, operator);
+			
 			// Arithmetic Operator
 			else {
 				visitNormalBinaryOperatorNode(node);
@@ -321,8 +332,7 @@ public class ASMCodeGenerator {
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));
 			
-			Labeller labeller = new Labeller("compare");
-			
+			Labeller labeller = new Labeller("compare");	
 			String startLabel = labeller.newLabel("arg1");
 			String arg2Label  = labeller.newLabel("arg2");
 			String subLabel   = labeller.newLabel("sub");
@@ -336,6 +346,7 @@ public class ASMCodeGenerator {
 			code.add(Label, arg2Label);
 			code.append(arg2);
 			code.add(Label, subLabel);
+			
 			if(node.child(0).getType() == PrimitiveType.FLOATING) {
 				code.add(FSubtract);
 				if(operator == Punctuator.GREATER){
@@ -389,6 +400,20 @@ public class ASMCodeGenerator {
 			code.add(Label, joinLabel);
 		}
 		
+		private void visitBooleanOperatorNode(BinaryOperatorNode node,
+				Lextant operator){
+			
+			newValueCode(node);
+			ASMCodeFragment arg1 = removeValueCode(node.child(0));
+			ASMCodeFragment arg2 = removeValueCode(node.child(1));
+			code.append(arg1);
+			code.append(arg2);
+			if(operator == Punctuator.OR) 
+				code.add(BTOr);
+			else if(operator == Punctuator.AND)
+				code.add(BTAnd);
+		}
+		
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);
 			Type typeOfLeftChild = node.child(0).getType();
@@ -408,7 +433,7 @@ public class ASMCodeGenerator {
 				code.add(JumpFZero, RunTime.FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR);
 			}
 			
-			code.add(opcode);							// type-dependent! (opcode is different for floats and for ints)
+			code.add(opcode);	// type-dependent! (opcode is different for floats and for ints)
 		}
 		
 		public void visitLeave(UnaryOperatorNode node) {

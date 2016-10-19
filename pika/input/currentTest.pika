@@ -1,4 +1,4 @@
 exec {
-    const result :=  !!!_true_ .
+    const result :=  _false_ || _false_ && _true_ || _false_ && _true_ .
     print result, _n_.
 }

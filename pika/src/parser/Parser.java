@@ -279,14 +279,14 @@ public class Parser {
 	// literal                  -> intNumber | identifier | booleanConstant
 	
 	///////////////////////////////////////////////////////////
-	// expression
+	// Expression
 	
 	// expression  -> comparisonExpression
 	private ParseNode parseExpression() {		
 		if(!startsExpression(nowReading)) {
 			return syntaxErrorNode("expression");
 		}
-		return parseComparisonExpression();
+		return parseBooleanOrExpression();
 	}
 	
 	private boolean startsExpression(Token token) {
@@ -294,9 +294,51 @@ public class Parser {
 	}
 	
 	///////////////////////////////////////////////////////////
+	// Or expression
+	private ParseNode parseBooleanOrExpression() {
+		if(!startsBooleanOrExpression(nowReading)) {
+			return syntaxErrorNode("comparison expression");
+		}
+		
+		ParseNode left = parseBooleanAndExpression();
+		while(nowReading.isLextant(Punctuator.OR)) {
+			Token booleanOrToken = nowReading;
+			readToken();
+			ParseNode right = parseBooleanAndExpression();
+			left = BinaryOperatorNode.withChildren(booleanOrToken, left, right);
+		  }
+		return left;
+	}
+	
+	private boolean startsBooleanOrExpression(Token token) {
+		return startsBooleanAndExpression(token);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// And expression
+	private ParseNode parseBooleanAndExpression() {
+		if(!startsBooleanAndExpression(nowReading)) {
+			return syntaxErrorNode("comparison expression");
+		}
+		
+		ParseNode left = parseComparisonExpression();
+		while(nowReading.isLextant(Punctuator.AND)){
+			Token booleanAndToken = nowReading;
+			readToken();
+			ParseNode right = parseComparisonExpression();
+			left = BinaryOperatorNode.withChildren(booleanAndToken, left, right);
+		  }
+		return left;
+	}
+	
+	private boolean startsBooleanAndExpression(Token token){
+		return startsComparisonExpression(token);
+	}
+	
+	///////////////////////////////////////////////////////////
 	// comparisonExpression
 	
-	// comparisonExpression -> additiveExpression [> additiveExpression]?
+	// comparisonExpression -> additiveExpression [> additiveExpression]*
 	private ParseNode parseComparisonExpression() {
 		if(!startsComparisonExpression(nowReading)) {
 			return syntaxErrorNode("comparison expression");
