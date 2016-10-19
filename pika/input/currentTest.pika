@@ -1,4 +1,3 @@
 exec {
-    const result :=  _false_ || _false_ && _true_ || _false_ && _true_ .
-    print result, _n_.
+    const numSet :=  length 3.
 }

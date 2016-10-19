@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import logging.PikaLogger;
 import parseTree.*;
+import parseTree.nodeTypes.ArrayIndexingNode;
 import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.UnaryOperatorNode;
 import parseTree.nodeTypes.BooleanConstantNode;
@@ -390,7 +391,7 @@ public class Parser {
 	
 	// multiplicativeExpression -> atomicExpression [MULT\DIVIDE atomicExpression]*  (left-assoc)
 	private ParseNode parseMultiplicativeExpression() {
-		if(!startsMultiplicativeExpression(nowReading)) {
+		if(!startsUnaryExpression(nowReading)) {
 			return syntaxErrorNode("multiplicativeExpression");
 		}
 		
@@ -419,12 +420,11 @@ public class Parser {
 		if(startsUnaryOperator(nowReading)) {
 			Token unaryToken = nowReading;
 			readToken();
-			ParseNode right = parseUnaryExpression();
+			ParseNode right = parseArrayIndexingExpression();
 			right = UnaryOperatorNode.withChildren(unaryToken, right);
-		
 			return right;
 		}else {
-			ParseNode right = parseAtomicExpression();
+			ParseNode right = parseArrayIndexingExpression();
 			return right;
 		}
 	}
@@ -434,9 +434,33 @@ public class Parser {
 	}
 	
 	private boolean startsUnaryOperator(Token token) {
-		return token.isLextant(Punctuator.NOT);
+		return token.isLextant(Punctuator.NOT) || token.isLextant(Keyword.LENGTH);
 	}
 	
+	///////////////////////////////////////////////////////////
+	// ArrayIndexingExpression
+	
+	private ParseNode parseArrayIndexingExpression(){
+		if(!startsArrayIndexingExpression(nowReading)){
+			return syntaxErrorNode("arrayIndexingExpression");
+		}
+		
+		ParseNode expressionToBeIndexed = parseAtomicExpression();
+		Token nextToken = nowReading;
+		
+		if(nextToken.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
+			expect(Punctuator.OPEN_SQUARE_BRACKET);
+			ParseNode expressionToGetIndex = parseExpression();
+			expect(Punctuator.CLOSE_SQUARE_BRACKET);	
+			return ArrayIndexingNode.withChildren(nextToken, expressionToBeIndexed, expressionToGetIndex);
+		}else{
+			return expressionToBeIndexed;
+		}
+	}
+	
+	private boolean startsArrayIndexingExpression(Token token){
+		return startsAtomicExpression(token);
+	}
 	
 	///////////////////////////////////////////////////////////
 	// AtomicExpression
@@ -447,18 +471,39 @@ public class Parser {
 			return syntaxErrorNode("atomic expression");
 		}
 		
-		if(startsTypeCastingExpression(nowReading))
-			return parseTypeCastingExpression();
-		else if(startsParenthesesExpression(nowReading))
+		if(startsParenthesesExpression(nowReading))
 			return parseParenthesesExpression();
+		else if(startsTypeCastingExpression(nowReading))
+			return parseTypeCastingExpression();
 		else
 			return parseLiteral();
 	}
 	
 	private boolean startsAtomicExpression(Token token) {
-		return startsLiteral(token) ||
-			   startsTypeCastingExpression(token)||
-			   startsParenthesesExpression(token);
+		return startsParenthesesExpression(token) || 
+			   startsTypeCastingExpression(token) ||
+			   startsLiteral(token);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// ParenthesesExpression
+	
+	private ParseNode parseParenthesesExpression(){
+		if(!startsParenthesesExpression(nowReading)) {
+			return syntaxErrorNode("parenthesesExpression");
+		}
+		
+		ParseNode expressionInParentheses;
+		
+		expect(Punctuator.OPEN_BRACKET);
+		expressionInParentheses = parseExpression();
+		expect(Punctuator.CLOSE_BRACKET);
+		
+		return expressionInParentheses;
+	}
+	
+	private boolean startsParenthesesExpression(Token token){
+		return token.isLextant(Punctuator.OPEN_BRACKET);
 	}
 	
 	///////////////////////////////////////////////////////////
@@ -484,27 +529,6 @@ public class Parser {
 	
 	private boolean startsTypeCastingExpression(Token token){
 		return token.isLextant(Punctuator.OPEN_SQUARE_BRACKET);
-	}
-	
-	///////////////////////////////////////////////////////////
-	// ParenthesesExpression
-	
-	private ParseNode parseParenthesesExpression(){
-		if(!startsParenthesesExpression(nowReading)) {
-			return syntaxErrorNode("parenthesesExpression");
-		}
-		
-		ParseNode expressionInParentheses;
-		
-		expect(Punctuator.OPEN_BRACKET);
-		expressionInParentheses = parseExpression();
-		expect(Punctuator.CLOSE_BRACKET);
-		
-		return expressionInParentheses;
-	}
-	
-	private boolean startsParenthesesExpression(Token token){
-		return token.isLextant(Punctuator.OPEN_BRACKET);
 	}
 	
 	///////////////////////////////////////////////////////////
