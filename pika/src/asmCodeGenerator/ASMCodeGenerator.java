@@ -32,7 +32,6 @@ import symbolTable.Binding;
 import symbolTable.Scope;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
-import asmCodeGenerator.codeStorage.StringHashTable;;
 
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
@@ -70,9 +69,9 @@ public class ASMCodeGenerator {
 	private ASMCodeFragment programASM() {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 		
-		code.add(    Label, RunTime.MAIN_PROGRAM_LABEL);
+		code.add(Label, RunTime.MAIN_PROGRAM_LABEL);
 		code.append( programCode());
-		code.add(    Halt );
+		code.add(Halt );
 		
 		return code;
 	}
@@ -413,33 +412,19 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitLeave(UnaryOperatorNode node) {
-			Lextant operator = node.getOperator();
-			
-			// Comparison Operator
-			if (operator == Punctuator.NOT) {
-				visitUnaryOperatorNode(node);
-			}
+			visitUnaryOperatorNode(node);
 		}
 		
 		private void visitUnaryOperatorNode(UnaryOperatorNode node) {
-			newValueCode(node);
-			ASMCodeFragment arg1 = removeValueCode(node.child(0));
-			code.append(arg1);		
-			
-			Labeller labeller = new Labeller("not");
-			String trueLabel  = labeller.newLabel("true");
-			String falseLabel = labeller.newLabel("false");
-			String joinLabel  = labeller.newLabel("join");
-			
-			code.add(JumpTrue, falseLabel);
-			code.add(Jump, trueLabel);
-			code.add(Label, trueLabel);
-			code.add(PushI, 1);
-			code.add(Jump, joinLabel);
-			code.add(Label, falseLabel);
-			code.add(PushI, 0);
-			code.add(Jump, joinLabel);
-			code.add(Label, joinLabel);
+			Lextant operator = node.getOperator();
+
+			// Comparison Operator
+			if (operator == Punctuator.NOT) {
+				newValueCode(node);
+				ASMCodeFragment arg1 = removeValueCode(node.child(0));
+				code.append(arg1);		
+				code.add(BNegate);
+			}			
 		}
 		
 
@@ -497,16 +482,6 @@ public class ASMCodeGenerator {
 			newValueCode(node);
 			String value = node.getValue();
 			Labeller label = new Labeller("stringConstant");
-			
-//			// My version 
-//			String label = StringHashTable.getLabelFor(value);
-//			if (label == null) {
-//				label = StringHashTable.applyLabelFor(value);
-//				code.add(DLabel, label);
-//				code.add(DataS, value);
-//			}
-//			
-//			code.add(PushD, label);
 			
 			// Testing version
 			code.add(DLabel, label.newLabel(value));
