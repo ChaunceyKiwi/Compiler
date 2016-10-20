@@ -1,6 +1,5 @@
 package semanticAnalyzer.types;
 
-
 public enum PrimitiveType implements Type {
 	BOOLEAN(1),
 	CHARACTER(1),

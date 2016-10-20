@@ -14,13 +14,18 @@ public enum Keyword implements Lextant {
 	FALSE("_false_"),
 	EXEC("exec"),
 	NULL_KEYWORD(""),
+	
+	// Primitive Type
 	BOOLEAN("bool"),
 	CHARACTER("char"),
 	STRING("string"),
 	INTEGER("int"),
 	FLOATING("float"),
+	
+	// for array type
 	LENGTH("length"),
-	COPY("clone");
+	COPY("clone"),
+	NEW("new");
 	
 	private String lexeme;
 	private Token prototype;

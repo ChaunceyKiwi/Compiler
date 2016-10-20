@@ -26,7 +26,6 @@ public final class LextantToken extends TokenImp {
 		return lextant.toString();
 	}
 	
-	
 	public static LextantToken make(TextLocation location, String lexeme, Lextant lextant) {
 		return new LextantToken(location, lexeme, lextant);
 	}
