@@ -1,10 +1,9 @@
 exec {
-    const A := 0.
-
-    if(A == 1) {
-    	print "Hello!".
-    }else {
-    	print "Go away!".
+    var A := 5.
+    
+    while(A > 1) {
+    	print A.
+    	A := A - 1.
     }
 
 }

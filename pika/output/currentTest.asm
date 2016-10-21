@@ -119,25 +119,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        4                         
-        DLabel       -stringConstant-2-Hello!  
-        DataC        72                        %% "Hello!"
-        DataC        101                       
-        DataC        108                       
-        DataC        108                       
-        DataC        111                       
-        DataC        33                        
-        DataC        0                         
-        DLabel       -stringConstant-3-Go away! 
-        DataC        71                        %% "Go away!"
-        DataC        111                       
-        DataC        32                        
-        DataC        97                        
-        DataC        119                       
-        DataC        97                        
-        DataC        121                       
-        DataC        33                        
-        DataC        0                         
+        DataZ        8                         
         Jump         $$main                    
         Label        $$general-runtime-error   
         PushD        $errors-general-message   
@@ -153,8 +135,9 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% A
-        PushI        0                         
+        PushI        5                         
         StoreI                                 
+        Label        -while-2-begin            
         Label        -compare-1-arg1           
         PushD        $global-memory-block      
         PushI        0                         
@@ -164,7 +147,7 @@
         PushI        1                         
         Label        -compare-1-sub            
         Subtract                               
-        JumpFalse    -compare-1-true           
+        JumpPos      -compare-1-true           
         Jump         -compare-1-false          
         Label        -compare-1-true           
         PushI        1                         
@@ -173,15 +156,23 @@
         PushI        0                         
         Jump         -compare-1-join           
         Label        -compare-1-join           
-        Label        -if-4-begin               
-        JumpFalse    -if-4-false-do-expression 
-        PushD        -stringConstant-2-Hello!  
-        PushD        $print-format-string      
+        JumpFalse    -while-2-end-of-while-statement 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% A
+        LoadI                                  
+        PushD        $print-format-integer     
         Printf                                 
-        Jump         -if-4-end-of-end-statement 
-        Label        -if-4-false-do-expression 
-        PushD        -stringConstant-3-Go away! 
-        PushD        $print-format-string      
-        Printf                                 
-        Label        -if-4-end-of-end-statement 
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% A
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% A
+        LoadI                                  
+        PushI        1                         
+        Subtract                               
+        StoreI                                 
+        Jump         -while-2-begin            
+        Label        -while-2-end-of-while-statement 
         Halt                                   

@@ -250,7 +250,7 @@ public class ASMCodeGenerator {
 			Labeller labeller = new Labeller("if");
 			String beginLabel = labeller.newLabel("begin");
 			String falseDoStatementLabel = labeller.newLabel("false-do-expression");
-			String endOfIfStatementLabel = labeller.newLabel("end-of-end-statement");
+			String endOfIfStatementLabel = labeller.newLabel("end-of-if-statement");
 			
 			code.append(booleanResult);
 			code.add(Label, beginLabel);
@@ -263,6 +263,23 @@ public class ASMCodeGenerator {
 				code.append(falseDoStatement);
 			}
 			code.add(Label, endOfIfStatementLabel);
+		}
+		
+		public void visitLeave(WhileStatementNode node){
+			newVoidCode(node);
+			ASMCodeFragment booleanResult = removeValueCode(node.child(0));	
+			ASMCodeFragment trueDoStatement = removeBlockCode(node.child(1));
+			
+			Labeller labeller = new Labeller("while");
+			String beginLabel = labeller.newLabel("begin");
+			String endOfWhileStatementLabel = labeller.newLabel("end-of-while-statement");
+			
+			code.add(Label, beginLabel);
+			code.append(booleanResult);
+			code.add(JumpFalse, endOfWhileStatementLabel);
+			code.append(trueDoStatement);
+			code.add(Jump, beginLabel);
+			code.add(Label, endOfWhileStatementLabel);
 		}
 		
 		public void visitLeave(TypeCastingNode node){
@@ -437,7 +454,6 @@ public class ASMCodeGenerator {
 		
 		private void visitBooleanOperatorNode(BinaryOperatorNode node,
 				Lextant operator){
-			
 			newValueCode(node);
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));
