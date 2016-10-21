@@ -17,7 +17,6 @@ public class ExpressionListNode extends ParseNode {
 		super(node);
 	}
 	
-	
 	////////////////////////////////////////////////////////////
 	// attributes
 	

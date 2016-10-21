@@ -26,6 +26,7 @@ import parseTree.nodeTypes.PrintStatementNode;
 import parseTree.nodeTypes.ProgramNode;
 import parseTree.nodeTypes.SpaceNode;
 import parseTree.nodeTypes.TypeCastingNode;
+import parseTree.nodeTypes.ExpressionListNode;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 import symbolTable.Binding;
@@ -36,6 +37,7 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
 	ParseNode root;
+	
 
 	public static ASMCodeFragment generate(ParseNode syntaxTree) {
 		ASMCodeGenerator codeGenerator = new ASMCodeGenerator(syntaxTree);
@@ -157,7 +159,9 @@ public class ASMCodeGenerator {
 				code.add(LoadC);
 			}else if(node.getType() == PrimitiveType.STRING){
 				code.add(LoadI);
-			}else {
+			}else if(node.getType().isReferenceType()){
+				code.add(LoadI);
+			}else{
 				assert false : "node " + node;
 			}
 			code.markAsValue();
@@ -233,9 +237,27 @@ public class ASMCodeGenerator {
 			code.add(opcodeForStore(type));
 		}
 		
+		public void visitLeave(ExpressionListNode node){
+			newValueCode(node);
+			Labeller label = new Labeller("exprList");
+			int subTypeSize = 4;
+			String labelOfArray = label.newLabel("array");
+			code.add(DLabel, labelOfArray);
+			
+			for(int i = 0; i < node.nChildren() - 1; i++){
+				code.add(PushD, labelOfArray);
+				code.add(PushI, subTypeSize*(i+1));
+				code.add(Add);
+				ASMCodeFragment value = removeValueCode(node.child(i));
+				code.append(value);
+				code.add(StoreI);
+			}
+			code.add(PushD, labelOfArray);
+		}
+		
 		public void visitLeave(TypeCastingNode node){
 			Type originalType = node.child(0).getType();
-			Type targetType = node.child(1).getType();
+			Type targetType   = node.child(1).getType();
 						
 			newValueCode(node);
 			ASMCodeFragment value = removeValueCode(node.child(0));
@@ -294,6 +316,9 @@ public class ASMCodeGenerator {
 				return StoreC;
 			}
 			if(type == PrimitiveType.STRING){
+				return StoreI;
+			}
+			if(type.isReferenceType()){
 				return StoreI;
 			}
 			assert false: "Type " + type + " unimplemented in opcodeForStore()";
@@ -476,7 +501,6 @@ public class ASMCodeGenerator {
 					assert false : "unimplemented operator in opcodeForOperator";
 				}
 			}
-			
 			return null;
 		}
 

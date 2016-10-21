@@ -17,6 +17,10 @@ public class RunTime {
 	public static final String GLOBAL_MEMORY_BLOCK    = "$global-memory-block";
 	public static final String USABLE_MEMORY_START    = "$usable-memory-start";
 	public static final String MAIN_PROGRAM_LABEL     = "$$main";
+	public static final String SEPARATOR_PRINT_FORMAT = "$print-format-separator";
+	public static final String OPEN_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-open-square-bracket";
+	public static final String CLOSE_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-close-square-bracket";
+
 	
 	public static final String GENERAL_RUNTIME_ERROR = "$$general-runtime-error";
 	public static final String INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR = "$$i-divide-by-zero";
@@ -62,7 +66,12 @@ public class RunTime {
 		frag.add(DataS, "true");
 		frag.add(DLabel, BOOLEAN_FALSE_STRING);
 		frag.add(DataS, "false");
-		
+		frag.add(DLabel, SEPARATOR_PRINT_FORMAT);
+		frag.add(DataS, ",");
+		frag.add(DLabel, OPEN_SQUARE_BRACKET_PRINT_FORMAT);
+		frag.add(DataS, "[");
+		frag.add(DLabel, CLOSE_SQUARE_BRACKET_PRINT_FORMAT);
+		frag.add(DataS, "]");
 		return frag;
 	}
 	

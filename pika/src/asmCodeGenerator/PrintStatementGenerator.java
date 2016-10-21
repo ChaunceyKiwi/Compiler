@@ -1,16 +1,13 @@
 package asmCodeGenerator;
 
-import static asmCodeGenerator.codeStorage.ASMOpcode.Jump;
-import static asmCodeGenerator.codeStorage.ASMOpcode.JumpTrue;
-import static asmCodeGenerator.codeStorage.ASMOpcode.Label;
-import static asmCodeGenerator.codeStorage.ASMOpcode.Printf;
-import static asmCodeGenerator.codeStorage.ASMOpcode.PushD;
+import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 import parseTree.ParseNode;
 import parseTree.nodeTypes.NewlineNode;
 import parseTree.nodeTypes.TabNode;
 import parseTree.nodeTypes.PrintStatementNode;
 import parseTree.nodeTypes.SpaceNode;
 import semanticAnalyzer.types.PrimitiveType;
+import semanticAnalyzer.types.ArrayType;
 import semanticAnalyzer.types.Type;
 import asmCodeGenerator.ASMCodeGenerator.CodeVisitor;
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
@@ -32,6 +29,8 @@ public class PrintStatementGenerator {
 			if(child instanceof NewlineNode || child instanceof SpaceNode || child instanceof TabNode) {
 				ASMCodeFragment childCode = visitor.removeVoidCode(child);
 				code.append(childCode);
+			}else if(child.getType() instanceof ArrayType){
+				appendPrintCodeForArrayType(child);
 			}
 			else {
 				appendPrintCode(child);
@@ -47,6 +46,32 @@ public class PrintStatementGenerator {
 		code.add(PushD, format);
 		code.add(Printf);
 	}
+	
+	private void appendPrintCodeForArrayType(ParseNode node) {
+		ArrayType type = (ArrayType)node.getType();
+		String format = printFormat(type.getSubType());
+		
+		code.append(visitor.removeValueCode(node));
+		code.add(PushD, RunTime.OPEN_SQUARE_BRACKET_PRINT_FORMAT);
+		code.add(Printf);
+		for(int i = 1; i <= 3; i++){
+			if(i > 1){
+				code.add(PushD, RunTime.SEPARATOR_PRINT_FORMAT);
+				code.add(Printf);
+				code.add(PushD, RunTime.SPACE_PRINT_FORMAT);
+				code.add(Printf);
+			}
+			code.add(Duplicate);
+			code.add(PushI, 4 * i);
+			code.add(Add);
+			code.add(LoadI);
+			code.add(PushD, format);
+			code.add(Printf);
+		}
+		code.add(PushD, RunTime.CLOSE_SQUARE_BRACKET_PRINT_FORMAT);
+		code.add(Printf);
+	}
+	
 	private void convertToStringIfBoolean(ParseNode node) {
 		if(node.getType() != PrimitiveType.BOOLEAN) {
 			return;

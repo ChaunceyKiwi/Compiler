@@ -10,8 +10,6 @@ import lexicalAnalyzer.Punctuator;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 
-
-
 public class FunctionSignatures extends ArrayList<FunctionSignature> {
 	private static final long serialVersionUID = -4907792488209670697L;
 	private static Map<Object, FunctionSignatures> signaturesForKey = new HashMap<Object, FunctionSignatures>();
@@ -33,6 +31,10 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		return this.key.equals(key);
 	}
 	
+	// To get the signature for a list of types
+	// For a signatures try each signature in it
+	// If such a signature is find, then stop and return it
+	// Otherwise return null 
 	public FunctionSignature acceptingSignature(List<Type> types) {
 		for(FunctionSignature functionSignature: this) {
 			if(functionSignature.accepts(types)) {
@@ -41,6 +43,8 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		}
 		return FunctionSignature.nullInstance();
 	}
+	
+	// Accept as long as there is one found
 	public boolean accepts(List<Type> types) {
 		return !acceptingSignature(types).isNull();
 	}
@@ -57,13 +61,13 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		}
 		return nullSignatures;
 	}
+	
 	public static FunctionSignature signature(Object key, List<Type> types) {
 		FunctionSignatures signatures = FunctionSignatures.signaturesOf(key);
 		return signatures.acceptingSignature(types);
 	}
 
-	
-	
+
 	/////////////////////////////////////////////////////////////////////////////////
 	// Put the signatures for operators in the following static block.
 	
@@ -157,5 +161,4 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 	// I will not use an ASMOpcode for the whichVariant.  In these cases I typically use
 	// a small object with one method (the "Command" design pattern) that generates the
 	// required code.
-
 }

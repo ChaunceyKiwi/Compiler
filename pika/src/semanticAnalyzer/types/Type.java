@@ -1,17 +1,15 @@
 package semanticAnalyzer.types;
 
 public interface Type {
-	/** returns the size of an instance of this type, in bytes.
-	 * 
-	 * @return number of bytes per instance
-	 */
+	// Returns the size of an instance of this type, in bytes.
 	public int getSize(); 
 	
-	/** Yields a printable string for information about this type.
-	 * use this rather than toString() if you want an abbreviated string.
-	 * In particular, this yields an empty string for PrimitiveType.NO_TYPE.
-	 * 
-	 * @return string representation of type.
-	 */
+	// Yields a printable string for information about this type.
+	// Use this rather than toString() if you want an abbreviated string.
+	// In particular, this yields an empty string for PrimitiveType.NO_TYPE.
 	public String infoString();
+
+	public boolean isReferenceType();	
+	
+	public boolean match(Type type);
 }

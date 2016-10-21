@@ -26,8 +26,10 @@ import parseTree.nodeTypes.NewlineNode;
 import parseTree.nodeTypes.PrintStatementNode;
 import parseTree.nodeTypes.ProgramNode;
 import parseTree.nodeTypes.SpaceNode;
+import parseTree.nodeTypes.ExpressionListNode;
 import semanticAnalyzer.signatures.FunctionSignatures;
 import semanticAnalyzer.types.PrimitiveType;
+import semanticAnalyzer.types.ArrayType;
 import semanticAnalyzer.types.Type;
 import symbolTable.Binding;
 import symbolTable.Scope;
@@ -89,13 +91,19 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		
 		Type declarationType = initializer.getType();
 		node.setType(declarationType);
-		identifier.setType(declarationType);	
+		identifier.setType(declarationType);
+		
+		// check if the identifier has already been declared
 		scope.getSymbolTable().errorIfAlreadyDefined(identifier.getToken());
-
+		
+		// if the declaration is var then variable is mutable
+		// if the declaration is const then variable is unmutable
 		if(node.getToken().isLextant(Keyword.VAR))
 			addBinding(identifier, declarationType, true);
-		else
+		else if(node.getToken().isLextant(Keyword.CONST))
 			addBinding(identifier, declarationType, false);
+		else
+			logError("Declaration type is neither var nor const");			
 	}
 	
 	@Override
@@ -114,6 +122,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		Type assignmentType = initializer.getType();
 		Type identifierType = identifier.getType();
 		
+		// The assignment type should be the same as the identifier type
 		if(assignmentType == identifierType) {
 			node.setType(assignmentType);
 			identifier.setType(assignmentType);
@@ -138,10 +147,10 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
 		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();
 		
+		// the operands of operation should obey the rule in the signature
 		if(signatures.accepts(childTypes)) {
 			node.setType(resultType);
-		}
-		else {
+		}else {
 			typeCheckError(node, childTypes);
 			node.setType(PrimitiveType.ERROR);
 		}
@@ -164,6 +173,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
 		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();
 		
+		// the operands of operation should obey the rule in the signature
 		if(signatures.accepts(childTypes)) {
 			node.setType(resultType);
 		}
@@ -176,6 +186,25 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	private Lextant operatorFor(UnaryOperatorNode node) {
 		LextantToken token = (LextantToken) node.getToken();
 		return token.getLextant();
+	}
+	
+	@Override
+	public void visitLeave(ExpressionListNode node){
+		int numOfChildren = node.nChildren();
+		
+		if(numOfChildren == 0) {
+			node.setType(PrimitiveType.NO_TYPE);
+		}
+		else if(numOfChildren == 1) {
+			ParseNode child = node.child(0);
+			node.setType(child.getType());
+		}else{
+			Type[] types = new Type[numOfChildren];
+			for(int i = 0; i < numOfChildren - 1; i++){
+				types[i] = node.child(i).getType();
+			}
+			node.setType(new ArrayType(types[0]));
+		}
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -216,19 +245,20 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		String type = node.getToken().getLexeme();
 		
 		// bool | char | string | int | float
+		// Assign the lexeme of token to the node type
 		switch(type){
-			case("bool"): node.setType(PrimitiveType.BOOLEAN); break;
-			case("char"): node.setType(PrimitiveType.CHARACTER); break;
-			case("string"): node.setType(PrimitiveType.STRING); break;
-			case("int"): node.setType(PrimitiveType.INTEGER); break;
-			case("float"): node.setType(PrimitiveType.FLOATING); break;
-			default:node.setType(PrimitiveType.ERROR);break;
+			case("bool"):   node.setType(PrimitiveType.BOOLEAN);   break;
+			case("char"):   node.setType(PrimitiveType.CHARACTER); break;
+			case("string"): node.setType(PrimitiveType.STRING);    break;
+			case("int"):    node.setType(PrimitiveType.INTEGER);   break;
+			case("float"):  node.setType(PrimitiveType.FLOATING);  break;
+			default:        node.setType(PrimitiveType.ERROR);     break;
 		}	
 	}
 	
-	
 	///////////////////////////////////////////////////////////////////////////
 	// IdentifierNodes, with helper methods
+	
 	@Override
 	public void visit(IdentifierNode node) {
 		if(!isBeingDeclared(node)) {		
