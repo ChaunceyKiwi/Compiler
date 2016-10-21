@@ -452,17 +452,43 @@ public class ASMCodeGenerator {
 			code.add(Label, joinLabel);
 		}
 		
-		private void visitBooleanOperatorNode(BinaryOperatorNode node,
-				Lextant operator){
+		private void visitBooleanOperatorNode(BinaryOperatorNode node, Lextant operator){
 			newValueCode(node);
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
-			ASMCodeFragment arg2 = removeValueCode(node.child(1));
-			code.append(arg1);
-			code.append(arg2);
-			if(operator == Punctuator.OR) 
-				code.add(BTOr);
-			else if(operator == Punctuator.AND)
-				code.add(BTAnd);
+			ASMCodeFragment arg2 = removeValueCode(node.child(1));			
+			Labeller labeller = new Labeller("boolean_operator");	
+			String startLabel = labeller.newLabel("arg1");
+			String arg2Label  = labeller.newLabel("arg2");
+			String trueLabel  = labeller.newLabel("true");
+			String falseLabel = labeller.newLabel("false");
+			String joinLabel  = labeller.newLabel("join");
+			
+			if(operator == Punctuator.OR){
+				code.add(Label, startLabel);
+				code.append(arg1);
+				code.add(JumpTrue, trueLabel);
+				code.add(Label, arg2Label);
+				code.append(arg2);
+				code.add(JumpTrue, trueLabel);
+				code.add(Jump, falseLabel);
+			}
+			else if(operator == Punctuator.AND){
+				code.add(Label, startLabel);
+				code.append(arg1);
+				code.add(JumpFalse, falseLabel);
+				code.add(Label,arg2Label);
+				code.append(arg2);
+				code.add(JumpFalse, falseLabel);
+				code.add(Jump, trueLabel);
+			}
+			
+			code.add(Label, trueLabel);
+			code.add(PushI, 1);
+			code.add(Jump, joinLabel);
+			code.add(Label, falseLabel);
+			code.add(PushI, 0);
+			code.add(Jump, joinLabel);
+			code.add(Label, joinLabel);	
 		}
 		
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
@@ -503,7 +529,6 @@ public class ASMCodeGenerator {
 			}			
 		}
 		
-
 		private ASMOpcode opcodeForOperator(Lextant lextant, Type typeOfLeftChild, Type typeOfRightChild) {
 			assert(lextant instanceof Punctuator);
 			Punctuator punctuator = (Punctuator)lextant;
