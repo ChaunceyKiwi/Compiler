@@ -60,6 +60,8 @@ public class ParseNode {
 	public boolean hasScope() {
 		return scope != null;
 	}
+	
+	// From current node to root, find the nearest scope
 	public Scope getLocalScope() {
 		for(ParseNode current : pathToRoot()) {
 			if(current.hasScope()) {
@@ -68,6 +70,8 @@ public class ParseNode {
 		}
 		return Scope.nullInstance();
 	}
+	
+	// If ths symbol table for current parse node has such an identifier
 	public boolean containsBindingOf(String identifier) {
 		if(!hasScope()) {
 			return false;
@@ -75,6 +79,9 @@ public class ParseNode {
 		SymbolTable symbolTable = scope.getSymbolTable();
 		return symbolTable.containsKey(identifier);
 	}
+	
+	// Get the identifier from the sybol table for current parse node
+	// Need to make sure such an identifier exists using containsBindingOf()
 	public Binding bindingOf(String identifier) {
 		if(!hasScope()) {
 			return Binding.nullInstance();

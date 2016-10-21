@@ -44,7 +44,9 @@ public class IdentifierNode extends ParseNode {
 	
 ////////////////////////////////////////////////////////////
 // Speciality functions
-
+	
+	// From current node to root, find nearst scope in which 
+	// variable is declared and return the binding
 	public Binding findVariableBinding() {
 		String identifier = token.getLexeme();
 

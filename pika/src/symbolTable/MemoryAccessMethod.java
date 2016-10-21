@@ -34,10 +34,12 @@ public enum MemoryAccessMethod {
 		generateBaseAddress(code, baseAddress);
 		addOffsetASM(code, offset, comment);
 	}
+	
 	private void addOffsetASM(ASMCodeFragment code, int offset, String comment) {
 		code.add(PushI, offset);
 		code.add(Add, "", comment);
 	}		
+	
 	protected void generateBaseAddress(ASMCodeFragment code, String baseAddress) {}
 
 }

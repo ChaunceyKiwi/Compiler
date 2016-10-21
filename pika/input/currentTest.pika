@@ -1,4 +1,8 @@
 exec {
-    var A := _true_ || _true_  && _false_ || _true_  && _false_.
-    print A. 
+    var a := 5.
+    
+    while(a > 0){
+   		print a.
+   		a := a - 1.
+    }
 }

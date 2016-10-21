@@ -55,6 +55,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		Scope scope = baseScope.createSubscope();
 		node.setScope(scope);
 	}		
+	
 	private void leaveScope(ParseNode node) {
 		node.getScope().leave();
 	}
@@ -75,11 +76,12 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		node.setType(declarationType);
 		identifier.setType(declarationType);
 		
-		// check if the identifier has already been declared
+		// If identifier has already been declared in current scope, report error.
 		scope.getSymbolTable().errorIfAlreadyDefined(identifier.getToken());
 		
-		// if the declaration is var then variable is mutable
-		// if the declaration is const then variable is unmutable
+		// If identifier has not been declared in current scope, 
+		// binding it to current scope and its symbol table.
+		// If the declaration is var then variable is mutable, const then unmutuable
 		if(node.getToken().isLextant(Keyword.VAR))
 			addBinding(identifier, declarationType, true);
 		else if(node.getToken().isLextant(Keyword.CONST))
@@ -97,10 +99,12 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	// assignment
 	@Override
 	public void visitLeave(AssignmentStatementNode node) {
+		// If identifier has already been declared in current scope, use it.
+		// Otherwise try parent's scope until root. Report error is still null
+		// This is performed in the visit of identifier node.
+		
 		IdentifierNode identifier = (IdentifierNode) node.child(0);
 		ParseNode initializer = node.child(1);
-		Boolean ismutable = identifier.getBinding().isMutable();
-		
 		Type assignmentType = initializer.getType();
 		Type identifierType = identifier.getType();
 		
@@ -108,11 +112,10 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		if(assignmentType == identifierType) {
 			node.setType(assignmentType);
 			identifier.setType(assignmentType);
-			addBinding(identifier, assignmentType, ismutable);
-		}else		
-			logError("Assignment operator := not defined for types " 
-					 + Arrays.asList(assignmentType, identifierType)
-					 + " at " + node.getToken().getLocation());	
+		}else{
+			assignmentStatementTypeDifferError(node, 
+					Arrays.asList(assignmentType, identifierType));
+		}
 	}
 	
 	public void visitLeave(IfStatementNode node){
@@ -258,6 +261,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	@Override
 	public void visit(IdentifierNode node) {
+		// If the identifier is not in the delcaration statement
 		if(!isBeingDeclared(node)) {		
 			Binding binding = node.findVariableBinding();
 			
@@ -290,6 +294,11 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	private void controlFlowError(ParseNode node){
 		logError(node.getToken().getLexeme() + " Statement Expression Error");
+	}
+	
+	private void assignmentStatementTypeDifferError(ParseNode node, List<Type> operandTypes){
+		logError("Assignment operator := not defined for types " + operandTypes
+				 + " at " + node.getToken().getLocation());
 	}
 	
 	private void logError(String message) {

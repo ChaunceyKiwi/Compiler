@@ -119,7 +119,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        1                         
+        DataZ        4                         
         Jump         $$main                    
         Label        $$general-runtime-error   
         PushD        $errors-general-message   
@@ -134,71 +134,45 @@
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% A
-        Label        -boolean_operator-4-arg1  
-        Label        -boolean_operator-2-arg1  
-        PushI        1                         
-        JumpTrue     -boolean_operator-2-true  
-        Label        -boolean_operator-2-arg2  
-        Label        -boolean_operator-1-arg1  
-        PushI        1                         
-        JumpFalse    -boolean_operator-1-false 
-        Label        -boolean_operator-1-arg2  
-        PushI        0                         
-        JumpFalse    -boolean_operator-1-false 
-        Jump         -boolean_operator-1-true  
-        Label        -boolean_operator-1-true  
-        PushI        1                         
-        Jump         -boolean_operator-1-join  
-        Label        -boolean_operator-1-false 
-        PushI        0                         
-        Jump         -boolean_operator-1-join  
-        Label        -boolean_operator-1-join  
-        JumpTrue     -boolean_operator-2-true  
-        Jump         -boolean_operator-2-false 
-        Label        -boolean_operator-2-true  
-        PushI        1                         
-        Jump         -boolean_operator-2-join  
-        Label        -boolean_operator-2-false 
-        PushI        0                         
-        Jump         -boolean_operator-2-join  
-        Label        -boolean_operator-2-join  
-        JumpTrue     -boolean_operator-4-true  
-        Label        -boolean_operator-4-arg2  
-        Label        -boolean_operator-3-arg1  
-        PushI        1                         
-        JumpFalse    -boolean_operator-3-false 
-        Label        -boolean_operator-3-arg2  
-        PushI        0                         
-        JumpFalse    -boolean_operator-3-false 
-        Jump         -boolean_operator-3-true  
-        Label        -boolean_operator-3-true  
-        PushI        1                         
-        Jump         -boolean_operator-3-join  
-        Label        -boolean_operator-3-false 
-        PushI        0                         
-        Jump         -boolean_operator-3-join  
-        Label        -boolean_operator-3-join  
-        JumpTrue     -boolean_operator-4-true  
-        Jump         -boolean_operator-4-false 
-        Label        -boolean_operator-4-true  
-        PushI        1                         
-        Jump         -boolean_operator-4-join  
-        Label        -boolean_operator-4-false 
-        PushI        0                         
-        Jump         -boolean_operator-4-join  
-        Label        -boolean_operator-4-join  
-        StoreC                                 
+        Add                                    %% a
+        PushI        5                         
+        StoreI                                 
+        Label        -while-2-begin            
+        Label        -compare-1-arg1           
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% A
-        LoadC                                  
-        JumpTrue     -print-boolean-5-true     
-        PushD        $boolean-false-string     
-        Jump         -print-boolean-5-join     
-        Label        -print-boolean-5-true     
-        PushD        $boolean-true-string      
-        Label        -print-boolean-5-join     
-        PushD        $print-format-boolean     
+        Add                                    %% a
+        LoadI                                  
+        Label        -compare-1-arg2           
+        PushI        0                         
+        Label        -compare-1-sub            
+        Subtract                               
+        JumpPos      -compare-1-true           
+        Jump         -compare-1-false          
+        Label        -compare-1-true           
+        PushI        1                         
+        Jump         -compare-1-join           
+        Label        -compare-1-false          
+        PushI        0                         
+        Jump         -compare-1-join           
+        Label        -compare-1-join           
+        JumpFalse    -while-2-end-of-while-statement 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $print-format-integer     
         Printf                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushI        1                         
+        Subtract                               
+        StoreI                                 
+        Jump         -while-2-begin            
+        Label        -while-2-end-of-while-statement 
         Halt                                   
