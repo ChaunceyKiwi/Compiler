@@ -25,7 +25,16 @@ public enum Keyword implements Lextant {
 	// for array type
 	LENGTH("length"),
 	COPY("clone"),
-	NEW("new");
+	NEW("new"),
+	
+	// conditional statement
+	IF("if"),
+	ELSE("else"),
+	WHILE("while"),
+	
+	// for release statement
+	RELEASE("release");
+		
 	
 	private String lexeme;
 	private Token prototype;

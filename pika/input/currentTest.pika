@@ -1,4 +1,9 @@
 exec {
-    const numSet :=  [1,3,5,7,9].
-    print numSet.
+    const A := 1.
+
+    while(A == 1) {
+    	print "Hello!".
+    }
+
+    release (A == 1).
 }

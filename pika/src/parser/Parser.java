@@ -4,29 +4,7 @@ import java.util.Arrays;
 
 import logging.PikaLogger;
 import parseTree.*;
-import parseTree.nodeTypes.ArrayIndexingNode;
-import parseTree.nodeTypes.BinaryOperatorNode;
-import parseTree.nodeTypes.UnaryOperatorNode;
-import parseTree.nodeTypes.BooleanConstantNode;
-import parseTree.nodeTypes.BlockStatementNode;
-import parseTree.nodeTypes.AssignmentStatementNode;
-import parseTree.nodeTypes.DeclarationNode;
-import parseTree.nodeTypes.TypeCastedToNode;
-import parseTree.nodeTypes.TypeCastingNode;
-import parseTree.nodeTypes.ErrorNode;
-import parseTree.nodeTypes.IdentifierNode;
-import parseTree.nodeTypes.IntegerConstantNode;
-import parseTree.nodeTypes.FloatingConstantNode;
-import parseTree.nodeTypes.CharConstantNode;
-import parseTree.nodeTypes.StringConstantNode;
-import parseTree.nodeTypes.NewlineNode;
-import parseTree.nodeTypes.TabNode;
-import parseTree.nodeTypes.PrintStatementNode;
-import parseTree.nodeTypes.ProgramNode;
-import parseTree.nodeTypes.SpaceNode;
-import parseTree.nodeTypes.ExpressionListNode;
-import parseTree.nodeTypes.NewArrayTypeLengthNode;
-import parseTree.nodeTypes.TypeNode;
+import parseTree.nodeTypes.*;
 import tokens.*;
 import lexicalAnalyzer.Keyword;
 import lexicalAnalyzer.Lextant;
@@ -120,6 +98,14 @@ public class Parser {
 			return parseAssignmentStatement();
 		}
 		
+		if(startsIfStatement(nowReading)){
+			return parseIfStatement();
+		}
+		
+		if(startsWhileStatement(nowReading)){
+			return parseWhileStatement();
+		}
+		
 		if(startsPrintStatement(nowReading)) {
 			return parsePrintStatement();
 		}
@@ -128,14 +114,21 @@ public class Parser {
 			return parseBlockStatement();
 		}
 		
+		if(startsReleaseStatement(nowReading)){
+			return parseReleaseStatement();
+		}
+		
 		return syntaxErrorNode("statement");
 	}
 	
 	private boolean startsStatement(Token token) {
 		return  startsDeclaration(token) || 
 				startsAssignmentStatement(token) ||   
+				startsIfStatement(token) ||
+				startsWhileStatement(token) ||
 				startsPrintStatement(token) ||
-				startsBlockStatement(token);
+				startsBlockStatement(token) ||
+				startsReleaseStatement(token);
 	}
 	
 	///////////////////////////////////////////////////////////
@@ -183,6 +176,64 @@ public class Parser {
 	}
 	
 	///////////////////////////////////////////////////////////
+	// If Statement
+	
+	private ParseNode parseIfStatement() {
+		if(!startsIfStatement(nowReading)) {
+			return syntaxErrorNode("if statement");
+		}
+		
+		Token ifStatementToken = nowReading;
+		IfStatementNode ifStatementNode = new IfStatementNode(ifStatementToken);
+		readToken();
+		expect(Punctuator.OPEN_BRACKET);
+		ParseNode expression = parseExpression();
+		ifStatementNode.appendChild(expression);
+		expect(Punctuator.CLOSE_BRACKET);
+		
+		ParseNode trueBlockStatement = parseBlockStatement();
+		ifStatementNode.appendChild(trueBlockStatement);
+		
+		if(nowReading.isLextant(Keyword.ELSE)){
+			readToken();
+			ParseNode falseBlockStatement = parseBlockStatement();
+			ifStatementNode.appendChild(falseBlockStatement);
+		}
+				
+		return ifStatementNode;
+	}
+	
+	private boolean startsIfStatement(Token token) {
+		return token.isLextant(Keyword.IF);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// While Statement
+	
+	private ParseNode parseWhileStatement() {
+		if(!startsWhileStatement(nowReading)) {
+			return syntaxErrorNode("while statement");
+		}
+		
+		Token whileStatementToken = nowReading;
+		WhileStatementNode whileStatementNode = new WhileStatementNode(whileStatementToken);
+		readToken();
+		expect(Punctuator.OPEN_BRACKET);
+		ParseNode expression = parseExpression();
+		whileStatementNode.appendChild(expression);
+		expect(Punctuator.CLOSE_BRACKET);
+		
+		ParseNode trueBlockStatement = parseBlockStatement();
+		whileStatementNode.appendChild(trueBlockStatement);
+				
+		return whileStatementNode;
+	}
+	
+	private boolean startsWhileStatement(Token token) {
+		return token.isLextant(Keyword.WHILE);
+	}
+	
+	///////////////////////////////////////////////////////////
 	// PrintStatement
 	
 	// printStatement -> PRINT printExpressionList .
@@ -202,6 +253,28 @@ public class Parser {
 	private boolean startsPrintStatement(Token token) {
 		return token.isLextant(Keyword.PRINT);
 	}	
+	
+	///////////////////////////////////////////////////////////
+	// Release Statement
+	
+	private ParseNode parseReleaseStatement() {
+		if(!startsReleaseStatement(nowReading)) {
+			return syntaxErrorNode("while statement");
+		}
+		
+		Token releaseStatementToken = nowReading;
+		ReleaseStatementNode releaseStatementNode = new ReleaseStatementNode(releaseStatementToken);
+		readToken();
+		ParseNode expression = parseExpression();
+		releaseStatementNode.appendChild(expression);
+		expect(Punctuator.TERMINATOR);				
+		
+		return releaseStatementNode;
+	}
+	
+	private boolean startsReleaseStatement(Token token) {
+		return token.isLextant(Keyword.RELEASE);
+	}
 
 	///////////////////////////////////////////////////////////
 	// PrintExpressionList
