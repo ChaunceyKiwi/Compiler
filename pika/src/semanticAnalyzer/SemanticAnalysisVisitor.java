@@ -8,25 +8,7 @@ import lexicalAnalyzer.Lextant;
 import logging.PikaLogger;
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
-import parseTree.nodeTypes.BinaryOperatorNode;
-import parseTree.nodeTypes.UnaryOperatorNode;
-import parseTree.nodeTypes.BooleanConstantNode;
-import parseTree.nodeTypes.BlockStatementNode;
-import parseTree.nodeTypes.DeclarationNode;
-import parseTree.nodeTypes.AssignmentStatementNode;
-import parseTree.nodeTypes.TypeCastedToNode;
-import parseTree.nodeTypes.TypeCastingNode;
-import parseTree.nodeTypes.ErrorNode;
-import parseTree.nodeTypes.IdentifierNode;
-import parseTree.nodeTypes.IntegerConstantNode;
-import parseTree.nodeTypes.FloatingConstantNode;
-import parseTree.nodeTypes.CharConstantNode;
-import parseTree.nodeTypes.StringConstantNode;
-import parseTree.nodeTypes.NewlineNode;
-import parseTree.nodeTypes.PrintStatementNode;
-import parseTree.nodeTypes.ProgramNode;
-import parseTree.nodeTypes.SpaceNode;
-import parseTree.nodeTypes.ExpressionListNode;
+import parseTree.nodeTypes.*;
 import semanticAnalyzer.signatures.FunctionSignatures;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.ArrayType;
@@ -133,6 +115,21 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 					 + " at " + node.getToken().getLocation());	
 	}
 	
+	public void visitLeave(IfStatementNode node){
+		assert node.nChildren() >= 2;
+		checkIfExpressionIsBoolean(node.child(0));
+	}
+	
+	public void visitLeave(WhileStatementNode node){
+		assert node.nChildren() == 2;
+		checkIfExpressionIsBoolean(node.child(0));
+	}
+	
+	public void checkIfExpressionIsBoolean(ParseNode node){
+		if(node.getType() != PrimitiveType.BOOLEAN){
+			controlFlowError(node);
+		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// expressions
@@ -290,6 +287,11 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		logError("operator " + token.getLexeme() + " not defined for types " 
 				 + operandTypes  + " at " + token.getLocation());	
 	}
+	
+	private void controlFlowError(ParseNode node){
+		logError(node.getToken().getLexeme() + " Statement Expression Error");
+	}
+	
 	private void logError(String message) {
 		PikaLogger log = PikaLogger.getLogger("compiler.semanticAnalyzer");
 		log.severe(message);

@@ -9,24 +9,7 @@ import asmCodeGenerator.runtime.RunTime;
 import lexicalAnalyzer.Lextant;
 import lexicalAnalyzer.Punctuator;
 import parseTree.*;
-import parseTree.nodeTypes.BinaryOperatorNode;
-import parseTree.nodeTypes.UnaryOperatorNode;
-import parseTree.nodeTypes.BooleanConstantNode;
-import parseTree.nodeTypes.BlockStatementNode;
-import parseTree.nodeTypes.DeclarationNode;
-import parseTree.nodeTypes.AssignmentStatementNode;
-import parseTree.nodeTypes.FloatingConstantNode;
-import parseTree.nodeTypes.CharConstantNode;
-import parseTree.nodeTypes.StringConstantNode;
-import parseTree.nodeTypes.IdentifierNode;
-import parseTree.nodeTypes.IntegerConstantNode;
-import parseTree.nodeTypes.NewlineNode;
-import parseTree.nodeTypes.TabNode;
-import parseTree.nodeTypes.PrintStatementNode;
-import parseTree.nodeTypes.ProgramNode;
-import parseTree.nodeTypes.SpaceNode;
-import parseTree.nodeTypes.TypeCastingNode;
-import parseTree.nodeTypes.ExpressionListNode;
+import parseTree.nodeTypes.*;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 import symbolTable.Binding;
@@ -118,7 +101,11 @@ public class ASMCodeGenerator {
 		
 	    public  ASMCodeFragment removeRootCode(ParseNode tree) {
 			return getAndRemoveCode(tree);
-		}		
+		}
+	    
+	    public ASMCodeFragment removeBlockCode(ParseNode tree) {
+	    	return getAndRemoveCode(tree);
+	    }
 	    
 		ASMCodeFragment removeValueCode(ParseNode node) {
 			ASMCodeFragment frag = getAndRemoveCode(node);
@@ -253,6 +240,29 @@ public class ASMCodeGenerator {
 				code.add(StoreI);
 			}
 			code.add(PushD, labelOfArray);
+		}
+		
+		public void visitLeave(IfStatementNode node){
+			newVoidCode(node);
+			ASMCodeFragment booleanResult = removeValueCode(node.child(0));	
+			ASMCodeFragment trueDoStatement = removeBlockCode(node.child(1));
+			
+			Labeller labeller = new Labeller("if");
+			String beginLabel = labeller.newLabel("begin");
+			String falseDoStatementLabel = labeller.newLabel("false-do-expression");
+			String endOfIfStatementLabel = labeller.newLabel("end-of-end-statement");
+			
+			code.append(booleanResult);
+			code.add(Label, beginLabel);
+			code.add(JumpFalse, falseDoStatementLabel);
+			code.append(trueDoStatement);
+			code.add(Jump, endOfIfStatementLabel);
+			if(node.nChildren() == 3){
+				code.add(Label, falseDoStatementLabel);
+				ASMCodeFragment falseDoStatement = removeBlockCode(node.child(2));
+				code.append(falseDoStatement);
+			}
+			code.add(Label, endOfIfStatementLabel);
 		}
 		
 		public void visitLeave(TypeCastingNode node){

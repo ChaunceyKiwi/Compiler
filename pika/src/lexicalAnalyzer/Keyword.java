@@ -27,7 +27,7 @@ public enum Keyword implements Lextant {
 	COPY("clone"),
 	NEW("new"),
 	
-	// conditional statement
+	// for control flow
 	IF("if"),
 	ELSE("else"),
 	WHILE("while"),

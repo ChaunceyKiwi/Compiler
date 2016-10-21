@@ -1,25 +1,6 @@
 package parseTree;
 
-import parseTree.nodeTypes.BinaryOperatorNode;
-import parseTree.nodeTypes.UnaryOperatorNode;
-import parseTree.nodeTypes.ExpressionListNode;
-import parseTree.nodeTypes.BooleanConstantNode;
-import parseTree.nodeTypes.BlockStatementNode;
-import parseTree.nodeTypes.AssignmentStatementNode;
-import parseTree.nodeTypes.TypeCastedToNode;
-import parseTree.nodeTypes.TypeCastingNode;
-import parseTree.nodeTypes.DeclarationNode;
-import parseTree.nodeTypes.ErrorNode;
-import parseTree.nodeTypes.IdentifierNode;
-import parseTree.nodeTypes.IntegerConstantNode;
-import parseTree.nodeTypes.FloatingConstantNode;
-import parseTree.nodeTypes.CharConstantNode;
-import parseTree.nodeTypes.StringConstantNode;
-import parseTree.nodeTypes.NewlineNode;
-import parseTree.nodeTypes.TabNode;
-import parseTree.nodeTypes.PrintStatementNode;
-import parseTree.nodeTypes.ProgramNode;
-import parseTree.nodeTypes.SpaceNode;
+import parseTree.nodeTypes.*;
 
 // Visitor pattern with pre- and post-order visits
 public interface ParseNodeVisitor {
@@ -53,6 +34,13 @@ public interface ParseNodeVisitor {
 	
 	void visitEnter(ExpressionListNode node);
 	void visitLeave(ExpressionListNode node);
+	
+	void visitEnter(IfStatementNode node);
+	void visitLeave(IfStatementNode node);
+	
+	void visitEnter(WhileStatementNode node);
+	void visitLeave(WhileStatementNode node);
+	
 	
 	// leaf nodes: visitLeaf only
 	void visit(BooleanConstantNode node);
@@ -143,6 +131,20 @@ public interface ParseNodeVisitor {
 			defaultVisitEnter(node);
 		}
 		public void visitLeave(ExpressionListNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		public void visitEnter(IfStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(IfStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		public void visitEnter(WhileStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(WhileStatementNode node) {
 			defaultVisitLeave(node);
 		}
 		

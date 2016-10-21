@@ -120,7 +120,7 @@
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
         DataZ        4                         
-        DLabel       -stringConstant-1-Hello!  
+        DLabel       -stringConstant-2-Hello!  
         DataC        72                        %% "Hello!"
         DataC        101                       
         DataC        108                       
@@ -128,7 +128,7 @@
         DataC        111                       
         DataC        33                        
         DataC        0                         
-        DLabel       -stringConstant-2-Go away! 
+        DLabel       -stringConstant-3-Go away! 
         DataC        71                        %% "Go away!"
         DataC        111                       
         DataC        32                        
@@ -153,12 +153,35 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% A
-        PushI        1                         
+        PushI        0                         
         StoreI                                 
-        PushD        -stringConstant-1-Hello!  
+        Label        -compare-1-arg1           
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% A
+        LoadI                                  
+        Label        -compare-1-arg2           
+        PushI        1                         
+        Label        -compare-1-sub            
+        Subtract                               
+        JumpFalse    -compare-1-true           
+        Jump         -compare-1-false          
+        Label        -compare-1-true           
+        PushI        1                         
+        Jump         -compare-1-join           
+        Label        -compare-1-false          
+        PushI        0                         
+        Jump         -compare-1-join           
+        Label        -compare-1-join           
+        Label        -if-4-begin               
+        JumpFalse    -if-4-false-do-expression 
+        PushD        -stringConstant-2-Hello!  
         PushD        $print-format-string      
         Printf                                 
-        PushD        -stringConstant-2-Go away! 
+        Jump         -if-4-end-of-end-statement 
+        Label        -if-4-false-do-expression 
+        PushD        -stringConstant-3-Go away! 
         PushD        $print-format-string      
         Printf                                 
+        Label        -if-4-end-of-end-statement 
         Halt                                   
