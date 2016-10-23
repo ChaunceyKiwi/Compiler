@@ -18,17 +18,13 @@ public class ArrayType implements Type{
 	private final Boolean subtype_is_reference;
 	private final Boolean is_deleted;
 	private final Boolean permanent;
-	private int length;
+	private final int length;
 	
 	private Type subType;
 	
     public int getLength() {
 //        assert(length >= 0);
         return length;
-    }
-    
-    public void setLength(int len){
-    	length = len;
     }
     
 	public ArrayType(){
@@ -47,6 +43,15 @@ public class ArrayType implements Type{
 		is_deleted = false;
 		permanent = false;
 		length = -1;
+	}
+	
+	public ArrayType(Type type, int nChildren){
+		subType = type;
+		immutability = false;
+		subtype_is_reference = type.isReferenceType();
+		is_deleted = false;
+		permanent = false;
+		length = nChildren;
 	}
 	
 	public Type getSubType(){

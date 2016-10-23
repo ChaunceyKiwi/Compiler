@@ -600,7 +600,7 @@ public class Parser {
 			expect(Punctuator.CLOSE_SQUARE_BRACKET);
 			ParseNode typeNode = new TypeCastedToNode(typeToken);
 			return TypeCastingNode.withChildren(verticalBarToken, expressionToBeCasted, typeNode);
-		}else if(verticalBarToken.isLextant(Punctuator.SEPARATOR)){
+		}else if(verticalBarToken.isLextant(Punctuator.SEPARATOR, Punctuator.CLOSE_SQUARE_BRACKET)){
 			ParseNode expressionListNode = parseArrayExpression(expressionToBeCasted);
 			return expressionListNode;
 		}else{
@@ -636,13 +636,12 @@ public class Parser {
 	}
 	
 	private ParseNode parseArrayExpression(ParseNode firstNode){
-		if(!nowReading.isLextant(Punctuator.SEPARATOR)) {
+		if(!nowReading.isLextant(Punctuator.SEPARATOR, Punctuator.CLOSE_SQUARE_BRACKET)) {
 			return syntaxErrorNode("arrayExpression");
 		}
 		
 		ParseNode expressionListNode = new ExpressionListNode(nowReading);
 		expressionListNode.appendChild(firstNode);
-		
 		while(nowReading.isLextant(Punctuator.SEPARATOR)){
 			readToken();
 			ParseNode expressionNode = parseExpression();

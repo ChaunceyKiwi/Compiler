@@ -161,7 +161,11 @@
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
         DataZ        4                         
-        DLabel       --print-array-2--loop-counter- 
+        DLabel       --print-array-26--loop-counter- 
+        DataI        0                         
+        DLabel       --print-array-27--loop-counter- 
+        DataI        0                         
+        DLabel       --print-array-28--loop-counter- 
         DataI        0                         
         DLabel       $mmgr-tags-size           
         DataZ        4                         
@@ -239,13 +243,105 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        Label        -exprList-1-array-creation-begin 
-        Label        -exprList-1-array-creation-get-length 
+        Label        -exprList-25-array-creation-begin 
+        Label        -exprList-25-array-creation-get-length 
+        PushI        4                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-25-array-creation-size 
+        PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-25-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-25-array-creation-status 
+        Duplicate                              
+        PushI        2                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-25-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-25-array-creation-length 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-25-array-creation-end 
+        Label        -exprList-25-array-initialization-begin 
+        Duplicate                              
+        Label        -exprList-6-array-creation-begin 
+        Label        -exprList-6-array-creation-get-length 
         PushI        5                         
         Duplicate                              
         JumpNeg      $$array-size-negative     
-        Label        -exprList-1-array-creation-size 
+        Label        -exprList-6-array-creation-size 
         PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-6-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-6-array-creation-status 
+        Duplicate                              
+        PushI        2                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-6-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-6-array-creation-length 
+        Duplicate                              
+        PushI        5                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-6-array-creation-end 
+        Label        -exprList-6-array-initialization-begin 
+        Duplicate                              
+        Label        -exprList-1-array-creation-begin 
+        Label        -exprList-1-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-1-array-creation-size 
+        PushI        1                         
         Multiply                               
         PushI        16                        
         Add                                    
@@ -268,7 +364,7 @@
         StoreI                                 
         Label        -exprList-1-array-creation-subtype-size 
         Duplicate                              
-        PushI        4                         
+        PushI        1                         
         Exchange                               
         PushI        8                         
         Add                                    
@@ -276,7 +372,7 @@
         StoreI                                 
         Label        -exprList-1-array-creation-length 
         Duplicate                              
-        PushI        5                         
+        PushI        3                         
         Exchange                               
         PushI        12                        
         Add                                    
@@ -285,89 +381,1715 @@
         Label        -exprList-1-array-creation-end 
         Label        -exprList-1-array-initialization-begin 
         Duplicate                              
-        PushI        2                         
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-1-array-initialization-end 
         Exchange                               
         PushI        16                        
         Add                                    
         Exchange                               
         StoreI                                 
         Duplicate                              
+        Label        -exprList-2-array-creation-begin 
+        Label        -exprList-2-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-2-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-2-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-2-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
         PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-2-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-2-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-2-array-creation-end 
+        Label        -exprList-2-array-initialization-begin 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-2-array-initialization-end 
         Exchange                               
         PushI        20                        
         Add                                    
         Exchange                               
         StoreI                                 
         Duplicate                              
-        PushI        6                         
+        Label        -exprList-3-array-creation-begin 
+        Label        -exprList-3-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-3-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-3-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-3-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-3-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-3-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-3-array-creation-end 
+        Label        -exprList-3-array-initialization-begin 
+        Duplicate                              
+        PushI        82                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        80                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        71                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-3-array-initialization-end 
         Exchange                               
         PushI        24                        
         Add                                    
         Exchange                               
         StoreI                                 
         Duplicate                              
+        Label        -exprList-4-array-creation-begin 
+        Label        -exprList-4-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-4-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-4-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-4-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-4-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
         PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-4-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-4-array-creation-end 
+        Label        -exprList-4-array-initialization-begin 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-4-array-initialization-end 
         Exchange                               
         PushI        28                        
         Add                                    
         Exchange                               
         StoreI                                 
         Duplicate                              
-        PushI        10                        
+        Label        -exprList-5-array-creation-begin 
+        Label        -exprList-5-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-5-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-5-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-5-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-5-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-5-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-5-array-creation-end 
+        Label        -exprList-5-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-5-array-initialization-end 
         Exchange                               
         PushI        32                        
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -exprList-1-array-initialization-end 
+        Label        -exprList-6-array-initialization-end 
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
         StoreI                                 
-        Label        --print-array-2--begin-   
+        Duplicate                              
+        Label        -exprList-12-array-creation-begin 
+        Label        -exprList-12-array-creation-get-length 
+        PushI        5                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-12-array-creation-size 
+        PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-12-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-12-array-creation-status 
+        Duplicate                              
+        PushI        2                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-12-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-12-array-creation-length 
+        Duplicate                              
+        PushI        5                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-12-array-creation-end 
+        Label        -exprList-12-array-initialization-begin 
+        Duplicate                              
+        Label        -exprList-7-array-creation-begin 
+        Label        -exprList-7-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-7-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-7-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-7-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-7-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-7-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-7-array-creation-end 
+        Label        -exprList-7-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-7-array-initialization-end 
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-8-array-creation-begin 
+        Label        -exprList-8-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-8-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-8-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-8-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-8-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-8-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-8-array-creation-end 
+        Label        -exprList-8-array-initialization-begin 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-8-array-initialization-end 
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-9-array-creation-begin 
+        Label        -exprList-9-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-9-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-9-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-9-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-9-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-9-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-9-array-creation-end 
+        Label        -exprList-9-array-initialization-begin 
+        Duplicate                              
+        PushI        82                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        80                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        71                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-9-array-initialization-end 
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-10-array-creation-begin 
+        Label        -exprList-10-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-10-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-10-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-10-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-10-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-10-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-10-array-creation-end 
+        Label        -exprList-10-array-initialization-begin 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-10-array-initialization-end 
+        Exchange                               
+        PushI        28                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-11-array-creation-begin 
+        Label        -exprList-11-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-11-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-11-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-11-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-11-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-11-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-11-array-creation-end 
+        Label        -exprList-11-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-11-array-initialization-end 
+        Exchange                               
+        PushI        32                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-12-array-initialization-end 
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-18-array-creation-begin 
+        Label        -exprList-18-array-creation-get-length 
+        PushI        5                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-18-array-creation-size 
+        PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-18-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-18-array-creation-status 
+        Duplicate                              
+        PushI        2                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-18-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-18-array-creation-length 
+        Duplicate                              
+        PushI        5                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-18-array-creation-end 
+        Label        -exprList-18-array-initialization-begin 
+        Duplicate                              
+        Label        -exprList-13-array-creation-begin 
+        Label        -exprList-13-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-13-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-13-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-13-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-13-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-13-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-13-array-creation-end 
+        Label        -exprList-13-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-13-array-initialization-end 
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-14-array-creation-begin 
+        Label        -exprList-14-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-14-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-14-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-14-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-14-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-14-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-14-array-creation-end 
+        Label        -exprList-14-array-initialization-begin 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-14-array-initialization-end 
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-15-array-creation-begin 
+        Label        -exprList-15-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-15-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-15-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-15-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-15-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-15-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-15-array-creation-end 
+        Label        -exprList-15-array-initialization-begin 
+        Duplicate                              
+        PushI        82                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        80                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        71                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-15-array-initialization-end 
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-16-array-creation-begin 
+        Label        -exprList-16-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-16-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-16-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-16-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-16-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-16-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-16-array-creation-end 
+        Label        -exprList-16-array-initialization-begin 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-16-array-initialization-end 
+        Exchange                               
+        PushI        28                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-17-array-creation-begin 
+        Label        -exprList-17-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-17-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-17-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-17-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-17-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-17-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-17-array-creation-end 
+        Label        -exprList-17-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-17-array-initialization-end 
+        Exchange                               
+        PushI        32                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-18-array-initialization-end 
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-24-array-creation-begin 
+        Label        -exprList-24-array-creation-get-length 
+        PushI        5                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-24-array-creation-size 
+        PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-24-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-24-array-creation-status 
+        Duplicate                              
+        PushI        2                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-24-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-24-array-creation-length 
+        Duplicate                              
+        PushI        5                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-24-array-creation-end 
+        Label        -exprList-24-array-initialization-begin 
+        Duplicate                              
+        Label        -exprList-19-array-creation-begin 
+        Label        -exprList-19-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-19-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-19-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-19-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-19-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-19-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-19-array-creation-end 
+        Label        -exprList-19-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-19-array-initialization-end 
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-20-array-creation-begin 
+        Label        -exprList-20-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-20-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-20-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-20-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-20-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-20-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-20-array-creation-end 
+        Label        -exprList-20-array-initialization-begin 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        65                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-20-array-initialization-end 
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-21-array-creation-begin 
+        Label        -exprList-21-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-21-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-21-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-21-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-21-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-21-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-21-array-creation-end 
+        Label        -exprList-21-array-initialization-begin 
+        Duplicate                              
+        PushI        82                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        80                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        71                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-21-array-initialization-end 
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-22-array-creation-begin 
+        Label        -exprList-22-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-22-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-22-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-22-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-22-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-22-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-22-array-creation-end 
+        Label        -exprList-22-array-initialization-begin 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        66                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-22-array-initialization-end 
+        Exchange                               
+        PushI        28                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        Label        -exprList-23-array-creation-begin 
+        Label        -exprList-23-array-creation-get-length 
+        PushI        3                         
+        Duplicate                              
+        JumpNeg      $$array-size-negative     
+        Label        -exprList-23-array-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        -exprList-23-array-creation-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-23-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-23-array-creation-subtype-size 
+        Duplicate                              
+        PushI        1                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-23-array-creation-length 
+        Duplicate                              
+        PushI        3                         
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-23-array-creation-end 
+        Label        -exprList-23-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        98                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Duplicate                              
+        PushI        99                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreC                                 
+        Label        -exprList-23-array-initialization-end 
+        Exchange                               
+        PushI        32                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-24-array-initialization-end 
+        Exchange                               
+        PushI        28                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -exprList-25-array-initialization-end 
+        StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
+        Label        --print-array-26--begin-  
         Duplicate                              
-        Label        --print-array-2-get-length 
+        Label        --print-array-26-get-length 
         PushI        12                        
         Add                                    
         LoadI                                  
-        PushD        --print-array-2--loop-counter- 
+        PushD        --print-array-26--loop-counter- 
         Exchange                               
         StoreI                                 
         PushI        16                        
         Add                                    
         PushD        $print-format-open-square-bracket 
         Printf                                 
-        Label        --print-array-2--loop-begin- 
-        PushD        --print-array-2--loop-counter- 
+        Label        --print-array-26--loop-begin- 
+        PushD        --print-array-26--loop-counter- 
         LoadI                                  
-        JumpFalse    --print-array-2--loop-end- 
+        JumpFalse    --print-array-26--loop-end- 
         Duplicate                              
         PushI        4                         
         Add                                    
         Exchange                               
         LoadI                                  
-        PushD        $print-format-integer     
-        Printf                                 
-        PushI        -1                        
-        PushD        --print-array-2--loop-counter- 
-        LoadI                                  
+        Label        --print-array-27--begin-  
+        Duplicate                              
+        Label        --print-array-27-get-length 
+        PushI        12                        
         Add                                    
-        PushD        --print-array-2--loop-counter- 
+        LoadI                                  
+        PushD        --print-array-27--loop-counter- 
         Exchange                               
         StoreI                                 
-        PushD        --print-array-2--loop-counter- 
+        PushI        16                        
+        Add                                    
+        PushD        $print-format-open-square-bracket 
+        Printf                                 
+        Label        --print-array-27--loop-begin- 
+        PushD        --print-array-27--loop-counter- 
         LoadI                                  
-        JumpFalse    --print-array-2--loop-end- 
+        JumpFalse    --print-array-27--loop-end- 
+        Duplicate                              
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        LoadI                                  
+        Label        --print-array-28--begin-  
+        Duplicate                              
+        Label        --print-array-28-get-length 
+        PushI        12                        
+        Add                                    
+        LoadI                                  
+        PushD        --print-array-28--loop-counter- 
+        Exchange                               
+        StoreI                                 
+        PushI        16                        
+        Add                                    
+        PushD        $print-format-open-square-bracket 
+        Printf                                 
+        Label        --print-array-28--loop-begin- 
+        PushD        --print-array-28--loop-counter- 
+        LoadI                                  
+        JumpFalse    --print-array-28--loop-end- 
+        Duplicate                              
+        PushI        1                         
+        Add                                    
+        Exchange                               
+        LoadI                                  
+        PushD        $print-format-char        
+        Printf                                 
+        PushI        -1                        
+        PushD        --print-array-28--loop-counter- 
+        LoadI                                  
+        Add                                    
+        PushD        --print-array-28--loop-counter- 
+        Exchange                               
+        StoreI                                 
+        PushD        --print-array-28--loop-counter- 
+        LoadI                                  
+        JumpFalse    --print-array-28--loop-end- 
         PushD        $print-format-separator   
         Printf                                 
         PushD        $print-format-space       
         Printf                                 
-        Jump         --print-array-2--loop-begin- 
-        Label        --print-array-2--loop-end- 
+        Jump         --print-array-28--loop-begin- 
+        Label        --print-array-28--loop-end- 
+        Pop                                    
         PushD        $print-format-close-square-bracket 
         Printf                                 
-        Label        --print-array-2--end-     
+        Label        --print-array-28--end-    
+        PushI        -1                        
+        PushD        --print-array-27--loop-counter- 
+        LoadI                                  
+        Add                                    
+        PushD        --print-array-27--loop-counter- 
+        Exchange                               
+        StoreI                                 
+        PushD        --print-array-27--loop-counter- 
+        LoadI                                  
+        JumpFalse    --print-array-27--loop-end- 
+        PushD        $print-format-separator   
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Jump         --print-array-27--loop-begin- 
+        Label        --print-array-27--loop-end- 
+        Pop                                    
+        PushD        $print-format-close-square-bracket 
+        Printf                                 
+        Label        --print-array-27--end-    
+        PushI        -1                        
+        PushD        --print-array-26--loop-counter- 
+        LoadI                                  
+        Add                                    
+        PushD        --print-array-26--loop-counter- 
+        Exchange                               
+        StoreI                                 
+        PushD        --print-array-26--loop-counter- 
+        LoadI                                  
+        JumpFalse    --print-array-26--loop-end- 
+        PushD        $print-format-separator   
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Jump         --print-array-26--loop-begin- 
+        Label        --print-array-26--loop-end- 
+        Pop                                    
+        PushD        $print-format-close-square-bracket 
+        Printf                                 
+        Label        --print-array-26--end-    
         Halt                                   
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         

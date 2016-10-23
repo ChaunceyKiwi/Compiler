@@ -30,7 +30,8 @@ public class PrintStatementGenerator {
 				ASMCodeFragment childCode = visitor.removeVoidCode(child);
 				code.append(childCode);
 			}else if(child.getType() instanceof ArrayType){
-				appendPrintCodeForArrayType(child);
+				code.append(visitor.removeValueCode(child));
+				appendPrintCodeForArrayType((ArrayType)child.getType());
 			}else {
 				appendPrintCode(child);
 			}
@@ -46,9 +47,8 @@ public class PrintStatementGenerator {
 		code.add(Printf);
 	}
 	
-	private void appendPrintCodeForArrayType(ParseNode node) {
-		ArrayType type = (ArrayType)node.getType();
-		String format = printFormat(type.getSubType());
+	private void appendPrintCodeForArrayType(ArrayType type) {
+		Type subType = type.getSubType();
 		int subTypeSize = type.getSubType().getSize();
 		
 		Labeller labeller = new Labeller("-print-array");
@@ -60,7 +60,6 @@ public class PrintStatementGenerator {
 		
 		code.add(Label, beginLabel);
 		// get the address of the array
-		code.append(visitor.removeValueCode(node));
 		code.add(Duplicate);
 		
 		// store the length of array as the loop counter
@@ -86,8 +85,15 @@ public class PrintStatementGenerator {
 		code.add(Add);
 		code.add(Exchange);		
 		code.add(LoadI);
-		code.add(PushD, format);
-		code.add(Printf);
+		
+		if(subType.isReferenceType()) {
+			appendPrintCodeForArrayType((ArrayType)subType);
+		}
+		else {
+			String format = printFormat(subType);
+			code.add(PushD, format);
+			code.add(Printf);
+		}
 		
 		// Decrement the counter by 1
 		Macros.decrementInteger(code, loopCounterLabel);
@@ -103,6 +109,7 @@ public class PrintStatementGenerator {
 		
 		code.add(Jump, loopBeginLabel);
 		code.add(Label, loopEndLabel);
+		code.add(Pop);
 		code.add(PushD, RunTime.CLOSE_SQUARE_BRACKET_PRINT_FORMAT);
 		code.add(Printf);
 		code.add(Label, endLabel);
