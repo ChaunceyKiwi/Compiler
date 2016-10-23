@@ -25,6 +25,8 @@ public class RunTime {
 	public static final String GENERAL_RUNTIME_ERROR = "$$general-runtime-error";
 	public static final String INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR = "$$i-divide-by-zero";
 	public static final String FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR = "$$f-divide-by-zero";
+	public static final String ARRAY_SIZE_NEGATIVE_ERROR = "$$array-size-negative";
+
 
 	
 	private ASMCodeFragment environmentASM() {
@@ -82,6 +84,7 @@ public class RunTime {
 		generalRuntimeError(frag);
 		integerDivideByZeroError(frag);
 		floatDivideByZeroError(frag);
+		arraySizeNegativeError(frag);
 		
 		return frag;
 	}
@@ -118,6 +121,15 @@ public class RunTime {
 		frag.add(Jump, GENERAL_RUNTIME_ERROR);
 	}
 	
+	private void arraySizeNegativeError(ASMCodeFragment frag) {
+		String arraySizeNegativeMessage = "$$errors-array-size-negative";
+		
+		frag.add(DLabel, arraySizeNegativeMessage);
+		frag.add(DataS, "array size cannot be negative");
+		frag.add(Label, ARRAY_SIZE_NEGATIVE_ERROR);
+		frag.add(PushD, arraySizeNegativeMessage);
+		frag.add(Jump, GENERAL_RUNTIME_ERROR);
+	}
 	
 	public static ASMCodeFragment getEnvironment() {
 		RunTime rt = new RunTime();

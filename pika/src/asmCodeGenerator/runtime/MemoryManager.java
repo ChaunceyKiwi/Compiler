@@ -85,8 +85,6 @@ public class MemoryManager {
 	// the only tunable parameter.
 	private static final int MEM_MANAGER_WASTE_TOLERANCE = MMGR_TWICE_TAG_SIZE + 8;
 
-	
-
 	// this code should reside on the executable pathway before the application.
 	public static ASMCodeFragment codeForInitialization() {
 		ASMCodeFragment frag = new ASMCodeFragment(GENERATES_VOID);
@@ -114,7 +112,6 @@ public class MemoryManager {
 		return frag;
 	}
 
-
 	// this goes after the main program, so that MEM_MANAGER_HEAP is after all other variable declarations.
 	public static ASMCodeFragment codeForAfterApplication() {
 		ASMCodeFragment frag = new ASMCodeFragment(GENERATES_VOID);	
@@ -133,8 +130,6 @@ public class MemoryManager {
 		
 		return frag;
 	}
-	
-	
 	
 	private static ASMCodeFragment subroutineMakeTags() {
 		ASMCodeFragment frag = new ASMCodeFragment(GENERATES_VOID);
@@ -351,8 +346,6 @@ public class MemoryManager {
 			
 		return frag;
 	}
-
-
 
 	// [... block] -> [...]
 	// pre: block is in Free Block List.

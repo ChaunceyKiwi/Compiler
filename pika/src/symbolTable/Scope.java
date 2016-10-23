@@ -33,7 +33,6 @@ public class Scope {
 		super();
 		this.baseScope = (baseScope == null) ? this : baseScope;
 		this.symbolTable = new SymbolTable();
-		
 		this.allocator = allocator;
 		allocator.saveState();
 	}
@@ -97,7 +96,7 @@ public class Scope {
 		private static NullScope instance = new NullScope();
 
 		private NullScope() {
-			super(	new PositiveMemoryAllocator(MemoryAccessMethod.NULL_ACCESS, "", 0),
+			super(new PositiveMemoryAllocator(MemoryAccessMethod.NULL_ACCESS, "", 0),
 					null);
 		}
 		public String toString() {
@@ -122,5 +121,4 @@ public class Scope {
 		log.severe("variable " + token.getLexeme() + 
 				" used outside of any scope at " + token.getLocation());
 	}
-
 }

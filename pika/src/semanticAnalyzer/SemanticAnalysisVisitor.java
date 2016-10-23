@@ -203,7 +203,9 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			for(int i = 0; i < numOfChildren - 1; i++){
 				types[i] = node.child(i).getType();
 			}
-			node.setType(new ArrayType(types[0]));
+			ArrayType arrayType = new ArrayType(types[0]);
+			arrayType.setLength(node.nChildren());
+			node.setType(arrayType);
 		}
 	}
 	

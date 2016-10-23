@@ -11,19 +11,50 @@ public class ArrayType implements Type{
 	public final static int startsForSubTypeSize = startsForStatus + status_size;
 	public final static int startsForLength = startsForSubTypeSize + subTypeSize_size;
 	public final static int startsForElement = startsForLength + length_size;
+	public final static int header_size = startsForElement;
+	
+	private final static int typeIdentifier = 7;
+	private final Boolean immutability;
+	private final Boolean subtype_is_reference;
+	private final Boolean is_deleted;
+	private final Boolean permanent;
+	private int length;
 	
 	private Type subType;
 	
+    public int getLength() {
+//        assert(length >= 0);
+        return length;
+    }
+    
+    public void setLength(int len){
+    	length = len;
+    }
+    
 	public ArrayType(){
 		subType = null;
+		immutability = false;
+		subtype_is_reference = false;
+		is_deleted = false;
+		permanent = false;
+		length = -1;
 	}
 	
 	public ArrayType(Type type){
 		subType = type;
+		immutability = false;
+		subtype_is_reference = type.isReferenceType();
+		is_deleted = false;
+		permanent = false;
+		length = -1;
 	}
 	
 	public Type getSubType(){
 		return subType;
+	}
+	
+	public int getTypeIdentifier(){
+		return typeIdentifier;
 	}
 	
 	public boolean match(Type type){
@@ -34,10 +65,36 @@ public class ArrayType implements Type{
 			return subType.match(arrayType.getSubType());
 		}
 	}
+	
+	public int getStatus() {
+		int status = 0;
+		
+		// bit 0 immutability
+		if(immutability)
+			status += 1;
+		
+		// bit 1 sub_type_is_reference
+		if(subtype_is_reference)
+			status += 2;
+		
+		// bit 2 is_deleted
+		if(is_deleted)
+			status += 4;
+		
+		// bit 3 permanent
+		if(permanent)
+			status += 8;
+		
+		return status;
+	}
 
 	public int getSize() {
 		// return the size of the reference type
 		return 4; 
+	}
+	
+	public int getHeaderSize(){
+		return header_size;
 	}
 
 	public String infoString() {

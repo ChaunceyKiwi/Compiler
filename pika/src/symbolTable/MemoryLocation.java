@@ -21,12 +21,15 @@ public class MemoryLocation {
 	public MemoryAccessMethod getAccessor() {
 		return accessor;
 	}
+	
 	public String getBaseAddress() {
 		return baseAddress;
 	}
+	
 	public int getOffset() {
 		return offset;
 	}
+	
 	public String toString() {
 		return "M-" + accessor + "(" + baseAddress + ") +" + offset + "  ";
 	}
@@ -43,6 +46,7 @@ public class MemoryLocation {
 	public static MemoryLocation nullInstance() {
 		return NullMemoryLocation.getInstance();
 	}
+	
 	private static class NullMemoryLocation extends MemoryLocation {
 		private static final int NULL_OFFSET = 0;
 		private static NullMemoryLocation instance=null;

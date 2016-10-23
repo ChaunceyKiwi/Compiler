@@ -19,6 +19,7 @@ public class NegativeMemoryAllocator implements MemoryAllocator {
 		this.minOffset = startingOffset;
 		this.bookmarks = new ArrayList<Integer>();
 	}
+	
 	public NegativeMemoryAllocator(MemoryAccessMethod accessor,String baseAddress) {
 		this(accessor, baseAddress, 0);
 	}

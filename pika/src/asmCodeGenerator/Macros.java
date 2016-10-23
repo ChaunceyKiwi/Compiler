@@ -5,29 +5,41 @@ import asmCodeGenerator.codeStorage.ASMCodeFragment;
 
 public class Macros {
 	
+	// need a (PushI num) at the front as operand
 	public static void addITo(ASMCodeFragment frag, String location) {
 		loadIFrom(frag, location);
 		frag.add(Add);
 		storeITo(frag, location);
 	}
+	
+	// increment integer
 	public static void incrementInteger(ASMCodeFragment frag, String location) {
 		frag.add(PushI, 1);
 		addITo(frag, location);
 	}
+	
+	// decrement integer
 	public static void decrementInteger(ASMCodeFragment frag, String location) {
 		frag.add(PushI, -1);
 		addITo(frag, location);
 	}
 	
+	// from address to value
+	// make sure address is right
 	public static void loadIFrom(ASMCodeFragment frag, String location) {
 		frag.add(PushD, location);
 		frag.add(LoadI);
 	}
+	
+	// store value to the address
+	// make sure a (PushI num) at the front as operand
 	public static void storeITo(ASMCodeFragment frag, String location) {
 		frag.add(PushD, location);
 		frag.add(Exchange);
 		frag.add(StoreI);
 	}
+	
+	
 	public static void declareI(ASMCodeFragment frag, String variableName) {
 		frag.add(DLabel, variableName);
 		frag.add(DataZ, 4);

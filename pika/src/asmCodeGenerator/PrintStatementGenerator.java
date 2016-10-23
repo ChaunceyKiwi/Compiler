@@ -31,8 +31,7 @@ public class PrintStatementGenerator {
 				code.append(childCode);
 			}else if(child.getType() instanceof ArrayType){
 				appendPrintCodeForArrayType(child);
-			}
-			else {
+			}else {
 				appendPrintCode(child);
 			}
 		}
@@ -50,26 +49,69 @@ public class PrintStatementGenerator {
 	private void appendPrintCodeForArrayType(ParseNode node) {
 		ArrayType type = (ArrayType)node.getType();
 		String format = printFormat(type.getSubType());
+		int subTypeSize = type.getSubType().getSize();
 		
+		Labeller labeller = new Labeller("-print-array");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String loopBeginLabel = labeller.newLabel("-loop-begin-");
+		String loopEndLabel = labeller.newLabel("-loop-end-");
+		String loopCounterLabel = labeller.newLabel("-loop-counter-");
+		
+		code.add(Label, beginLabel);
+		// get the address of the array
 		code.append(visitor.removeValueCode(node));
+		code.add(Duplicate);
+		
+		// store the length of array as the loop counter
+		code.append(ArrayBuilder.pushArrayLength(labeller));
+		createLoopCounter(loopCounterLabel);
+		
+		// get the address of first element
+		code.add(PushI, ArrayType.header_size);
+		code.add(Add);
+		
 		code.add(PushD, RunTime.OPEN_SQUARE_BRACKET_PRINT_FORMAT);
 		code.add(Printf);
-		for(int i = 1; i <= 3; i++){
-			if(i > 1){
-				code.add(PushD, RunTime.SEPARATOR_PRINT_FORMAT);
-				code.add(Printf);
-				code.add(PushD, RunTime.SPACE_PRINT_FORMAT);
-				code.add(Printf);
-			}
-			code.add(Duplicate);
-			code.add(PushI, 4 * i);
-			code.add(Add);
-			code.add(LoadI);
-			code.add(PushD, format);
-			code.add(Printf);
-		}
+		code.add(Label, loopBeginLabel);
+		code.add(PushD, loopCounterLabel);
+		code.add(LoadI);
+		
+		// Counter counts from length to 0
+		// If counter is 0, then exit loop
+		code.add(JumpFalse, loopEndLabel);
+		
+		code.add(Duplicate);	
+		code.add(PushI, subTypeSize);
+		code.add(Add);
+		code.add(Exchange);		
+		code.add(LoadI);
+		code.add(PushD, format);
+		code.add(Printf);
+		
+		// Decrement the counter by 1
+		Macros.decrementInteger(code, loopCounterLabel);
+		
+		// Print separator and space if not last element
+		code.add(PushD, loopCounterLabel);
+		code.add(LoadI);
+		code.add(JumpFalse, loopEndLabel);
+		code.add(PushD, RunTime.SEPARATOR_PRINT_FORMAT);
+		code.add(Printf);
+		code.add(PushD, RunTime.SPACE_PRINT_FORMAT);
+		code.add(Printf);
+		
+		code.add(Jump, loopBeginLabel);
+		code.add(Label, loopEndLabel);
 		code.add(PushD, RunTime.CLOSE_SQUARE_BRACKET_PRINT_FORMAT);
 		code.add(Printf);
+		code.add(Label, endLabel);
+	}
+	
+	private void createLoopCounter(String label){
+		code.add(DLabel, label);
+		code.add(DataI, 0);
+		Macros.storeITo(code, label);
 	}
 	
 	private void convertToStringIfBoolean(ParseNode node) {

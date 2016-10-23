@@ -1,21 +1,27 @@
 package asmCodeGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+
 
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import asmCodeGenerator.codeStorage.ASMOpcode;
+import asmCodeGenerator.ArrayBuilder;
+import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
 import lexicalAnalyzer.Lextant;
 import lexicalAnalyzer.Punctuator;
 import parseTree.*;
 import parseTree.nodeTypes.*;
-import semanticAnalyzer.types.PrimitiveType;
-import semanticAnalyzer.types.Type;
+import semanticAnalyzer.types.*;
 import symbolTable.Binding;
 import symbolTable.Scope;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
+
+
 
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
@@ -34,10 +40,11 @@ public class ASMCodeGenerator {
 	public ASMCodeFragment makeASM() {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 		
+		code.append( MemoryManager.codeForInitialization());
 		code.append( RunTime.getEnvironment() );
 		code.append( globalVariableBlockASM() );
 		code.append( programASM() );
-//		code.append( MemoryManager.codeForAfterApplication() );
+		code.append( MemoryManager.codeForAfterApplication() );
 		
 		return code;
 	}
@@ -56,7 +63,7 @@ public class ASMCodeGenerator {
 		
 		code.add(Label, RunTime.MAIN_PROGRAM_LABEL);
 		code.append( programCode());
-		code.add(Halt );
+		code.add(Halt);
 		
 		return code;
 	}
@@ -66,7 +73,6 @@ public class ASMCodeGenerator {
 		return visitor.removeRootCode(root);
 	}
 
-
 	protected class CodeVisitor extends ParseNodeVisitor.Default {
 		private Map<ParseNode, ASMCodeFragment> codeMap;
 		ASMCodeFragment code;
@@ -74,7 +80,6 @@ public class ASMCodeGenerator {
 		public CodeVisitor() {
 			codeMap = new HashMap<ParseNode, ASMCodeFragment>();
 		}
-
 
 		////////////////////////////////////////////////////////////////////
         // Make the field "code" refer to a new fragment of different sorts.
@@ -169,6 +174,7 @@ public class ASMCodeGenerator {
 				code.append(childCode);
 			}
 		}
+		
 		public void visitLeave(BlockStatementNode node) {
 			newVoidCode(node);
 			for(ParseNode child : node.getChildren()) {
@@ -184,16 +190,19 @@ public class ASMCodeGenerator {
 			newVoidCode(node);
 			new PrintStatementGenerator(code, this).generate(node);	
 		}
+		
 		public void visit(NewlineNode node) {
 			newVoidCode(node);
 			code.add(PushD, RunTime.NEWLINE_PRINT_FORMAT);
 			code.add(Printf);
 		}
+		
 		public void visit(TabNode node) {
 			newVoidCode(node);
 			code.add(PushD, RunTime.TAB_PRINT_FORMAT);
 			code.add(Printf);
 		}
+		
 		public void visit(SpaceNode node) {
 			newVoidCode(node);
 			code.add(PushD, RunTime.SPACE_PRINT_FORMAT);
@@ -226,20 +235,24 @@ public class ASMCodeGenerator {
 		
 		public void visitLeave(ExpressionListNode node){
 			newValueCode(node);
-			Labeller label = new Labeller("exprList");
-			int subTypeSize = 4;
-			String labelOfArray = label.newLabel("array");
-			code.add(DLabel, labelOfArray);
+			Labeller labeller = new Labeller("exprList");
+			ArrayType arrayType = (ArrayType)(node.getType());			
 			
-			for(int i = 0; i < node.nChildren() - 1; i++){
-				code.add(PushD, labelOfArray);
-				code.add(PushI, subTypeSize*(i+1));
-				code.add(Add);
-				ASMCodeFragment value = removeValueCode(node.child(i));
-				code.append(value);
-				code.add(StoreI);
+			ASMCodeFragment lengthOfArray = new ASMCodeFragment(
+					ASMCodeFragment.CodeType.GENERATES_VALUE);
+			lengthOfArray.add(PushI, arrayType.getLength());
+			
+			
+			List <ASMCodeFragment> arrayElement = new ArrayList<>();
+			for(int i = 0; i < node.nChildren();i++){
+				arrayElement.add(removeValueCode(node.child(i)));
 			}
-			code.add(PushD, labelOfArray);
+			
+			newValueCode(node);
+			
+			code.append(ArrayBuilder.arrayCreation(arrayType, lengthOfArray, labeller));
+			code.append(ArrayBuilder.arrayInitialization(arrayType, arrayElement, 
+					opcodeForStore(arrayType.getSubType()), labeller));
 		}
 		
 		public void visitLeave(IfStatementNode node){
