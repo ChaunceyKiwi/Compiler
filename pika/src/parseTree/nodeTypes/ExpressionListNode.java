@@ -10,7 +10,7 @@ public class ExpressionListNode extends ParseNode {
 
 	public ExpressionListNode(Token token) {
 		super(token);
-		assert(token instanceof LextantToken);
+//		assert(token instanceof LextantToken);
 	}
 
 	public ExpressionListNode(ParseNode node) {
@@ -26,17 +26,6 @@ public class ExpressionListNode extends ParseNode {
 	public LextantToken lextantToken() {
 		return (LextantToken)token;
 	}	
-	
-	
-//	////////////////////////////////////////////////////////////
-//	// convenience factory
-//	
-//	public static ExpressionListNode withChildren(Token token, ParseNode left, ParseNode right) {
-//		ExpressionListNode node = new ExpressionListNode(token);
-//		node.appendChild(left);
-//		node.appendChild(right);
-//		return node;
-//	}
 	
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors

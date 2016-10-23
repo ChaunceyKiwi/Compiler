@@ -760,12 +760,19 @@ public class Parser {
 		return new CharConstantNode(previouslyRead);
 	}
 	
-	private ParseNode parseString(){
+	private ParseNode parseString(){	
 		if(!startsString(nowReading)){
 			return syntaxErrorNode("string constant");
 		}
+		
+		ParseNode expressionListNode = new ExpressionListNode(nowReading);
+		
+		for(CharToken charToken : ((StringToken)nowReading).getCharTokens()) {
+			expressionListNode.appendChild(new CharConstantNode(charToken));
+		}
 		readToken();
-		return new StringConstantNode(previouslyRead);
+		
+		return expressionListNode;
 	}
 	
 	

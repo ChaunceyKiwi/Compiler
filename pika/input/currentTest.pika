@@ -1,5 +1,5 @@
 exec {
-    var a := [[[^a^,^b^,^c^],[^A^,^A^,^A^],[^R^,^P^,^G^],[^B^,^B^,^B^],[^a^,^b^,^c^]],[[^a^,^b^,^c^],[^A^,^A^,^A^],[^R^,^P^,^G^],[^B^,^B^,^B^],[^a^,^b^,^c^]],[[^a^,^b^,^c^],[^A^,^A^,^A^],[^R^,^P^,^G^],[^B^,^B^,^B^],[^a^,^b^,^c^]],[[^a^,^b^,^c^],[^A^,^A^,^A^],[^R^,^P^,^G^],[^B^,^B^,^B^],[^a^,^b^,^c^]]].
+    var a := [["How are you", "are you ok", "I miss you"],["How are you", "are you ok", "I miss you"],["How are you", "are you ok", "I miss you"]].
 
     print a.
 }
