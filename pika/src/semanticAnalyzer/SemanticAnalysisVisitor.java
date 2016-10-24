@@ -163,22 +163,21 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		List<Type> childTypes = Arrays.asList(right.getType());
 		
 		Lextant operator = operatorFor(node);
-		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
-		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();
-		
-		// the operands of operation should obey the rule in the signature
-		if(signatures.accepts(childTypes)) {
-			node.setType(resultType);
-		}
-		else {
-			typeCheckError(node, childTypes);
-			node.setType(PrimitiveType.ERROR);
-		}
+		setTypeAndCheckSignature(node, operator, childTypes);
 	}
 	
 	private Lextant operatorFor(UnaryOperatorNode node) {
 		LextantToken token = (LextantToken) node.getToken();
 		return token.getLextant();
+	}
+	
+	
+	public void visitLeave(CopyOperatorNode node) {
+		assert node.nChildren() == 1;
+		ParseNode right = node.child(0);
+		List<Type> childTypes = Arrays.asList(right.getType());
+		
+		setTypeAndCheckSignature(node, CopyOperatorNode.ARRAY_CLONE, childTypes);
 	}
 	
 	@Override
@@ -202,9 +201,6 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		ParseNode left  = node.child(0);
 		ParseNode right = node.child(1);
 		List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
-		
-		// Check if the operands of operation obey the rule in the signature
-		// And set type as the result type of signature
 		setTypeAndCheckSignature(node, NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, childTypes);
 	}
 	
@@ -301,6 +297,8 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	///////////////////////////////////////////////////////////////////////////
 	// Common used semantic function
 	
+	// Check if the operands of operation obey the rule in the signature
+	// And set type as the result type of signature
 	private void setTypeAndCheckSignature(ParseNode node, Object operator, List<Type> childTypes){
 		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
 		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();

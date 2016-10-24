@@ -7,8 +7,7 @@ import parseTree.nodeTypes.TabNode;
 import parseTree.nodeTypes.PrintStatementNode;
 import parseTree.nodeTypes.SpaceNode;
 import semanticAnalyzer.types.PrimitiveType;
-import semanticAnalyzer.types.ArrayType;
-import semanticAnalyzer.types.Type;
+import semanticAnalyzer.types.*;
 import asmCodeGenerator.ASMCodeGenerator.CodeVisitor;
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import asmCodeGenerator.runtime.RunTime;
@@ -49,6 +48,10 @@ public class PrintStatementGenerator {
 	
 	private void appendPrintCodeForArrayType(ArrayType type) {
 		Type subType = type.getSubType();
+		if(subType instanceof TypeVariable){
+			subType = ((TypeVariable)subType).getSubtype();
+		}
+			
 		int subTypeSize = type.getSubType().getSize();
 		
 		Labeller labeller = new Labeller("-print-array");
@@ -63,7 +66,7 @@ public class PrintStatementGenerator {
 		code.add(Duplicate);
 		
 		// store the length of array as the loop counter
-		code.append(ArrayBuilder.pushArrayLength(labeller));
+		code.append(ArrayBuilder.pushArrayLength(labeller.newLabel("-push-array-length")));
 		createLoopCounter(loopCounterLabel);
 		
 		// get the address of first element

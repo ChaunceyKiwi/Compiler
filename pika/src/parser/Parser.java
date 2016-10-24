@@ -627,10 +627,10 @@ public class Parser {
 			ParseNode arrayLength = parseExpression();
 			return NewArrayTypeLengthNode.withChildren(newToken, arrayType, arrayLength);
 		}else if(nowReading.isLextant(Keyword.COPY)){
-			Token unaryToken = nowReading;			
+			Token copyToken = nowReading;			
 			readToken();
 			ParseNode expressionNode = parseExpression();
-			return UnaryOperatorNode.withChildren(unaryToken, expressionNode);
+			return CopyOperatorNode.withChildren(copyToken, expressionNode);
 		}else
 			return syntaxErrorNode("Neither new nor clone for arrayExpression");
 	}

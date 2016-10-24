@@ -11,6 +11,9 @@ public interface ParseNodeVisitor {
 	void visitEnter(UnaryOperatorNode node);
 	void visitLeave(UnaryOperatorNode node);
 	
+	void visitEnter(CopyOperatorNode node);
+	void visitLeave(CopyOperatorNode node);
+	
 	void visitEnter(BlockStatementNode node);
 	void visitLeave(BlockStatementNode node);
 
@@ -46,6 +49,7 @@ public interface ParseNodeVisitor {
 	
 	void visitEnter(WhileStatementNode node);
 	void visitLeave(WhileStatementNode node);
+	
 	
 	
 	// leaf nodes: visitLeaf only
@@ -88,6 +92,13 @@ public interface ParseNodeVisitor {
 			defaultVisitEnter(node);
 		}
 		public void visitLeave(UnaryOperatorNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		public void visitEnter(CopyOperatorNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(CopyOperatorNode node) {
 			defaultVisitLeave(node);
 		}
 		

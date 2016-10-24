@@ -15,6 +15,10 @@ public final class TypeVariable implements Type {
 		return 0;
 	}
 	
+	public Type getSubtype(){
+		return subType;
+	}
+	
 	public String infoString(){
 		return "";
 	}

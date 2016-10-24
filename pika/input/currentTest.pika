@@ -1,5 +1,5 @@
 exec {
-    var a := new [int] (3 + 4).
-
-    print a.
+    var a := "Nice to meet you".
+    const B := clone a.
+    print B.
 }

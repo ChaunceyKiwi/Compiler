@@ -547,6 +547,14 @@ public class ASMCodeGenerator {
 			}			
 		}
 		
+		public void visitLeave(CopyOperatorNode node){
+			newValueCode(node);
+			Labeller labeller = new Labeller("-copy-operator-");
+			ArrayType arrayType = (ArrayType)node.getType();
+			ASMCodeFragment arg1 = removeValueCode(node.child(0));
+			code.append(ArrayBuilder.arrayClone(arrayType, arg1, labeller));
+		}
+		
 		private ASMOpcode opcodeForOperator(Lextant lextant, Type typeOfLeftChild, Type typeOfRightChild) {
 			assert(lextant instanceof Punctuator);
 			Punctuator punctuator = (Punctuator)lextant;

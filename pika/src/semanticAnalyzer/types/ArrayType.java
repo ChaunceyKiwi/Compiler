@@ -55,7 +55,10 @@ public class ArrayType implements Type{
 	}
 	
 	public Type getSubType(){
-		return subType;
+		if(subType instanceof TypeVariable)
+			return ((TypeVariable)subType).getSubtype();
+		else
+			return subType;
 	}
 	
 	public int getTypeIdentifier(){
