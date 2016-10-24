@@ -241,18 +241,23 @@ public class ASMCodeGenerator {
 			ASMCodeFragment lengthOfArray = new ASMCodeFragment(
 					ASMCodeFragment.CodeType.GENERATES_VALUE);
 			lengthOfArray.add(PushI, arrayType.getLength());
-			
-			
+				
 			List <ASMCodeFragment> arrayElement = new ArrayList<>();
 			for(int i = 0; i < node.nChildren();i++){
 				arrayElement.add(removeValueCode(node.child(i)));
 			}
-			
-			newValueCode(node);
-			
+						
 			code.append(ArrayBuilder.arrayCreation(arrayType, lengthOfArray, labeller));
 			code.append(ArrayBuilder.arrayInitialization(arrayType, arrayElement, 
 					opcodeForStore(arrayType.getSubType()), labeller));
+		}
+		
+		public void visitLeave(NewArrayTypeLengthNode node){
+			newValueCode(node);
+			Labeller labeller = new Labeller("empty-array-creation");
+			ArrayType arrayType = (ArrayType)(node.getType());
+			ASMCodeFragment lengthOfArray = removeValueCode(node.child(1));
+			code.append(ArrayBuilder.arrayCreation(arrayType, lengthOfArray, labeller));
 		}
 		
 		public void visitLeave(IfStatementNode node){

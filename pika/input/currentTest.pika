@@ -1,5 +1,5 @@
 exec {
-    var a := [["How are you", "are you ok", "I miss you"],["How are you", "are you ok", "I miss you"],["How are you", "are you ok", "I miss you"]].
+    var a := new [int] (3 + 4).
 
     print a.
 }

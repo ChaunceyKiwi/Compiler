@@ -38,6 +38,9 @@ public class ASMCodeChunk {
 		ASMInstruction instruction = new ASMInstruction(opcode);
 		instructions.add(instruction);
 	}
+	public void add(ASMInstruction instruction) {
+		instructions.add(instruction);
+	}
 	
 	static private String terminator = System.getProperty("line.separator");
 	public String toString() {

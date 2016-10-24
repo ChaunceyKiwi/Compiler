@@ -2,8 +2,7 @@ package semanticAnalyzer.signatures;
 
 import java.util.List;
 
-import semanticAnalyzer.types.PrimitiveType;
-import semanticAnalyzer.types.Type;
+import semanticAnalyzer.types.*;
 
 // immutable
 public class FunctionSignature {
@@ -52,7 +51,7 @@ public class FunctionSignature {
 			return false;
 		}
 		
-		for(int i=0; i<paramTypes.length; i++) {
+		for(int i = 0; i < paramTypes.length; i++) {
 			if(!assignableTo(paramTypes[i], types.get(i))) {
 				return false;
 			}
@@ -63,8 +62,11 @@ public class FunctionSignature {
 	private boolean assignableTo(Type variableType, Type valueType) {
 		if(valueType == PrimitiveType.ERROR && ALL_TYPES_ACCEPT_ERROR_TYPES) {
 			return true;
-		}	
-		return variableType.equals(valueType);
+		}else if(variableType instanceof ArrayType && valueType instanceof ArrayType) {
+			return ((ArrayType)variableType).match((ArrayType)valueType);
+		}else {
+			return variableType.match(valueType);
+		}		
 	}
 	
 	// Null object pattern

@@ -1,6 +1,5 @@
 package asmCodeGenerator;
-import asmCodeGenerator.codeStorage.ASMCodeFragment;
-import asmCodeGenerator.codeStorage.ASMOpcode;
+import asmCodeGenerator.codeStorage.*;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
 import semanticAnalyzer.types.ArrayType;
@@ -23,11 +22,12 @@ public class ArrayBuilder {
 		String lengthLabel = labeller.newLabel("array-creation-length");
 		String endLabel = labeller.newLabel("array-creation-end");
 		
+		
 		code.add(Label, beginLabel);
 		code.add(Label, getLengthLabel);
-		
+			
 		// Length of array cannot be negative
-		code.append(lengthOfArray);
+		appendLengthCode(code, lengthOfArray);
 		code.add(Duplicate);
 		code.add(JumpNeg, RunTime.ARRAY_SIZE_NEGATIVE_ERROR);
 		
@@ -65,7 +65,7 @@ public class ArrayBuilder {
 		// add length of array
 		code.add(Label, lengthLabel);
 		code.add(Duplicate);
-		code.add(PushI, arrayType.getLength());
+		appendLengthCode(code, lengthOfArray);
 		code.add(Exchange);
 		Macros.writeIOffset(code, 12);
 		
@@ -105,5 +105,13 @@ public class ArrayBuilder {
 		Macros.readIOffset(code, 12);
 		
 		return code;
+	}
+	
+	public static void appendLengthCode(ASMCodeFragment code, ASMCodeFragment lengthOfArray){
+		for(ASMCodeChunk chunks : lengthOfArray.chunks){
+			for(ASMInstruction instrs: chunks.instructions){
+				code.add(instrs);
+			}
+		}
 	}
 }

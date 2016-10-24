@@ -7,7 +7,8 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class NewArrayTypeLengthNode extends ParseNode {
-
+	public final static String EMPTY_ARRAY_CREATION = "empty_array_creation";
+	
 	public NewArrayTypeLengthNode(Token token) {
 		super(token);
 		assert(token instanceof LextantToken);

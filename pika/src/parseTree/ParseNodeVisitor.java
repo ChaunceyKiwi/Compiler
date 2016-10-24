@@ -35,6 +35,12 @@ public interface ParseNodeVisitor {
 	void visitEnter(ExpressionListNode node);
 	void visitLeave(ExpressionListNode node);
 	
+	void visitEnter(NewArrayTypeLengthNode node);
+	void visitLeave(NewArrayTypeLengthNode node);
+	
+	void visitEnter(TypeNode node);
+	void visitLeave(TypeNode node);
+	
 	void visitEnter(IfStatementNode node);
 	void visitLeave(IfStatementNode node);
 	
@@ -131,6 +137,22 @@ public interface ParseNodeVisitor {
 			defaultVisitEnter(node);
 		}
 		public void visitLeave(ExpressionListNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		public void visitEnter(NewArrayTypeLengthNode node) {
+			defaultVisitEnter(node);
+		}
+		
+		public void visitLeave(NewArrayTypeLengthNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		public void visitEnter(TypeNode node) {
+			defaultVisitEnter(node);
+		}
+		
+		public void visitLeave(TypeNode node) {
 			defaultVisitLeave(node);
 		}
 		

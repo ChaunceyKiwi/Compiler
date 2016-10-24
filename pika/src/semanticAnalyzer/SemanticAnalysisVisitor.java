@@ -142,18 +142,11 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		ParseNode left  = node.child(0);
 		ParseNode right = node.child(1);
 		List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
-		
 		Lextant operator = operatorFor(node);
-		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
-		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();
 		
-		// the operands of operation should obey the rule in the signature
-		if(signatures.accepts(childTypes)) {
-			node.setType(resultType);
-		}else {
-			typeCheckError(node, childTypes);
-			node.setType(PrimitiveType.ERROR);
-		}
+		// Check if the operands of operation obey the rule in the signature
+		// And set type as the result type of signature
+		setTypeAndCheckSignature(node, operator, childTypes);
 	}
 	
 	private Lextant operatorFor(BinaryOperatorNode node) {
@@ -201,6 +194,32 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 				types[i] = node.child(i).getType();
 			}
 			node.setType(new ArrayType(types[0], node.nChildren()));
+		}
+	}
+	
+	public void visitLeave(NewArrayTypeLengthNode node){
+		assert node.nChildren() == 2;
+		ParseNode left  = node.child(0);
+		ParseNode right = node.child(1);
+		List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
+		
+		// Check if the operands of operation obey the rule in the signature
+		// And set type as the result type of signature
+		setTypeAndCheckSignature(node, NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, childTypes);
+	}
+	
+	public void visitLeave(TypeNode node){
+		assert node.nChildren() <= 1;
+		// Primitive Type
+		if(node.nChildren() == 0) {
+			assert node.getType() instanceof PrimitiveType;
+			String primitiveTypeLexeme = node.getToken().getLexeme();
+			PrimitiveType primitiveType = PrimitiveType.returnPrimitiveTypeByLexeme(primitiveTypeLexeme);
+			node.setType(primitiveType);
+		// Array Type
+		}else if(node.nChildren() == 1){
+			assert node.child(0) instanceof TypeNode;
+			node.setType(new ArrayType(node.child(0).getType()));
 		}
 	}
 	
@@ -277,6 +296,22 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		Scope scope = identifierNode.getLocalScope();
 		Binding binding = scope.createBinding(identifierNode, type, ismutable);
 		identifierNode.setBinding(binding);
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	// Common used semantic function
+	
+	private void setTypeAndCheckSignature(ParseNode node, Object operator, List<Type> childTypes){
+		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
+		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();
+
+		// the operands of operation should obey the rule in the signature
+		if(signatures.accepts(childTypes)) {
+			node.setType(resultType);
+		}else {
+			typeCheckError(node, childTypes);
+			node.setType(PrimitiveType.ERROR);
+		}
 	}
 	
 	///////////////////////////////////////////////////////////////////////////

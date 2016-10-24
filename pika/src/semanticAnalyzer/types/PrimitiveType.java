@@ -1,4 +1,5 @@
 package semanticAnalyzer.types;
+import lexicalAnalyzer.Keyword;
 
 public enum PrimitiveType implements Type {
 	BOOLEAN(1),
@@ -37,5 +38,15 @@ public enum PrimitiveType implements Type {
 	
 	public boolean isReferenceType() {
 		return false;
+	}
+	
+	public static PrimitiveType returnPrimitiveTypeByLexeme(String Lexeme){		
+		if(Lexeme.equals(Keyword.BOOLEAN.getLexeme())) return PrimitiveType.BOOLEAN;
+		else if(Lexeme.equals(Keyword.CHARACTER.getLexeme())) return PrimitiveType.CHARACTER;
+		else if(Lexeme.equals(Keyword.STRING.getLexeme())) return PrimitiveType.STRING;
+		else if(Lexeme.equals(Keyword.INTEGER.getLexeme())) return PrimitiveType.INTEGER;
+		else if(Lexeme.equals(Keyword.FLOATING.getLexeme())) return PrimitiveType.FLOATING;
+//		else if(Lexeme.equals(RATIONAL)) return PrimitiveType.RATIONAL;
+		else return PrimitiveType.ERROR;
 	}
 }

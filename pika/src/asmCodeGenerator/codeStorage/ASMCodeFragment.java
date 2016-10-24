@@ -75,6 +75,9 @@ public class ASMCodeFragment {
 	public void add(ASMOpcode opcode) {
 		lastChunk().add(opcode);
 	}
+	public void add(ASMInstruction instr) {
+		lastChunk().add(instr);
+	}
 	
 //	public void remove()
 
