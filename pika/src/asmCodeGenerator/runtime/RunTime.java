@@ -25,9 +25,11 @@ public class RunTime {
 	public static final String GENERAL_RUNTIME_ERROR = "$$general-runtime-error";
 	public static final String INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR = "$$i-divide-by-zero";
 	public static final String FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR = "$$f-divide-by-zero";
+	
+	// Array Related
 	public static final String ARRAY_SIZE_NEGATIVE_ERROR = "$$array-size-negative";
-
-
+	public static final String ARRAY_INDEX_NEGATIVE_ERROR = "$$array-index-negative";
+	public static final String ARRAY_INDEX_EXCEED_BOUND_ERROR = "$$array-index-exceed-bound";
 	
 	private ASMCodeFragment environmentASM() {
 		ASMCodeFragment result = new ASMCodeFragment(GENERATES_VOID);
@@ -85,6 +87,8 @@ public class RunTime {
 		integerDivideByZeroError(frag);
 		floatDivideByZeroError(frag);
 		arraySizeNegativeError(frag);
+		arrayIndexNegativeError(frag);
+		arrayIndexExceedBoundError(frag);
 		
 		return frag;
 	}
@@ -128,6 +132,26 @@ public class RunTime {
 		frag.add(DataS, "array size cannot be negative");
 		frag.add(Label, ARRAY_SIZE_NEGATIVE_ERROR);
 		frag.add(PushD, arraySizeNegativeMessage);
+		frag.add(Jump, GENERAL_RUNTIME_ERROR);
+	}
+	
+	private void arrayIndexNegativeError(ASMCodeFragment frag) {
+		String arrayIndexNegativeMessage = "$$errors-array-index-negative";
+		
+		frag.add(DLabel, arrayIndexNegativeMessage);
+		frag.add(DataS, "array index cannot be negative");
+		frag.add(Label, ARRAY_INDEX_NEGATIVE_ERROR);
+		frag.add(PushD, arrayIndexNegativeMessage);
+		frag.add(Jump, GENERAL_RUNTIME_ERROR);
+	}
+	
+	private void arrayIndexExceedBoundError(ASMCodeFragment frag) {
+		String arrayIndexExceedBoundMessage = "$$errors-index-exceed-bound";
+		
+		frag.add(DLabel, arrayIndexExceedBoundMessage);
+		frag.add(DataS, "index exceed array length");
+		frag.add(Label, ARRAY_INDEX_EXCEED_BOUND_ERROR);
+		frag.add(PushD, arrayIndexExceedBoundMessage);
 		frag.add(Jump, GENERAL_RUNTIME_ERROR);
 	}
 	

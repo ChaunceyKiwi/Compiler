@@ -171,6 +171,15 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		return token.getLextant();
 	}
 	
+	public void visitLeave(ArrayIndexingNode node){
+		assert node.nChildren() == 2;
+		ParseNode left  = node.child(0);
+		ParseNode right = node.child(1);
+		List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
+		
+		setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
+	}
+	
 	
 	public void visitLeave(CopyOperatorNode node) {
 		assert node.nChildren() == 1;

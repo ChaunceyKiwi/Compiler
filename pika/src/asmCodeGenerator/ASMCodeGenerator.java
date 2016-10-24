@@ -27,7 +27,6 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 public class ASMCodeGenerator {
 	ParseNode root;
 	
-
 	public static ASMCodeFragment generate(ParseNode syntaxTree) {
 		ASMCodeGenerator codeGenerator = new ASMCodeGenerator(syntaxTree);
 		return codeGenerator.makeASM();
@@ -553,6 +552,16 @@ public class ASMCodeGenerator {
 			ArrayType arrayType = (ArrayType)node.getType();
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			code.append(ArrayBuilder.arrayClone(arrayType, arg1, labeller));
+		}
+		
+		public void visitLeave(ArrayIndexingNode node){
+			newValueCode(node);
+			Labeller labeller = new Labeller("-array-indexing-");
+			ArrayType arrayType = (ArrayType)node.child(0).getType();
+			ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
+			ASMCodeFragment index = removeValueCode(node.child(1));
+			
+			code.append(ArrayBuilder.arrayElementAtIndex(arrayType, arrayAddress, index, labeller));
 		}
 		
 		private ASMOpcode opcodeForOperator(Lextant lextant, Type typeOfLeftChild, Type typeOfRightChild) {

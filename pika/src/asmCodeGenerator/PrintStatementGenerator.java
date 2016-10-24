@@ -28,19 +28,37 @@ public class PrintStatementGenerator {
 			if(child instanceof NewlineNode || child instanceof SpaceNode || child instanceof TabNode) {
 				ASMCodeFragment childCode = visitor.removeVoidCode(child);
 				code.append(childCode);
-			}else if(child.getType() instanceof ArrayType){
+			}else if(child.getType() instanceof ArrayType) {
 				code.append(visitor.removeValueCode(child));
 				appendPrintCodeForArrayType((ArrayType)child.getType());
-			}else {
+			}else if(child.getType() instanceof TypeVariable) {
+				Type subtype = ((TypeVariable)child.getType()).getSubtype();
+				if(subtype instanceof ArrayType) {
+					code.append(visitor.removeValueCode(child));
+					code.add(LoadI);
+					appendPrintCodeForArrayType((ArrayType)subtype);
+				}else if(subtype instanceof PrimitiveType) {
+					appendPrintCode(child);
+				}
+			}else{
 				appendPrintCode(child);
 			}
 		}
 	}
 
 	private void appendPrintCode(ParseNode node) {
-		String format = printFormat(node.getType());
-
-		code.append(visitor.removeValueCode(node));
+		String format;
+		
+		if(node.getType() instanceof TypeVariable) {
+			format = printFormat(((TypeVariable)node.getType()).getSubtype());
+			code.append(visitor.removeValueCode(node));
+			code.add(LoadI);
+		}else {
+			format = printFormat(node.getType());
+			code.append(visitor.removeValueCode(node));
+		}
+		
+		
 		convertToStringIfBoolean(node);
 		code.add(PushD, format);
 		code.add(Printf);

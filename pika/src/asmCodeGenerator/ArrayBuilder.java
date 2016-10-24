@@ -22,7 +22,6 @@ public class ArrayBuilder {
 		String lengthLabel = labeller.newLabel("array-creation-length");
 		String endLabel = labeller.newLabel("array-creation-end");
 		
-		
 		code.add(Label, beginLabel);
 		code.add(Label, getLengthLabel);
 			
@@ -252,6 +251,55 @@ public class ArrayBuilder {
 		code.add(Label, endElementCopyLabel);
 		code.add(Label, endLabel);
 		
+		return code;
+	}
+	
+	public static ASMCodeFragment arrayElementAtIndex(ArrayType arrayType, 
+			ASMCodeFragment arrayAddress, ASMCodeFragment index, Labeller labeller){
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		String beginLabel = labeller.newLabel("array-index-begin");
+		String beginFetchingLabel = labeller.newLabel("array-index-fetching-begin");
+		String endFetchingLabel = labeller.newLabel("array-index-fetching-end");
+		String endLabel = labeller.newLabel("array-index-end");
+		String memoryPointer = labeller.newLabel("memory-pointer");
+		
+		code.add(Label, beginLabel);
+		code.append(arrayAddress);
+		code.add(Duplicate);
+				
+		// store array index in memory pointer
+		code.append(index);
+		code.add(Duplicate);
+		memoryPointer(code, memoryPointer);
+		
+		// negative index check
+		code.add(Duplicate);
+		code.add(JumpNeg, RunTime.ARRAY_INDEX_NEGATIVE_ERROR);
+		
+		// index boundry check
+		code.add(Exchange);
+		code.append(pushArrayLength(labeller.newLabel("array-length")));
+		code.add(Exchange);
+		code.add(Subtract);
+		code.add(JumpPos, beginFetchingLabel);
+		code.add(Jump, RunTime.ARRAY_INDEX_EXCEED_BOUND_ERROR);
+		code.add(Label, beginFetchingLabel);
+		
+		// get the address of first element
+		code.add(PushI, arrayType.getHeaderSize());
+		code.add(Add);
+		
+		// get the address offset to first element
+		code.add(PushD, memoryPointer);
+		code.add(LoadI);
+		code.add(PushI, arrayType.getSubType().getSize());
+		code.add(Multiply);	
+		
+		// return the address of ith element of original array
+		code.add(Add);
+		
+		code.add(Label, endFetchingLabel);
+		code.add(Label, endLabel);
 		return code;
 	}
 	

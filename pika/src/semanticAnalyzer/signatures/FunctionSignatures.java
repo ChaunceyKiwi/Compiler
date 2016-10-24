@@ -8,6 +8,7 @@ import java.util.Map;
 import asmCodeGenerator.codeStorage.ASMOpcode;
 import lexicalAnalyzer.Punctuator;
 import semanticAnalyzer.types.*;
+import parseTree.nodeTypes.ArrayIndexingNode;
 import parseTree.nodeTypes.CopyOperatorNode;
 import parseTree.nodeTypes.NewArrayTypeLengthNode;
 
@@ -165,5 +166,11 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 				new FunctionSignature(CopyOperatorNode.ARRAY_CLONE,
 					new ArrayType(typeVariable), new ArrayType(typeVariable))
 		);
+		
+		new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING,
+				new FunctionSignature(ArrayIndexingNode.ARRAY_INDEXING,
+						new ArrayType(typeVariable), PrimitiveType.INTEGER, typeVariable)
+		);
+		
 	}
 }

@@ -7,7 +7,8 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class ArrayIndexingNode extends ParseNode {
-
+	public final static String ARRAY_INDEXING = "array_indexing";
+	
 	public ArrayIndexingNode(Token token) {
 		super(token);
 		assert(token instanceof LextantToken);

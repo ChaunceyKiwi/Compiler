@@ -39,7 +39,6 @@ public class Macros {
 		frag.add(StoreI);
 	}
 	
-	
 	public static void declareI(ASMCodeFragment frag, String variableName) {
 		frag.add(DLabel, variableName);
 		frag.add(DataZ, 4);

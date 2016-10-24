@@ -1,5 +1,4 @@
 exec {
-    var a := "Nice to meet you".
-    const B := clone a.
-    print B.
+    var a := ["String0", "String1", "String2", "String3"].
+    print a[2].
 }
