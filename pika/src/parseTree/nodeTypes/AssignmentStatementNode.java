@@ -7,6 +7,7 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class AssignmentStatementNode extends ParseNode {
+	public final static String VALUE_ASSIGNMENT = "value_assignment";
 
 	public AssignmentStatementNode(Token token) {
 		super(token);

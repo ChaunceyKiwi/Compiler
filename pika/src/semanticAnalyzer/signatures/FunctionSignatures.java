@@ -9,6 +9,7 @@ import asmCodeGenerator.codeStorage.ASMOpcode;
 import lexicalAnalyzer.Punctuator;
 import semanticAnalyzer.types.*;
 import parseTree.nodeTypes.ArrayIndexingNode;
+import parseTree.nodeTypes.AssignmentStatementNode;
 import parseTree.nodeTypes.CopyOperatorNode;
 import parseTree.nodeTypes.NewArrayTypeLengthNode;
 
@@ -170,6 +171,11 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING,
 				new FunctionSignature(ArrayIndexingNode.ARRAY_INDEXING,
 						new ArrayType(typeVariable), PrimitiveType.INTEGER, typeVariable)
+		);
+		
+		new FunctionSignatures(AssignmentStatementNode.VALUE_ASSIGNMENT,
+				new FunctionSignature(AssignmentStatementNode.VALUE_ASSIGNMENT,
+						typeVariable, typeVariable, typeVariable)
 		);
 		
 	}

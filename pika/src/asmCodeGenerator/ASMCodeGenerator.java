@@ -347,6 +347,9 @@ public class ASMCodeGenerator {
 		}
 		
 		private ASMOpcode opcodeForStore(Type type) {
+			if(type instanceof TypeVariable)
+				type = ((TypeVariable)type).getSubtype();
+			
 			if(type == PrimitiveType.INTEGER) {
 				return StoreI;
 			}
@@ -555,7 +558,7 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitLeave(ArrayIndexingNode node){
-			newValueCode(node);
+			newAddressCode(node);
 			Labeller labeller = new Labeller("-array-indexing-");
 			ArrayType arrayType = (ArrayType)node.child(0).getType();
 			ASMCodeFragment arrayAddress = removeValueCode(node.child(0));

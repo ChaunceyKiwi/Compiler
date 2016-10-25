@@ -99,23 +99,15 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	// assignment
 	@Override
 	public void visitLeave(AssignmentStatementNode node) {
-		// If identifier has already been declared in current scope, use it.
-		// Otherwise try parent's scope until root. Report error is still null
-		// This is performed in the visit of identifier node.
+		assert node.nChildren() == 2;
 		
-		IdentifierNode identifier = (IdentifierNode) node.child(0);
+		ParseNode target = node.child(0);
 		ParseNode initializer = node.child(1);
+		Type identifierType = target.getType();
 		Type assignmentType = initializer.getType();
-		Type identifierType = identifier.getType();
-		
-		// The assignment type should be the same as the identifier type
-		if(assignmentType == identifierType) {
-			node.setType(assignmentType);
-			identifier.setType(assignmentType);
-		}else{
-			assignmentStatementTypeDifferError(node, 
-					Arrays.asList(assignmentType, identifierType));
-		}
+		List<Type> childTypes = Arrays.asList(identifierType, assignmentType);
+
+		setTypeAndCheckSignature(node, AssignmentStatementNode.VALUE_ASSIGNMENT, childTypes);
 	}
 	
 	public void visitLeave(IfStatementNode node){

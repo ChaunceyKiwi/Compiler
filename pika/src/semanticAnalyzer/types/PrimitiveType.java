@@ -33,7 +33,12 @@ public enum PrimitiveType implements Type {
 	}
 	
 	public boolean match(Type type) {
-		return this == type;
+		if(type instanceof PrimitiveType)
+			return this == type;
+		else if(type instanceof TypeVariable)
+			return this == ((TypeVariable)type).getSubtype();
+		else
+			return false;
 	}
 	
 	public boolean isReferenceType() {

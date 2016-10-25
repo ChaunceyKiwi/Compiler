@@ -3,8 +3,7 @@ package parseTree;
 import java.util.ArrayList;
 import java.util.List;
 
-import semanticAnalyzer.types.PrimitiveType;
-import semanticAnalyzer.types.Type;
+import semanticAnalyzer.types.*;
 import symbolTable.Binding;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
@@ -45,6 +44,8 @@ public class ParseNode {
 		this.type = type;
 	}
 	public Type getType() {
+		if(type instanceof TypeVariable)
+			type = ((TypeVariable)type).getSubtype();
 		return type;
 	}
 

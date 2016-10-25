@@ -162,8 +162,7 @@ public class Parser {
 			return syntaxErrorNode("assignment statement");
 		}
 		Token assignmentStatementToken = nowReading;
-//		readToken();	
-		ParseNode identifier = parseIdentifier();
+		ParseNode identifier = parseTarget();
 		expect(Punctuator.ASSIGN);
 		ParseNode initializer = parseExpression();
 		expect(Punctuator.TERMINATOR);
@@ -172,7 +171,27 @@ public class Parser {
 	}
 	
 	private boolean startsAssignmentStatement(Token token) {
-		return startsIdentifier(token);
+		return startsTarget(token);
+	}
+	
+	private ParseNode parseTarget() {
+		if(!startsTarget(nowReading)) {
+			return syntaxErrorNode("target");
+		}
+		
+		if(startsArrayIndexingExpression(nowReading)) {
+			return parseArrayIndexingExpression();
+		}else if (startsParenthesesExpression(nowReading)){
+			return parseParenthesesExpression();
+		}else{
+			return parseIdentifier();
+		}
+	}
+	
+	private boolean startsTarget(Token token) {
+		return	startsIdentifier(token) || 
+				startsArrayIndexingExpression(token) ||
+				startsParenthesesExpression(token);
 	}
 	
 	///////////////////////////////////////////////////////////
