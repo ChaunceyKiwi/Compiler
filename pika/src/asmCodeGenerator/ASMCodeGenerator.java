@@ -87,6 +87,7 @@ public class ASMCodeGenerator {
 		
 		return code;
 	}
+	
 	private ASMCodeFragment programCode() {
 		CodeVisitor visitor = new CodeVisitor();
 		root.accept(visitor);
@@ -206,12 +207,22 @@ public class ASMCodeGenerator {
 		}
 
 		///////////////////////////////////////////////////////////////////////////
-		// statements and declarations
+		// Statements
+		/*
+		 *	Statements -> PrintStatement
+		 *				  Declatation
+		 *			      AssignmentStatement
+		 *			      IfStatement 
+		 *			      WhileStatement
+		 */
+		
+		// PrintStatement
 		public void visitLeave(PrintStatementNode node) {
 			newVoidCode(node);
 			new PrintStatementGenerator(code, this).generate(node);	
 		}
 		
+		// Declatation
 		public void visitLeave(DeclarationNode node) {
 			newVoidCode(node);
 			Type type = node.getType();
@@ -223,6 +234,7 @@ public class ASMCodeGenerator {
 			code.add(opcodeForStore(type));
 		}
 		
+		// AssignmentStatement
 		public void visitLeave(AssignmentStatementNode node) {
 			newVoidCode(node);
 			Type type = node.getType();
@@ -234,39 +246,12 @@ public class ASMCodeGenerator {
 			code.add(opcodeForStore(type));
 		}
 		
-		public void visitLeave(ExpressionListNode node){
-			newValueCode(node);
-			Labeller labeller = new Labeller("exprList");
-			ArrayType arrayType = (ArrayType)(node.getType());			
-			
-			ASMCodeFragment lengthOfArray = new ASMCodeFragment(
-					ASMCodeFragment.CodeType.GENERATES_VALUE);
-			lengthOfArray.add(PushI, arrayType.getLength());
-				
-			List <ASMCodeFragment> arrayElement = new ArrayList<>();
-			for(int i = 0; i < node.nChildren();i++){
-				arrayElement.add(removeValueCode(node.child(i)));
-			}
-						
-			code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
-			code.append(ArrayHelper.arrayInitialization(arrayType, arrayElement, 
-					opcodeForStore(arrayType.getSubType()), labeller));
-		}
-		
-		public void visitLeave(NewArrayTypeLengthNode node){
-			newValueCode(node);
-			Labeller labeller = new Labeller("empty-array-creation");
-			ArrayType arrayType = (ArrayType)(node.getType());
-			ASMCodeFragment lengthOfArray = removeValueCode(node.child(1));
-			code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
-		}
-		
+		// IfStatement
 		public void visitLeave(IfStatementNode node){
 			newVoidCode(node);
 			ASMCodeFragment booleanResult = removeValueCode(node.child(0));	
 			ASMCodeFragment trueDoStatement = removeBlockCode(node.child(1));
-			
-			Labeller labeller = new Labeller("if");
+			Labeller labeller = new Labeller("-if-statement-");
 			String beginLabel = labeller.newLabel("begin");
 			String falseDoStatementLabel = labeller.newLabel("false-do-expression");
 			String endOfIfStatementLabel = labeller.newLabel("end-of-if-statement");
@@ -284,12 +269,12 @@ public class ASMCodeGenerator {
 			code.add(Label, endOfIfStatementLabel);
 		}
 		
+		// WhileStatement
 		public void visitLeave(WhileStatementNode node){
 			newVoidCode(node);
 			ASMCodeFragment booleanResult = removeValueCode(node.child(0));	
 			ASMCodeFragment trueDoStatement = removeBlockCode(node.child(1));
-			
-			Labeller labeller = new Labeller("while");
+			Labeller labeller = new Labeller("-while-statement-");
 			String beginLabel = labeller.newLabel("begin");
 			String endOfWhileStatementLabel = labeller.newLabel("end-of-while-statement");
 			
@@ -301,52 +286,15 @@ public class ASMCodeGenerator {
 			code.add(Label, endOfWhileStatementLabel);
 		}
 		
-		public void visitLeave(TypeCastingNode node){
-			Type originalType = node.child(0).getType();
-			Type targetType   = node.child(1).getType();
-						
-			newValueCode(node);
-			ASMCodeFragment value = removeValueCode(node.child(0));
-			code.append(value);
-			Labeller labeller = new Labeller("casting");
-			
-			// Followed castings are allowed
-			// Char -> Int , Int -> Char
-			// Int -> Float , Float -> Int
-			// Int -> Bool, Char -> Bool
-			// selfType -> selfType
-			
-			if(originalType == targetType) 
-				return;
-			else if(originalType == PrimitiveType.FLOATING && targetType == PrimitiveType.INTEGER)
-				code.add(ConvertI);
-			else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.FLOATING)
-				code.add(ConvertF);
-			else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.BOOLEAN){
-				String trueLabel  = labeller.newLabel("true");
-				String joinLabel  = labeller.newLabel("join");
-				
-				code.add(JumpTrue, trueLabel);
-				code.add(PushI, 0);
-				code.add(Jump, joinLabel);
-				code.add(Label, trueLabel);
-				code.add(PushI, 1);
-				code.add(Label, joinLabel);		
-			}else if(originalType == PrimitiveType.CHARACTER && targetType == PrimitiveType.BOOLEAN){
-				String trueLabel  = labeller.newLabel("true");
-				String joinLabel  = labeller.newLabel("join");
-				
-				code.add(JumpTrue, trueLabel);
-				code.add(PushI, 0);
-				code.add(Jump, joinLabel);
-				code.add(Label, trueLabel);
-				code.add(PushI, 1);
-				code.add(Label, joinLabel);		
-			}else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.CHARACTER){
-				code.add(PushI, 127);
-				code.add(BTAnd);
-			}
-		}
+		
+		///////////////////////////////////////////////////////////////////////////
+		// Expressions
+		
+		/* Expression -> BinaryExpression
+		 * 			  -> UnaryExpression
+		 * 			  -> TypeCastingExpression
+		 * 			  -> ArrayIndexingExpression 
+		 */
 		
 		///////////////////////////////////////////////////////////////////////////
 		// expressions
@@ -531,10 +479,6 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitLeave(UnaryOperatorNode node) {
-			visitUnaryOperatorNode(node);
-		}
-		
-		private void visitUnaryOperatorNode(UnaryOperatorNode node) {
 			Lextant operator = node.getOperator();
 
 			// Comparison Operator
@@ -546,12 +490,41 @@ public class ASMCodeGenerator {
 			}			
 		}
 		
-		public void visitLeave(CopyOperatorNode node){
+		public void visitLeave(TypeCastingNode node){
 			newValueCode(node);
-			Labeller labeller = new Labeller("-copy-operator-");
-			ArrayType arrayType = (ArrayType)node.getType();
-			ASMCodeFragment arg1 = removeValueCode(node.child(0));
-			code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
+			Type originalType = node.child(0).getType();
+			Type targetType   = node.child(1).getType();
+						
+			Labeller labeller = new Labeller("-casting-");
+			String trueLabel  = labeller.newLabel("true");
+			String joinLabel  = labeller.newLabel("join");
+			ASMCodeFragment value = removeValueCode(node.child(0));
+			code.append(value);
+			
+			if(originalType == targetType) 
+				return;
+			else if(originalType == PrimitiveType.FLOATING && targetType == PrimitiveType.INTEGER)
+				code.add(ConvertI);
+			else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.FLOATING)
+				code.add(ConvertF);
+			else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.BOOLEAN) {
+				code.add(JumpTrue, trueLabel);
+				code.add(PushI, 0);
+				code.add(Jump, joinLabel);
+				code.add(Label, trueLabel);
+				code.add(PushI, 1);
+				code.add(Label, joinLabel);		
+			}else if(originalType == PrimitiveType.CHARACTER && targetType == PrimitiveType.BOOLEAN) {				
+				code.add(JumpTrue, trueLabel);
+				code.add(PushI, 0);
+				code.add(Jump, joinLabel);
+				code.add(Label, trueLabel);
+				code.add(PushI, 1);
+				code.add(Label, joinLabel);		
+			}else if(originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.CHARACTER) {
+				code.add(PushI, 127);
+				code.add(BTAnd);
+			}
 		}
 		
 		public void visitLeave(ArrayIndexingNode node){
@@ -563,8 +536,51 @@ public class ASMCodeGenerator {
 			code.append(ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, labeller, reg1));
 		}
 		
-		///////////////////////////////////////////// 
+		///////////////////////////////////////////////////////////////////////////
+		// ArrayExpressions
+		
+		/* ArrayExpressions -> NewArrayTypeLengthExpression
+		 * 			  		-> ExpressionList
+		 * 			  		-> CloneExpression 
+		 */
+		
+		public void visitLeave(NewArrayTypeLengthNode node){
+			newValueCode(node);
+			Labeller labeller = new Labeller("empty-array-creation");
+			ArrayType arrayType = (ArrayType)(node.getType());
+			ASMCodeFragment lengthOfArray = removeValueCode(node.child(1));
+			code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
+		}
+		
+		public void visitLeave(ExpressionListNode node){
+			newValueCode(node);
+			Labeller labeller = new Labeller("-expr-list-");
+			ArrayType arrayType = (ArrayType)(node.getType());	
+			List <ASMCodeFragment> arrayElement = new ArrayList<>();
+			
+			ASMCodeFragment lengthOfArray = new ASMCodeFragment(
+					ASMCodeFragment.CodeType.GENERATES_VALUE);
+			lengthOfArray.add(PushI, arrayType.getLength());
+				
+			for(int i = 0; i < node.nChildren();i++){
+				arrayElement.add(removeValueCode(node.child(i)));
+			}
+			code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
+			code.append(ArrayHelper.arrayInitialization(arrayType, arrayElement, 
+					opcodeForStore(arrayType.getSubType()), labeller));
+		}
+
+		public void visitLeave(CopyOperatorNode node){
+			newValueCode(node);
+			Labeller labeller = new Labeller("-copy-operator-");
+			ArrayType arrayType = (ArrayType)node.getType();
+			ASMCodeFragment arg1 = removeValueCode(node.child(0));
+			code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
+		}
+		
+		///////////////////////////////////////////////////////////////////////////
 		// Helper Function
+		
 		private ASMOpcode opcodeForStore(Type type) {
 			if(type instanceof TypeVariable)
 				type = ((TypeVariable)type).getSubtype();

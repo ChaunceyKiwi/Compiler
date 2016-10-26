@@ -1,5 +1,5 @@
 exec {
-    var a := [^g^,^t^,^b^].
+    var a := [3.3 / 5.8 | int].
 
     print a.
 }
