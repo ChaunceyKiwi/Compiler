@@ -1,6 +1,9 @@
 exec {
-    var a := 3 // 4.
-    var b := a //// 4.
+    var a := [[1,2,3],[4,5,6]].
 
-    print b.
+    release a.
+
+    var b := [[3,2,1],[8,5,2]].
+
+    print a.
 }

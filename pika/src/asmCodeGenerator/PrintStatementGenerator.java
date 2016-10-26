@@ -30,15 +30,13 @@ public class PrintStatementGenerator {
 				code.append(childCode);
 			}else if(child.getType() instanceof ArrayType) {
 				code.append(visitor.removeValueCode(child));
-				code.append(ArrayHelper.appendPrintCodeForArrayType(
-						(ArrayType)child.getType()));
+				code.append(ArrayHelper.arrayPrint((ArrayType)child.getType()));
 			}else if(child.getType() instanceof TypeVariable) {
 				Type subtype = ((TypeVariable)child.getType()).getSubtype();
 				if(subtype instanceof ArrayType) {
 					code.append(visitor.removeValueCode(child));
 					code.add(LoadI);
-					code.append(ArrayHelper.appendPrintCodeForArrayType(
-							(ArrayType)subtype));
+					code.append(ArrayHelper.arrayPrint((ArrayType)subtype));
 				}else if(subtype instanceof PrimitiveType) {
 					appendPrintCode(child);
 				}

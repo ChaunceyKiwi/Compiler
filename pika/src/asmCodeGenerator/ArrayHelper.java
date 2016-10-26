@@ -307,7 +307,7 @@ public class ArrayHelper {
 		return code;
 	}
 	
-	public static ASMCodeFragment appendPrintCodeForArrayType(ArrayType type) {
+	public static ASMCodeFragment arrayPrint(ArrayType type) {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 		
 		Type subType = type.getSubType();
@@ -352,7 +352,7 @@ public class ArrayHelper {
 		code.add(LoadI);
 		
 		if(subType.isReferenceType()) {
-			code.append(appendPrintCodeForArrayType((ArrayType)subType));
+			code.append(arrayPrint((ArrayType)subType));
 		}
 		else {
 			String format = PrintStatementGenerator.printFormat(subType);
@@ -381,18 +381,86 @@ public class ArrayHelper {
 		return code;
 	}
 	
+	public static ASMCodeFragment arrayRelease(ArrayType arrayType) {
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+		code.add(Duplicate);
+		
+		Type subType = arrayType.getSubType();
+		if(subType instanceof TypeVariable){
+			subType = ((TypeVariable)subType).getSubtype();
+		}
+			
+		int subTypeSize = arrayType.getSubType().getSize();
+		Labeller labeller = new Labeller("-release-array-");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String loopBeginLabel = labeller.newLabel("-loop-begin-");
+		String loopEndLabel = labeller.newLabel("-loop-end-");
+		String loopCounterLabel = labeller.newLabel("-loop-counter-");
+		
+		code.add(Label, beginLabel);
+		// get the address of the array
+		code.add(Duplicate);
+		
+		// store the length of array as the loop counter
+		code.append(pushArrayLength(labeller.newLabel("-push-array-length")));
+		createLoopCounter(code, loopCounterLabel);
+		
+		// get the address of first element
+		code.add(PushI, ArrayType.header_size);
+		code.add(Add);
+		
+		code.add(Label, loopBeginLabel);
+		code.add(PushD, loopCounterLabel);
+		code.add(LoadI);
+		
+		// Counter counts from length to 0
+		// If counter is 0, then exit loop
+		code.add(JumpFalse, loopEndLabel);
+		
+		code.add(Duplicate);	
+		code.add(PushI, subTypeSize);
+		code.add(Add);
+		code.add(Exchange);		
+		code.add(LoadI);
+		
+		if(subType.isReferenceType()) {
+			code.append(arrayRelease((ArrayType)subType));
+		}
+		else {
+			code.add(Pop);
+		}
+		// Decrement the counter by 1
+		Macros.decrementInteger(code, loopCounterLabel);
+		
+		code.add(Jump, loopBeginLabel);
+		code.add(Label, loopEndLabel);
+		code.add(Pop);
+		code.add(Call, MemoryManager.MEM_MANAGER_DEALLOCATE);
+		code.add(Label, endLabel);
+		
+		return code;
+	}
+	
+	
 	private static void createLoopCounter(ASMCodeFragment code, String label){
 		code.add(DLabel, label);
 		code.add(DataI, 0);
 		Macros.storeITo(code, label);
 	}
 	
+	
 	public static ASMCodeFragment pushArrayLength(String label){
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-		
 		code.add(Label, label);
 		Macros.readIOffset(code, 12);
-		
+		return code;
+	}
+	
+	public static ASMCodeFragment pushSubtypeSize(String label){
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);		
+		code.add(Label, label);
+		Macros.readIOffset(code, 8);
 		return code;
 	}
 }

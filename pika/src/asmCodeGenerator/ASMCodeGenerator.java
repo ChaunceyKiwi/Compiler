@@ -291,7 +291,9 @@ public class ASMCodeGenerator {
 		public void visitLeave(ReleaseStatementNode node){
 			newVoidCode(node);
 			code.append(removeValueCode(node.child(0)));
+			ArrayType arrayType = (ArrayType)node.child(0).getType(); 
 			
+			code.append(ArrayHelper.arrayRelease(arrayType));
 		}
 		
 		
