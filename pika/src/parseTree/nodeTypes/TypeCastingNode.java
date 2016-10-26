@@ -7,6 +7,7 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class TypeCastingNode extends ParseNode {
+	public final static String TYPE_CASTING = "type_casting";
 
 	public TypeCastingNode(Token token) {
 		super(token);

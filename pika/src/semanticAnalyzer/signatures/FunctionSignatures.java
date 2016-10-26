@@ -12,6 +12,7 @@ import parseTree.nodeTypes.ArrayIndexingNode;
 import parseTree.nodeTypes.AssignmentStatementNode;
 import parseTree.nodeTypes.CopyOperatorNode;
 import parseTree.nodeTypes.NewArrayTypeLengthNode;
+import parseTree.nodeTypes.TypeCastingNode;
 
 
 public class FunctionSignatures extends ArrayList<FunctionSignature> {
@@ -175,6 +176,23 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		
 		/////////////////////////////////////////////////////////////////////////////////
 		// Other Operator
+		new FunctionSignatures(TypeCastingNode.TYPE_CASTING,
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						PrimitiveType.CHARACTER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						PrimitiveType.INTEGER, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER),
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						PrimitiveType.INTEGER, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						PrimitiveType.INTEGER, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						typeVariable, typeVariable, typeVariable)
+		);
+		
 		new FunctionSignatures(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION,
 				new FunctionSignature(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION,
 					new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable))

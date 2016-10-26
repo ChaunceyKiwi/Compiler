@@ -1,15 +1,12 @@
 package asmCodeGenerator;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-
-
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import asmCodeGenerator.codeStorage.ASMOpcode;
 import asmCodeGenerator.FunctionStorage;
-import asmCodeGenerator.ArrayBuilder;
+import asmCodeGenerator.ArrayHelper;
 import asmCodeGenerator.RationalHelper;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
@@ -26,13 +23,13 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
 	ParseNode root;
-	String reg1ForFunction = "reg1-func";
-	String reg2ForFunction = "reg2-func";
-	String reg1 = "reg1-system";
-	String reg2 = "reg2-system";
-	String reg3 = "reg3-system";
-	String reg4 = "reg4-system";
-	String GCDCalculation = "GCDCalculation"; 
+	static String reg1ForFunction = "reg1-func";
+	static String reg2ForFunction = "reg2-func";
+	static String reg1 = "reg1-system";
+	static String reg2 = "reg2-system";
+	static String reg3 = "reg3-system";
+	static String reg4 = "reg4-system";
+	static String GCDCalculation = "GCDCalculation"; 
 	
 	public static ASMCodeFragment generate(ParseNode syntaxTree) {
 		ASMCodeGenerator codeGenerator = new ASMCodeGenerator(syntaxTree);
@@ -57,7 +54,6 @@ public class ASMCodeGenerator {
 		return code;
 	}
 	
-	
 	private ASMCodeFragment globalVariableBlockASM() {
 		assert root.hasScope();
 		Scope scope = root.getScope();
@@ -72,6 +68,7 @@ public class ASMCodeGenerator {
 		createRegister(code, reg2);
 		createRegister(code, reg3);
 		createRegister(code, reg4);
+		
 		return code;
 	}
 	
@@ -210,51 +207,30 @@ public class ASMCodeGenerator {
 
 		///////////////////////////////////////////////////////////////////////////
 		// statements and declarations
-
 		public void visitLeave(PrintStatementNode node) {
 			newVoidCode(node);
 			new PrintStatementGenerator(code, this).generate(node);	
 		}
 		
-		public void visit(NewlineNode node) {
-			newVoidCode(node);
-			code.add(PushD, RunTime.NEWLINE_PRINT_FORMAT);
-			code.add(Printf);
-		}
-		
-		public void visit(TabNode node) {
-			newVoidCode(node);
-			code.add(PushD, RunTime.TAB_PRINT_FORMAT);
-			code.add(Printf);
-		}
-		
-		public void visit(SpaceNode node) {
-			newVoidCode(node);
-			code.add(PushD, RunTime.SPACE_PRINT_FORMAT);
-			code.add(Printf);
-		}
-		
 		public void visitLeave(DeclarationNode node) {
 			newVoidCode(node);
+			Type type = node.getType();
 			ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
 			ASMCodeFragment rvalue = removeValueCode(node.child(1));
-			
+		
 			code.append(lvalue);
 			code.append(rvalue);
-			
-			Type type = node.getType();
 			code.add(opcodeForStore(type));
 		}
 		
 		public void visitLeave(AssignmentStatementNode node) {
 			newVoidCode(node);
+			Type type = node.getType();
 			ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
 			ASMCodeFragment rvalue = removeValueCode(node.child(1));
 			
 			code.append(lvalue);
 			code.append(rvalue);
-			
-			Type type = node.getType();
 			code.add(opcodeForStore(type));
 		}
 		
@@ -272,8 +248,8 @@ public class ASMCodeGenerator {
 				arrayElement.add(removeValueCode(node.child(i)));
 			}
 						
-			code.append(ArrayBuilder.arrayCreation(arrayType, lengthOfArray, labeller));
-			code.append(ArrayBuilder.arrayInitialization(arrayType, arrayElement, 
+			code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
+			code.append(ArrayHelper.arrayInitialization(arrayType, arrayElement, 
 					opcodeForStore(arrayType.getSubType()), labeller));
 		}
 		
@@ -282,7 +258,7 @@ public class ASMCodeGenerator {
 			Labeller labeller = new Labeller("empty-array-creation");
 			ArrayType arrayType = (ArrayType)(node.getType());
 			ASMCodeFragment lengthOfArray = removeValueCode(node.child(1));
-			code.append(ArrayBuilder.arrayCreation(arrayType, lengthOfArray, labeller));
+			code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
 		}
 		
 		public void visitLeave(IfStatementNode node){
@@ -372,36 +348,6 @@ public class ASMCodeGenerator {
 			}
 		}
 		
-		private ASMOpcode opcodeForStore(Type type) {
-			if(type instanceof TypeVariable)
-				type = ((TypeVariable)type).getSubtype();
-			
-			if(type == PrimitiveType.INTEGER) {
-				return StoreI;
-			}
-			if(type == PrimitiveType.BOOLEAN) {
-				return StoreC;
-			}
-			if(type == PrimitiveType.FLOATING){
-				return StoreF;
-			}
-			if(type == PrimitiveType.CHARACTER){
-				return StoreC;
-			}
-			if(type == PrimitiveType.STRING){
-				return StoreI;
-			}
-			if(type == PrimitiveType.RATIONAL){
-				return StoreI;
-			}
-			if(type.isReferenceType()){
-				return StoreI;
-			}
-			assert false: "Type " + type + " unimplemented in opcodeForStore()";
-			return null;
-		}
-
-
 		///////////////////////////////////////////////////////////////////////////
 		// expressions
 		public void visitLeave(BinaryOperatorNode node) {
@@ -566,15 +512,13 @@ public class ASMCodeGenerator {
 		
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);
-			Type typeOfLeftChild = node.child(0).getType();
-			Type typeOfRightChild = node.child(1).getType();
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));
 			
 			code.append(arg1);
 			code.append(arg2);
 			
-			ASMOpcode opcode = opcodeForOperator(node.getOperator(), typeOfLeftChild, typeOfRightChild);
+			ASMOpcode opcode = (ASMOpcode)node.getSignature().getVariant();
 			if(opcode == Divide){
 				code.add(Duplicate);
 				code.add(JumpFalse, RunTime.INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR);
@@ -583,7 +527,7 @@ public class ASMCodeGenerator {
 				code.add(JumpFZero, RunTime.FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR);
 			}
 			
-			code.add(opcode);	// type-dependent! (opcode is different for floats and for ints)
+			code.add(opcode);
 		}
 		
 		public void visitLeave(UnaryOperatorNode node) {
@@ -607,7 +551,7 @@ public class ASMCodeGenerator {
 			Labeller labeller = new Labeller("-copy-operator-");
 			ArrayType arrayType = (ArrayType)node.getType();
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
-			code.append(ArrayBuilder.arrayClone(arrayType, arg1, labeller));
+			code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
 		}
 		
 		public void visitLeave(ArrayIndexingNode node){
@@ -616,57 +560,69 @@ public class ASMCodeGenerator {
 			ArrayType arrayType = (ArrayType)node.child(0).getType();
 			ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
 			ASMCodeFragment index = removeValueCode(node.child(1));
-			code.append(ArrayBuilder.arrayElementAtIndex(arrayType, arrayAddress, index, labeller));
+			code.append(ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, labeller, reg1));
 		}
 		
-		private ASMOpcode opcodeForOperator(Lextant lextant, Type typeOfLeftChild, Type typeOfRightChild) {
-			assert(lextant instanceof Punctuator);
-			Punctuator punctuator = (Punctuator)lextant;
-			
-			if(typeOfLeftChild == PrimitiveType.INTEGER && typeOfRightChild == PrimitiveType.INTEGER ){
-				switch(punctuator) {
-				case ADD: 	   		return Add;				// type-dependent!
-				case SUBTRACT:      return Subtract;
-				case MULTIPLY: 		return Multiply;		// type-dependent!
-				case DIVIDE:        return Divide;
-				default:
-					assert false : "unimplemented operator in opcodeForOperator";
-				}
-			}else if(typeOfLeftChild == PrimitiveType.FLOATING && typeOfRightChild == PrimitiveType.FLOATING ){
-				switch(punctuator) {
-				case ADD: 	   		return FAdd;				// type-dependent!
-				case SUBTRACT:      return FSubtract;
-				case MULTIPLY: 		return FMultiply;		// type-dependent!
-				case DIVIDE:        return FDivide;
-				default:
-					assert false : "unimplemented operator in opcodeForOperator";
-				}
-			}
+		///////////////////////////////////////////// 
+		// Helper Function
+		private ASMOpcode opcodeForStore(Type type) {
+			if(type instanceof TypeVariable)
+				type = ((TypeVariable)type).getSubtype();
+			if(type == PrimitiveType.INTEGER) 	return StoreI;
+			if(type == PrimitiveType.BOOLEAN)	return StoreC;
+			if(type == PrimitiveType.FLOATING)	return StoreF;
+			if(type == PrimitiveType.CHARACTER)	return StoreC;
+			if(type == PrimitiveType.STRING) 	return StoreI;
+			if(type == PrimitiveType.RATIONAL)  return StoreI;
+			if(type.isReferenceType()) 			return StoreI;
+			assert false: "Type " + type + " unimplemented in opcodeForStore()";
 			return null;
 		}
-
+		
 		///////////////////////////////////////////////////////////////////////////
 		// leaf nodes (ErrorNode not necessary)
 		public void visit(BooleanConstantNode node) {
 			newValueCode(node);
 			code.add(PushI, node.getValue() ? 1 : 0);
 		}
+		
 		public void visit(IdentifierNode node) {
 			newAddressCode(node);
 			Binding binding = node.getBinding();
 			binding.generateAddress(code);
-		}		
+		}	
+		
 		public void visit(IntegerConstantNode node) {
 			newValueCode(node);
 			code.add(PushI, node.getValue());
 		}
+		
 		public void visit(FloatingConstantNode node){
 			newValueCode(node);
 			code.add(PushF, node.getValue());
 		}
+		
 		public void visit(CharConstantNode node){
 			newValueCode(node);
 			code.add(PushI, node.getValue());
+		}
+		
+		public void visit(NewlineNode node) {
+			newVoidCode(node);
+			code.add(PushD, RunTime.NEWLINE_PRINT_FORMAT);
+			code.add(Printf);
+		}
+		
+		public void visit(TabNode node) {
+			newVoidCode(node);
+			code.add(PushD, RunTime.TAB_PRINT_FORMAT);
+			code.add(Printf);
+		}
+		
+		public void visit(SpaceNode node) {
+			newVoidCode(node);
+			code.add(PushD, RunTime.SPACE_PRINT_FORMAT);
+			code.add(Printf);
 		}
 	}
 }

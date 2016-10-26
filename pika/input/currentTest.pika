@@ -1,6 +1,5 @@
 exec {
-    var a := 1234 // -2345.
-    var b := a //// 270.
+    var a := [^g^,^t^,^b^].
 
-    print b.
+    print a.
 }

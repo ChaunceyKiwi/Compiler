@@ -7,10 +7,10 @@ import java.util.List;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
-public class ArrayBuilder {
+public class ArrayHelper {
 	
 	public static ASMCodeFragment arrayCreation(ArrayType arrayType, 
-			ASMCodeFragment lengthOfArray, Labeller labeller){
+			ASMCodeFragment lengthOfArray, Labeller labeller, String reg1){
 		
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 		String beginLabel = labeller.newLabel("array-creation-begin");
@@ -26,8 +26,10 @@ public class ArrayBuilder {
 		code.add(Label, getLengthLabel);
 			
 		// Length of array cannot be negative
-		appendCodeFragment(code, lengthOfArray);
+		code.append(lengthOfArray);
 		code.add(Duplicate);
+		code.add(Duplicate);
+		Macros.storeITo(code, reg1);
 		code.add(JumpNeg, RunTime.ARRAY_SIZE_NEGATIVE_ERROR);
 		
 		// Get the size of whole array including header and element
@@ -64,7 +66,8 @@ public class ArrayBuilder {
 		// add length of array
 		code.add(Label, lengthLabel);
 		code.add(Duplicate);
-		appendCodeFragment(code, lengthOfArray);
+		code.add(PushD, reg1);
+		code.add(LoadI);
 		code.add(Exchange);
 		Macros.writeIOffset(code, 12);
 		
@@ -96,8 +99,11 @@ public class ArrayBuilder {
 		return code;
 	}
 	
+	// need one register as counter 
+	// and another two as pointers
 	public static ASMCodeFragment arrayClone(ArrayType arrayType,
-			ASMCodeFragment originalArray, Labeller labeller){
+			ASMCodeFragment originalArray, Labeller labeller, 
+			String counter, String originArrayMemoryPointer, String newArrayMemoryPointer){
 		
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
@@ -115,9 +121,6 @@ public class ArrayBuilder {
 		String statusLabel = labeller.newLabel("array-copy-status");
 		String subTypeSizeLabel = labeller.newLabel("array-copy-subtype-size");
 		String lengthLabel = labeller.newLabel("array-copy-length");
-		String loopCounterLabel = labeller.newLabel("array-copy-counter");
-		String originArrayMemoryPointer = labeller.newLabel("orinal-array-pointer");
-		String newArrayMemoryPointer = labeller.newLabel("new-array-pointer");
 		
 		int subTypeSize = arrayType.getSubType().getSize();
 		
@@ -129,7 +132,7 @@ public class ArrayBuilder {
 		// Get the address of original array
 		// Store it in the originArrayMemoryPointer
 		code.add(Duplicate);
-		memoryPointer(code, originArrayMemoryPointer);
+		Macros.storeITo(code, originArrayMemoryPointer);
 		
 		// Get the length of array
 		code.add(Label, sizeLabel);
@@ -137,7 +140,7 @@ public class ArrayBuilder {
 		
 		// Copy length as a counter
 		code.add(Duplicate);
-		createLoopCounter(code, loopCounterLabel);
+		Macros.storeITo(code, counter);
 		
 		// length * size = whole size for element part
 		code.add(PushI, subTypeSize);
@@ -154,8 +157,7 @@ public class ArrayBuilder {
 		// Get the address of the first element in new array
 		// And store it in newArrayMemoryPointer
 		code.add(Duplicate);
-		memoryPointer(code, newArrayMemoryPointer);
-		
+		Macros.storeITo(code, newArrayMemoryPointer);		
 		code.add(Label, beginHeaderCopyLabel);
 		
 		// add type identifier of array
@@ -207,7 +209,7 @@ public class ArrayBuilder {
 		code.add(StoreI);
 		
 		code.add(Label, beginElementCopyLabel);
-		code.add(PushD, loopCounterLabel);
+		code.add(PushD, counter);
 		code.add(LoadI);
 		code.add(JumpFalse, endElementCopyLabel);
 		
@@ -246,7 +248,7 @@ public class ArrayBuilder {
 		code.add(StoreI);
 		
 		// Decrement the counter by 1
-		Macros.decrementInteger(code, loopCounterLabel);
+		Macros.decrementInteger(code, counter);
 		code.add(Jump, beginElementCopyLabel);
 		code.add(Label, endElementCopyLabel);
 		code.add(Label, endLabel);
@@ -255,13 +257,12 @@ public class ArrayBuilder {
 	}
 	
 	public static ASMCodeFragment arrayElementAtIndex(ArrayType arrayType, 
-			ASMCodeFragment arrayAddress, ASMCodeFragment index, Labeller labeller){
+			ASMCodeFragment arrayAddress, ASMCodeFragment index, Labeller labeller, String memoryPointer){
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 		String beginLabel = labeller.newLabel("array-index-begin");
 		String beginFetchingLabel = labeller.newLabel("array-index-fetching-begin");
 		String endFetchingLabel = labeller.newLabel("array-index-fetching-end");
 		String endLabel = labeller.newLabel("array-index-end");
-		String memoryPointer = labeller.newLabel("memory-pointer");
 		
 		code.add(Label, beginLabel);
 		code.append(arrayAddress);
@@ -270,7 +271,7 @@ public class ArrayBuilder {
 		// store array index in memory pointer
 		code.append(index);
 		code.add(Duplicate);
-		memoryPointer(code, memoryPointer);
+		Macros.storeITo(code, memoryPointer);
 		
 		// negative index check
 		code.add(Duplicate);
@@ -310,25 +311,5 @@ public class ArrayBuilder {
 		Macros.readIOffset(code, 12);
 		
 		return code;
-	}
-	
-	public static void appendCodeFragment(ASMCodeFragment code, ASMCodeFragment codeToAppend){
-		for(ASMCodeChunk chunks : codeToAppend.chunks){
-			for(ASMInstruction instrs: chunks.instructions){
-				code.add(instrs);
-			}
-		}
-	}
-	
-	public static void createLoopCounter(ASMCodeFragment code, String label){
-		code.add(DLabel, label);
-		code.add(DataI, 0);
-		Macros.storeITo(code, label);
-	}
-	
-	public static void memoryPointer(ASMCodeFragment code, String label){
-		code.add(DLabel, label);
-		code.add(DataI, 0);
-		Macros.storeITo(code, label);
 	}
 }

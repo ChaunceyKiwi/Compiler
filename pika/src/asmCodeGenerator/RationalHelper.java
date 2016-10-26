@@ -24,7 +24,7 @@ public class RationalHelper {
 
 		// store abs(num1) in reg1
 		code.add(PushD, reg1ForFunction);
-		ArrayBuilder.appendCodeFragment(code, arg1);
+		code.append(arg1);
 		code.add(Duplicate);
 		Macros.storeITo(code, reg1);
 		code.add(Duplicate);
@@ -35,7 +35,7 @@ public class RationalHelper {
 		
 		// store abs(num2) in reg2
 		code.add(PushD, reg2ForFunction);
-		ArrayBuilder.appendCodeFragment(code, arg2);
+		code.append(arg2);
 		code.add(Duplicate);
 		Macros.storeITo(code, reg2);
 		code.add(Duplicate);
@@ -86,8 +86,8 @@ public class RationalHelper {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 		
 		if(type == PrimitiveType.FLOATING){
-			ArrayBuilder.appendCodeFragment(code, arg1);
-			ArrayBuilder.appendCodeFragment(code, arg2);
+			code.append(arg1);
+			code.append(arg2);
 			code.add(ConvertF);
 			code.add(FMultiply);
 			code.add(ConvertI);
@@ -95,11 +95,11 @@ public class RationalHelper {
 		// [ (n//m)///(d) = int((n*d)/m) ]
 		else if(type == PrimitiveType.RATIONAL){
 			// store rational address
-			ArrayBuilder.appendCodeFragment(code, arg1);
+			code.append(arg1);
 			Macros.storeITo(code, addressPointer);
 			
 			// get n*d
-			ArrayBuilder.appendCodeFragment(code, arg2);
+			code.append(arg2);
 			code.add(PushD, addressPointer);
 			code.add(LoadI);
 			code.add(LoadI);
@@ -133,8 +133,8 @@ public class RationalHelper {
 		code.add(Label, beginLabel);
 		
 		if(type == PrimitiveType.FLOATING){
-			ArrayBuilder.appendCodeFragment(code, arg1);
-			ArrayBuilder.appendCodeFragment(code, arg2);
+			code.append(arg1);
+			code.append(arg2);
 			code.add(Duplicate);
 			Macros.storeITo(code, reg4);
 			code.add(ConvertF);
@@ -144,11 +144,11 @@ public class RationalHelper {
 		// [ (n//m)///(d) = int((n*d)/m) ]
 		else if(type == PrimitiveType.RATIONAL){
 			// store rational address
-			ArrayBuilder.appendCodeFragment(code, arg1);
+			code.append(arg1);
 			Macros.storeITo(code, reg3);
 
 			// get n*d
-			ArrayBuilder.appendCodeFragment(code, arg2);
+			code.append(arg2);
 			code.add(Duplicate);
 			Macros.storeITo(code, reg4);
 			code.add(PushD, reg3);

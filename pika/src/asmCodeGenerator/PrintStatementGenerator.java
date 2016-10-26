@@ -78,11 +78,11 @@ public class PrintStatementGenerator {
 		String jumpLabel2 = labeller.newLabel("jumpLabel2");
 		String jumpLabel3 = labeller.newLabel("jumpLabel3");
 		String joinLabel = labeller.newLabel("joinLabel");
-		String addressOfRationalLabel = labeller.newLabel("rational-addr");
+		String addressOfRationalLabel =  ASMCodeGenerator.reg1;
 		String format = printFormat(type);
 					
 		code.add(Label, beginLabel);
-		ArrayBuilder.memoryPointer(code, addressOfRationalLabel);
+		Macros.storeITo(code, addressOfRationalLabel);
 		
 		// get interger part and print: a = int(n/m)
 		code.add(PushD, addressOfRationalLabel);
@@ -183,7 +183,7 @@ public class PrintStatementGenerator {
 		code.add(Duplicate);
 		
 		// store the length of array as the loop counter
-		code.append(ArrayBuilder.pushArrayLength(labeller.newLabel("-push-array-length")));
+		code.append(ArrayHelper.pushArrayLength(labeller.newLabel("-push-array-length")));
 		createLoopCounter(loopCounterLabel);
 		
 		// get the address of first element

@@ -8,12 +8,14 @@ import symbolTable.Binding;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
 import tokens.Token;
+import semanticAnalyzer.signatures.*;
 
 public class ParseNode {
 	public static final ParseNode NO_PARENT = null;
 	
 	List<ParseNode>	children;
 	ParseNode parent;
+	FunctionSignature signature;
 
 	protected Token token;
 	Type type;					// used for expressions
@@ -24,6 +26,7 @@ public class ParseNode {
 		this.type = PrimitiveType.NO_TYPE;
 		this.scope = null;
 		this.parent = NO_PARENT;
+		this.signature = null;
 		initChildren();
 	}
 	// "detached" copy constructor.  Copies all info except tree info (parent and children)
@@ -31,6 +34,7 @@ public class ParseNode {
 		this.token = node.token;
 		this.type = node.type;
 		this.scope = node.scope;
+		this.signature = null;
 	}
 	public Token getToken() {
 		return token;
@@ -43,10 +47,19 @@ public class ParseNode {
 	public void setType(Type type) {
 		this.type = type;
 	}
+	
 	public Type getType() {
 		if(type instanceof TypeVariable)
 			type = ((TypeVariable)type).getSubtype();
 		return type;
+	}
+	
+	public void setSignature(FunctionSignature signature){
+		this.signature = signature;
+	}
+	
+	public FunctionSignature getSignature(){
+		return this.signature;
 	}
 
 	

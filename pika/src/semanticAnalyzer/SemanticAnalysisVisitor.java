@@ -9,7 +9,7 @@ import logging.PikaLogger;
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
 import parseTree.nodeTypes.*;
-import semanticAnalyzer.signatures.FunctionSignatures;
+import semanticAnalyzer.signatures.*;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.ArrayType;
 import semanticAnalyzer.types.Type;
@@ -65,7 +65,6 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Statements
-	
 	/*
 	 *	Statements -> PrintStatement
 	 *				  Declatation
@@ -143,7 +142,6 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	 * 			  -> UnaryExpression
 	 * 			  -> TypeCastingExpression
 	 * 			  -> ArrayIndexingExpression 
-	 * 
 	 */
 	
 	// BinaryExpression
@@ -184,7 +182,11 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	// TypeCastingExpression
 	@Override
 	public void visitLeave(TypeCastingNode node) {
-		node.setType(node.child(1).getType());
+		assert node.nChildren() == 2;
+		ParseNode left  = node.child(0);
+		ParseNode right = node.child(1);
+		List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
+		setTypeAndCheckSignature(node, TypeCastingNode.TYPE_CASTING, childTypes);
 	}
 	
 	// ArrayIndexingExpression
@@ -345,10 +347,12 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	// And set type as the result type of signature
 	private void setTypeAndCheckSignature(ParseNode node, Object operator, List<Type> childTypes){
 		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
-		Type resultType = FunctionSignatures.signature(signatures.getKey(), childTypes).resultType();
 
 		// the operands of operation should obey the rule in the signature
 		if(signatures.accepts(childTypes)) {
+			FunctionSignature signature = FunctionSignatures.signature(signatures.getKey(), childTypes);
+			Type resultType = signature.resultType();
+			node.setSignature(signature);			
 			node.setType(resultType);
 		}else {
 			typeCheckError(node, childTypes);
