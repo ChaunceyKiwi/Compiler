@@ -10,6 +10,7 @@ import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import asmCodeGenerator.codeStorage.ASMOpcode;
 import asmCodeGenerator.FunctionStorage;
 import asmCodeGenerator.ArrayBuilder;
+import asmCodeGenerator.RationalHelper;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
 import lexicalAnalyzer.Lextant;
@@ -27,6 +28,10 @@ public class ASMCodeGenerator {
 	ParseNode root;
 	String reg1ForFunction = "reg1-func";
 	String reg2ForFunction = "reg2-func";
+	String reg1 = "reg1-system";
+	String reg2 = "reg2-system";
+	String reg3 = "reg3-system";
+	String reg4 = "reg4-system";
 	String GCDCalculation = "GCDCalculation"; 
 	
 	public static ASMCodeFragment generate(ParseNode syntaxTree) {
@@ -63,10 +68,14 @@ public class ASMCodeGenerator {
 		code.add(DataZ, globalBlockSize);
 		createRegister(code, reg1ForFunction);
 		createRegister(code, reg2ForFunction);
+		createRegister(code, reg1);
+		createRegister(code, reg2);
+		createRegister(code, reg3);
+		createRegister(code, reg4);
 		return code;
 	}
 	
-	private void createRegister(ASMCodeFragment code, String label){
+	public static void createRegister(ASMCodeFragment code, String label){
 		code.add(DLabel, label);
 		code.add(DataI, 0);
 		Macros.storeITo(code, label);
@@ -418,7 +427,6 @@ public class ASMCodeGenerator {
 					operator == Punctuator.RATIONALIZE
 			) visitRationalOperatorNode(node);
 			
-			
 			// Arithmetic Operator
 			else {
 				visitNormalBinaryOperatorNode(node);
@@ -539,72 +547,22 @@ public class ASMCodeGenerator {
 		}
 		
 		private void visitRationalOperatorNode(BinaryOperatorNode node) {
-			// Treat a rational number as an array with 2 elements
 			newValueCode(node);
-			Labeller labeller = new Labeller("rational-number");
-			
-			String beginLabel = labeller.newLabel("rational-creation-begin");
-			String endLabel = labeller.newLabel("rational-creation-end");
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));
-			String getAbsForArg1 = labeller.newLabel("get-abs-for-arg1");
-			String getAbsForArg2 = labeller.newLabel("get-abs-for-arg2");
+			Lextant operator = node.getOperator();
+			Type type = node.child(0).getType();
 			
-			// store abs(num1) in reg1
-			code.add(PushD, reg1ForFunction);
-			ArrayBuilder.appendCodeFragment(code, arg1);
-			code.add(Duplicate);
-			code.add(JumpPos, getAbsForArg1);
-			code.add(Negate);
-			code.add(Label, getAbsForArg1);
-			code.add(StoreI);
-			
-			
-			// store abs(num2) in reg2
-			code.add(PushD, reg2ForFunction);
-			ArrayBuilder.appendCodeFragment(code, arg2);
-			code.add(Duplicate);
-			code.add(JumpPos, getAbsForArg2);
-			code.add(Negate);
-			code.add(Label, getAbsForArg2);
-			code.add(StoreI);
-			
-			// Call function to get GCD and store it in reg1
-			code.add(Call, GCDCalculation);
-			code.add(PushD, reg1ForFunction);
-			code.add(Exchange);
-			code.add(StoreI);
-
-			code.add(Label, beginLabel);
-			
-			// Rational number needs 8 bytes 
-			code.add(PushI, 8);
-			
-			// call the memory manager to get address allocated
-			code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
-			
-			// Store first integer
-			code.add(Duplicate);
-			code.append(arg1);
-			code.add(PushD, reg1ForFunction);
-			code.add(LoadI);
-			code.add(Divide);
-			code.add(Exchange);
-			Macros.writeIOffset(code, 0);
-			
-			// Store second integer
-			code.add(Duplicate);
-			code.append(arg2);
-			code.add(PushD, reg1ForFunction);
-			code.add(LoadI);
-			code.add(Divide);
-			code.add(Exchange);
-			Macros.writeIOffset(code, 4);
-			code.add(Label, endLabel);			
-			
-			// leave the address of array on the accumulator
+			if(operator == Punctuator.OVER) {
+				code.append(RationalHelper.performOverPuntuator(arg1, arg2, GCDCalculation,
+						reg1ForFunction, reg2ForFunction, reg1, reg2));
+			}else if(operator == Punctuator.EXPRESSOVER) {
+				code.append(RationalHelper.performExpressOverPunctuator(arg1, arg2, type, reg1ForFunction));
+			}else if(operator == Punctuator.RATIONALIZE) {
+				code.append(RationalHelper.performRationalizePuntuator(arg1, arg2, type, GCDCalculation,
+						reg1ForFunction, reg2ForFunction, reg1, reg2, reg3, reg4));
+			}
 		}
-		
 		
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);

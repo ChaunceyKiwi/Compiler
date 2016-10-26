@@ -1,4 +1,6 @@
 exec {
-    var a := 60 // 15.
-    print a.
+    var a := -3.1415926.
+    var b := a //// 223092870.
+
+    print b.
 }

@@ -228,10 +228,18 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        8                         
+        DataZ        16                        
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
+        DataI        0                         
+        DLabel       reg1-system               
+        DataI        0                         
+        DLabel       reg2-system               
+        DataI        0                         
+        DLabel       reg3-system               
+        DataI        0                         
+        DLabel       reg4-system               
         DataI        0                         
         DLabel       --print-rational--2-rational-addr 
         DataI        0                         
@@ -319,33 +327,76 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg3-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg4-system               
+        Exchange                               
+        StoreI                                 
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushD        reg1-func                 
-        PushI        60                        
+        PushF        -3.14159                  
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% b
+        Label        --rationalize--1-rational-creation-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadF                                  
+        PushI        223092870                 
         Duplicate                              
-        JumpPos      -rational-number-1-get-abs-for-arg1 
+        PushD        reg4-system               
+        Exchange                               
+        StoreI                                 
+        ConvertF                               
+        FMultiply                              
+        ConvertI                               
+        PushD        reg3-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg3-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rationalize--1-get-abs-for-arg1 
         Negate                                 
-        Label        -rational-number-1-get-abs-for-arg1 
+        Label        --rationalize--1-get-abs-for-arg1 
         StoreI                                 
         PushD        reg2-func                 
-        PushI        15                        
+        PushD        reg4-system               
+        LoadI                                  
         Duplicate                              
-        JumpPos      -rational-number-1-get-abs-for-arg2 
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rationalize--1-get-abs-for-arg2 
         Negate                                 
-        Label        -rational-number-1-get-abs-for-arg2 
+        Label        --rationalize--1-get-abs-for-arg2 
         StoreI                                 
         Call         GCDCalculation            
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Label        -rational-number-1-rational-creation-begin 
         PushI        8                         
         Call         -mem-manager-allocate     
         Duplicate                              
-        PushI        60                        
+        PushD        reg1-system               
+        LoadI                                  
         PushD        reg1-func                 
         LoadI                                  
         Divide                                 
@@ -355,7 +406,8 @@
         Exchange                               
         StoreI                                 
         Duplicate                              
-        PushI        15                        
+        PushD        reg2-system               
+        LoadI                                  
         PushD        reg1-func                 
         LoadI                                  
         Divide                                 
@@ -364,11 +416,11 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -rational-number-1-rational-creation-end 
+        Label        --rationalize--1-rational-creation-end 
         StoreI                                 
         PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
+        PushI        8                         
+        Add                                    %% b
         LoadI                                  
         Label        --print-rational--2--begin- 
         PushD        --print-rational--2-rational-addr 
