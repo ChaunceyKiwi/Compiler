@@ -95,10 +95,27 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 			new FunctionSignature(ASMOpcode.FMultiply, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
 		);
 		
-		new FunctionSignatures(Punctuator.DIVIDE,
-			new FunctionSignature(ASMOpcode.Divide, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-			new FunctionSignature(ASMOpcode.FDivide, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+		new FunctionSignatures(Punctuator.OVER,
+			new FunctionSignature(Punctuator.OVER, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.RATIONAL)
 		);
+		
+		new FunctionSignatures(Punctuator.EXPRESSOVER,
+				new FunctionSignature(Punctuator.EXPRESSOVER, PrimitiveType.RATIONAL, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(Punctuator.EXPRESSOVER, PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.INTEGER)
+		);
+		
+		new FunctionSignatures(Punctuator.RATIONALIZE,
+				new FunctionSignature(Punctuator.RATIONALIZE, PrimitiveType.RATIONAL, PrimitiveType.INTEGER, PrimitiveType.RATIONAL),
+				new FunctionSignature(Punctuator.RATIONALIZE, PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.RATIONAL)
+		);
+		
+		/////////////////////////////////////////////////////////////////////////////////
+		// Rational Number Operator
+		new FunctionSignatures(Punctuator.DIVIDE,
+				new FunctionSignature(ASMOpcode.Divide, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(ASMOpcode.FDivide, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+		);
+		
 		
 		/////////////////////////////////////////////////////////////////////////////////
 		// Comparison Operator

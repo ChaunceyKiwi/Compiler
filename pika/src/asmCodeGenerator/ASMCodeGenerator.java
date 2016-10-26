@@ -8,6 +8,7 @@ import java.util.List;
 
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import asmCodeGenerator.codeStorage.ASMOpcode;
+import asmCodeGenerator.FunctionStorage;
 import asmCodeGenerator.ArrayBuilder;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
@@ -21,16 +22,18 @@ import symbolTable.Scope;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
-
-
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
 	ParseNode root;
+	String reg1ForFunction = "reg1-func";
+	String reg2ForFunction = "reg2-func";
+	String GCDCalculation = "GCDCalculation"; 
 	
 	public static ASMCodeFragment generate(ParseNode syntaxTree) {
 		ASMCodeGenerator codeGenerator = new ASMCodeGenerator(syntaxTree);
 		return codeGenerator.makeASM();
 	}
+	
 	public ASMCodeGenerator(ParseNode root) {
 		super();
 		this.root = root;
@@ -43,10 +46,13 @@ public class ASMCodeGenerator {
 		code.append( RunTime.getEnvironment() );
 		code.append( globalVariableBlockASM() );
 		code.append( programASM() );
-		code.append( MemoryManager.codeForAfterApplication() );
+		code.append( MemoryManager.codeForAfterApplication());
+		code.append( FunctionStorage.GCDCalculation(GCDCalculation, reg1ForFunction, reg2ForFunction));
 		
 		return code;
 	}
+	
+	
 	private ASMCodeFragment globalVariableBlockASM() {
 		assert root.hasScope();
 		Scope scope = root.getScope();
@@ -55,8 +61,17 @@ public class ASMCodeGenerator {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 		code.add(DLabel, RunTime.GLOBAL_MEMORY_BLOCK);
 		code.add(DataZ, globalBlockSize);
+		createRegister(code, reg1ForFunction);
+		createRegister(code, reg2ForFunction);
 		return code;
 	}
+	
+	private void createRegister(ASMCodeFragment code, String label){
+		code.add(DLabel, label);
+		code.add(DataI, 0);
+		Macros.storeITo(code, label);
+	}
+	
 	private ASMCodeFragment programASM() {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 		
@@ -149,6 +164,8 @@ public class ASMCodeGenerator {
 			}else if(node.getType() == PrimitiveType.CHARACTER){
 				code.add(LoadC);
 			}else if(node.getType() == PrimitiveType.STRING){
+				code.add(LoadI);
+			}else if(node.getType() == PrimitiveType.RATIONAL){
 				code.add(LoadI);
 			}else if(node.getType().isReferenceType()){
 				code.add(LoadI);
@@ -365,6 +382,9 @@ public class ASMCodeGenerator {
 			if(type == PrimitiveType.STRING){
 				return StoreI;
 			}
+			if(type == PrimitiveType.RATIONAL){
+				return StoreI;
+			}
 			if(type.isReferenceType()){
 				return StoreI;
 			}
@@ -385,12 +405,19 @@ public class ASMCodeGenerator {
 				operator == Punctuator.EQUAL ||
 				operator == Punctuator.GREATER ||	
 				operator == Punctuator.GREATEROREQUAL
-			) visitComparisonOperatorNode(node, operator);
+			) visitComparisonOperatorNode(node);
 			
 			// Boolean Operator
 			else if (operator == Punctuator.AND ||
 					 operator == Punctuator.OR
-			) visitBooleanOperatorNode(node, operator);
+			) visitBooleanOperatorNode(node);
+			
+			// Rational Operator
+			else if (operator == Punctuator.OVER ||
+					operator == Punctuator.EXPRESSOVER ||
+					operator == Punctuator.RATIONALIZE
+			) visitRationalOperatorNode(node);
+			
 			
 			// Arithmetic Operator
 			else {
@@ -398,9 +425,8 @@ public class ASMCodeGenerator {
 			}
 		}
 		
-		private void visitComparisonOperatorNode(BinaryOperatorNode node,
-				Lextant operator) {
-
+		private void visitComparisonOperatorNode(BinaryOperatorNode node) {
+			Lextant operator = node.getOperator();
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));
 			
@@ -472,8 +498,9 @@ public class ASMCodeGenerator {
 			code.add(Label, joinLabel);
 		}
 		
-		private void visitBooleanOperatorNode(BinaryOperatorNode node, Lextant operator){
+		private void visitBooleanOperatorNode(BinaryOperatorNode node){
 			newValueCode(node);
+			Lextant operator = node.getOperator();
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));			
 			Labeller labeller = new Labeller("boolean_operator");	
@@ -510,6 +537,74 @@ public class ASMCodeGenerator {
 			code.add(Jump, joinLabel);
 			code.add(Label, joinLabel);	
 		}
+		
+		private void visitRationalOperatorNode(BinaryOperatorNode node) {
+			// Treat a rational number as an array with 2 elements
+			newValueCode(node);
+			Labeller labeller = new Labeller("rational-number");
+			
+			String beginLabel = labeller.newLabel("rational-creation-begin");
+			String endLabel = labeller.newLabel("rational-creation-end");
+			ASMCodeFragment arg1 = removeValueCode(node.child(0));
+			ASMCodeFragment arg2 = removeValueCode(node.child(1));
+			String getAbsForArg1 = labeller.newLabel("get-abs-for-arg1");
+			String getAbsForArg2 = labeller.newLabel("get-abs-for-arg2");
+			
+			// store abs(num1) in reg1
+			code.add(PushD, reg1ForFunction);
+			ArrayBuilder.appendCodeFragment(code, arg1);
+			code.add(Duplicate);
+			code.add(JumpPos, getAbsForArg1);
+			code.add(Negate);
+			code.add(Label, getAbsForArg1);
+			code.add(StoreI);
+			
+			
+			// store abs(num2) in reg2
+			code.add(PushD, reg2ForFunction);
+			ArrayBuilder.appendCodeFragment(code, arg2);
+			code.add(Duplicate);
+			code.add(JumpPos, getAbsForArg2);
+			code.add(Negate);
+			code.add(Label, getAbsForArg2);
+			code.add(StoreI);
+			
+			// Call function to get GCD and store it in reg1
+			code.add(Call, GCDCalculation);
+			code.add(PushD, reg1ForFunction);
+			code.add(Exchange);
+			code.add(StoreI);
+
+			code.add(Label, beginLabel);
+			
+			// Rational number needs 8 bytes 
+			code.add(PushI, 8);
+			
+			// call the memory manager to get address allocated
+			code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+			
+			// Store first integer
+			code.add(Duplicate);
+			code.append(arg1);
+			code.add(PushD, reg1ForFunction);
+			code.add(LoadI);
+			code.add(Divide);
+			code.add(Exchange);
+			Macros.writeIOffset(code, 0);
+			
+			// Store second integer
+			code.add(Duplicate);
+			code.append(arg2);
+			code.add(PushD, reg1ForFunction);
+			code.add(LoadI);
+			code.add(Divide);
+			code.add(Exchange);
+			Macros.writeIOffset(code, 4);
+			code.add(Label, endLabel);			
+			
+			// leave the address of array on the accumulator
+		}
+		
 		
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);
@@ -563,7 +658,6 @@ public class ASMCodeGenerator {
 			ArrayType arrayType = (ArrayType)node.child(0).getType();
 			ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
 			ASMCodeFragment index = removeValueCode(node.child(1));
-			
 			code.append(ArrayBuilder.arrayElementAtIndex(arrayType, arrayAddress, index, labeller));
 		}
 		
@@ -616,16 +710,5 @@ public class ASMCodeGenerator {
 			newValueCode(node);
 			code.add(PushI, node.getValue());
 		}
-		public void visit(StringConstantNode node){
-			newValueCode(node);
-			String value = node.getValue();
-			Labeller label = new Labeller("stringConstant");
-			
-			// Testing version
-			code.add(DLabel, label.newLabel(value));
-			code.add(DataS, value);
-			code.add(PushD, label.newLabel(value));
-		}
 	}
-
 }

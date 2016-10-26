@@ -327,11 +327,6 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		logError(node.getToken().getLexeme() + " Statement Expression Error");
 	}
 	
-	private void assignmentStatementTypeDifferError(ParseNode node, List<Type> operandTypes){
-		logError("Assignment operator := not defined for types " + operandTypes
-				 + " at " + node.getToken().getLocation());
-	}
-	
 	private void logError(String message) {
 		PikaLogger log = PikaLogger.getLogger("compiler.semanticAnalyzer");
 		log.severe(message);

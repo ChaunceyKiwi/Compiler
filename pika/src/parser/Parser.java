@@ -485,13 +485,14 @@ public class Parser {
 	// MultiplicativeExpression
 	
 	// multiplicativeExpression -> atomicExpression [MULT\DIVIDE atomicExpression]*  (left-assoc)
+	// And also the operator for rational number
 	private ParseNode parseMultiplicativeExpression() {
 		if(!startsUnaryExpression(nowReading)) {
 			return syntaxErrorNode("multiplicativeExpression");
 		}
 		
 		ParseNode left = parseUnaryExpression();
-		while(nowReading.isLextant(Punctuator.MULTIPLY, Punctuator.DIVIDE)) {
+		while(isMultiplicativeOperator(nowReading)) {
 			Token multiplicativeToken = nowReading;
 			readToken();
 			ParseNode right = parseUnaryExpression();
@@ -499,6 +500,11 @@ public class Parser {
 		}
 		
 		return left;
+	}
+	
+	private boolean isMultiplicativeOperator(Token token){
+		return token.isLextant(Punctuator.MULTIPLY, Punctuator.DIVIDE,
+			Punctuator.OVER, Punctuator.EXPRESSOVER, Punctuator.RATIONALIZE);
 	}
 	
 	private boolean startsMultiplicativeExpression(Token token) {

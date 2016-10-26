@@ -26,7 +26,7 @@ public class ArrayBuilder {
 		code.add(Label, getLengthLabel);
 			
 		// Length of array cannot be negative
-		appendLengthCode(code, lengthOfArray);
+		appendCodeFragment(code, lengthOfArray);
 		code.add(Duplicate);
 		code.add(JumpNeg, RunTime.ARRAY_SIZE_NEGATIVE_ERROR);
 		
@@ -64,7 +64,7 @@ public class ArrayBuilder {
 		// add length of array
 		code.add(Label, lengthLabel);
 		code.add(Duplicate);
-		appendLengthCode(code, lengthOfArray);
+		appendCodeFragment(code, lengthOfArray);
 		code.add(Exchange);
 		Macros.writeIOffset(code, 12);
 		
@@ -312,8 +312,8 @@ public class ArrayBuilder {
 		return code;
 	}
 	
-	public static void appendLengthCode(ASMCodeFragment code, ASMCodeFragment lengthOfArray){
-		for(ASMCodeChunk chunks : lengthOfArray.chunks){
+	public static void appendCodeFragment(ASMCodeFragment code, ASMCodeFragment codeToAppend){
+		for(ASMCodeChunk chunks : codeToAppend.chunks){
 			for(ASMInstruction instrs: chunks.instructions){
 				code.add(instrs);
 			}

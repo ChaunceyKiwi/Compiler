@@ -12,6 +12,11 @@ public enum Punctuator implements Lextant {
 	MULTIPLY("*"),
 	DIVIDE("/"),
 	
+	// Rational operator
+	OVER("//"),
+	EXPRESSOVER("///"),
+	RATIONALIZE("////"),
+	
 	// Comparison operator
 	LESSER("<"),
 	LESSEROREQUAL("<="),

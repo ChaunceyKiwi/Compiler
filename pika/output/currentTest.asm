@@ -61,6 +61,15 @@
         DLabel       $print-format-close-square-bracket 
         DataC        93                        %% "]"
         DataC        0                         
+        DLabel       $print-format-over        
+        DataC        47                        %% "/"
+        DataC        0                         
+        DLabel       $print-format-and         
+        DataC        95                        %% "_"
+        DataC        0                         
+        DLabel       $print-format-minus-sign  
+        DataC        45                        %% "-"
+        DataC        0                         
         DLabel       $errors-general-message   
         DataC        82                        %% "Runtime error: %s\n"
         DataC        117                       
@@ -219,26 +228,12 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        4                         
-        DLabel       --array-indexing--2-memory-pointer 
+        DataZ        8                         
+        DLabel       reg1-func                 
         DataI        0                         
-        DLabel       --array-indexing--3-memory-pointer 
+        DLabel       reg2-func                 
         DataI        0                         
-        DLabel       --array-indexing--4-memory-pointer 
-        DataI        0                         
-        DLabel       --array-indexing--5-memory-pointer 
-        DataI        0                         
-        DLabel       --array-indexing--6-memory-pointer 
-        DataI        0                         
-        DLabel       --array-indexing--7-memory-pointer 
-        DataI        0                         
-        DLabel       --array-indexing--8-memory-pointer 
-        DataI        0                         
-        DLabel       --array-indexing--9-memory-pointer 
-        DataI        0                         
-        DLabel       --array-indexing--10-memory-pointer 
-        DataI        0                         
-        DLabel       --array-indexing--11-memory-pointer 
+        DLabel       --print-rational--2-rational-addr 
         DataI        0                         
         DLabel       $mmgr-tags-size           
         DataZ        4                         
@@ -318,408 +313,133 @@
         Label        $$array-index-exceed-bound 
         PushD        $$errors-index-exceed-bound 
         Jump         $$general-runtime-error   
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushD        reg2-func                 
+        Exchange                               
+        StoreI                                 
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        Label        -empty-array-creation-1-array-creation-begin 
-        Label        -empty-array-creation-1-array-creation-get-length 
-        PushI        5                         
+        PushD        reg1-func                 
+        PushI        60                        
         Duplicate                              
-        JumpNeg      $$array-size-negative     
-        Label        -empty-array-creation-1-array-creation-size 
+        JumpPos      -rational-number-1-get-abs-for-arg1 
+        Negate                                 
+        Label        -rational-number-1-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushI        15                        
+        Duplicate                              
+        JumpPos      -rational-number-1-get-abs-for-arg2 
+        Negate                                 
+        Label        -rational-number-1-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        Label        -rational-number-1-rational-creation-begin 
         PushI        8                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
         Call         -mem-manager-allocate     
-        Label        -empty-array-creation-1-array-creation-type 
         Duplicate                              
-        PushI        7                         
+        PushI        60                        
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
         Exchange                               
         PushI        0                         
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -empty-array-creation-1-array-creation-status 
         Duplicate                              
-        PushI        0                         
+        PushI        15                        
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
         Exchange                               
         PushI        4                         
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -empty-array-creation-1-array-creation-subtype-size 
-        Duplicate                              
-        PushI        8                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
+        Label        -rational-number-1-rational-creation-end 
         StoreI                                 
-        Label        -empty-array-creation-1-array-creation-length 
-        Duplicate                              
-        PushI        5                         
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        -empty-array-creation-1-array-creation-end 
-        StoreI                                 
-        Label        --array-indexing--2-array-index-begin 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
-        Duplicate                              
-        PushI        0                         
-        Duplicate                              
-        PushD        --array-indexing--2-memory-pointer 
+        Label        --print-rational--2--begin- 
+        PushD        --print-rational--2-rational-addr 
         Exchange                               
         StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--2-array-length 
-        PushI        12                        
-        Add                                    
+        PushD        --print-rational--2-rational-addr 
         LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--2-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--2-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--2-memory-pointer 
         LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--2-array-index-fetching-end 
-        Label        --array-indexing--2-array-index-end 
-        PushF        0.900000                  
-        StoreF                                 
-        Label        --array-indexing--3-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
+        PushD        --print-rational--2-rational-addr 
         LoadI                                  
-        Duplicate                              
-        PushI        1                         
-        Duplicate                              
-        PushD        --array-indexing--3-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--3-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--3-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--3-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--3-memory-pointer 
-        LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--3-array-index-fetching-end 
-        Label        --array-indexing--3-array-index-end 
-        PushF        0.910000                  
-        StoreF                                 
-        Label        --array-indexing--4-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        Duplicate                              
-        PushI        2                         
-        Duplicate                              
-        PushD        --array-indexing--4-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--4-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--4-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--4-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--4-memory-pointer 
-        LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--4-array-index-fetching-end 
-        Label        --array-indexing--4-array-index-end 
-        PushF        0.920000                  
-        StoreF                                 
-        Label        --array-indexing--5-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        Duplicate                              
-        PushI        3                         
-        Duplicate                              
-        PushD        --array-indexing--5-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--5-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--5-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--5-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--5-memory-pointer 
-        LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--5-array-index-fetching-end 
-        Label        --array-indexing--5-array-index-end 
-        PushF        0.930000                  
-        StoreF                                 
-        Label        --array-indexing--6-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        Duplicate                              
         PushI        4                         
-        Duplicate                              
-        PushD        --array-indexing--6-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--6-array-length 
-        PushI        12                        
         Add                                    
         LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--6-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--6-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--6-memory-pointer 
-        LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--6-array-index-fetching-end 
-        Label        --array-indexing--6-array-index-end 
-        PushF        0.940000                  
-        StoreF                                 
-        Label        --array-indexing--7-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
+        Divide                                 
         Duplicate                              
-        PushI        0                         
         Duplicate                              
-        PushD        --array-indexing--7-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--7-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--7-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--7-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--7-memory-pointer 
-        LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--7-array-index-fetching-end 
-        Label        --array-indexing--7-array-index-end 
-        LoadF                                  
-        PushD        $print-format-floating    
+        JumpFalse    --print-rational--2-jumpLabel3 
+        PushD        $print-format-integer     
         Printf                                 
-        PushD        $print-format-space       
-        Printf                                 
-        Label        --array-indexing--8-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
+        Jump         --print-rational--2-joinLabel 
+        Label        --print-rational--2-jumpLabel3 
+        PushD        --print-rational--2-rational-addr 
         LoadI                                  
-        Duplicate                              
-        PushI        1                         
-        Duplicate                              
-        PushD        --array-indexing--8-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--8-array-length 
-        PushI        12                        
-        Add                                    
         LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--8-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--8-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--8-memory-pointer 
+        PushD        --print-rational--2-rational-addr 
         LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--8-array-index-fetching-end 
-        Label        --array-indexing--8-array-index-end 
-        LoadF                                  
-        PushD        $print-format-floating    
-        Printf                                 
-        PushD        $print-format-space       
-        Printf                                 
-        Label        --array-indexing--9-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        Duplicate                              
-        PushI        2                         
-        Duplicate                              
-        PushD        --array-indexing--9-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--9-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--9-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--9-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--9-memory-pointer 
-        LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--9-array-index-fetching-end 
-        Label        --array-indexing--9-array-index-end 
-        LoadF                                  
-        PushD        $print-format-floating    
-        Printf                                 
-        PushD        $print-format-space       
-        Printf                                 
-        Label        --array-indexing--10-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        Duplicate                              
-        PushI        3                         
-        Duplicate                              
-        PushD        --array-indexing--10-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--10-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--10-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--10-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--10-memory-pointer 
-        LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--10-array-index-fetching-end 
-        Label        --array-indexing--10-array-index-end 
-        LoadF                                  
-        PushD        $print-format-floating    
-        Printf                                 
-        PushD        $print-format-space       
-        Printf                                 
-        Label        --array-indexing--11-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        Duplicate                              
         PushI        4                         
-        Duplicate                              
-        PushD        --array-indexing--11-memory-pointer 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--11-array-length 
-        PushI        12                        
         Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpPos      --print-rational--2-joinLabel 
+        PushD        $print-format-minus-sign  
+        Printf                                 
+        Label        --print-rational--2-joinLabel 
+        PushD        --print-rational--2-rational-addr 
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        --print-rational--2-rational-addr 
+        LoadI                                  
         LoadI                                  
         Exchange                               
         Subtract                               
-        JumpPos      --array-indexing--11-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--11-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        --array-indexing--11-memory-pointer 
+        Duplicate                              
+        JumpFalse    --print-rational--2--end- 
+        PushD        --print-rational--2-rational-addr 
         LoadI                                  
-        PushI        8                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--11-array-index-fetching-end 
-        Label        --array-indexing--11-array-index-end 
-        LoadF                                  
-        PushD        $print-format-floating    
+        LoadI                                  
+        JumpPos      --print-rational--2-jumpLabel1 
+        Negate                                 
+        Label        --print-rational--2-jumpLabel1 
+        PushD        $print-format-and         
         Printf                                 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-over        
+        Printf                                 
+        PushD        --print-rational--2-rational-addr 
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Duplicate                              
+        JumpPos      --print-rational--2-jumpLabel2 
+        Negate                                 
+        Label        --print-rational--2-jumpLabel2 
+        PushD        $print-format-integer     
+        Printf                                 
+        Label        --print-rational--2--end- 
         Halt                                   
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
@@ -1089,3 +809,43 @@
         PushD        $mmgr-remove-return       
         LoadI                                  
         Return                                 
+        Label        GCDCalculation            
+        Label        --GCD-Calculation--3--function-begin- 
+        Label        --GCD-Calculation--3--loop-begin- 
+        PushD        reg1-func                 
+        LoadI                                  
+        Duplicate                              
+        JumpFalse    --GCD-Calculation--3--loop-end- 
+        PushD        reg2-func                 
+        LoadI                                  
+        Duplicate                              
+        JumpFalse    --GCD-Calculation--3--loop-end- 
+        Subtract                               
+        JumpPos      --GCD-Calculation--3--positive-case- 
+        Label        --GCD-Calculation--3--not-positive-case- 
+        PushD        reg2-func                 
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Subtract                               
+        PushD        reg2-func                 
+        Exchange                               
+        StoreI                                 
+        Jump         --GCD-Calculation--3--join- 
+        Label        --GCD-Calculation--3--positive-case- 
+        PushD        reg1-func                 
+        LoadI                                  
+        PushD        reg2-func                 
+        LoadI                                  
+        Subtract                               
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        Jump         --GCD-Calculation--3--join- 
+        Label        --GCD-Calculation--3--join- 
+        Jump         --GCD-Calculation--3--loop-begin- 
+        Label        --GCD-Calculation--3--loop-end- 
+        Add                                    
+        Exchange                               
+        Return                                 
+        Label        --GCD-Calculation--3--function-end- 

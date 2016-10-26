@@ -18,6 +18,10 @@ public class RunTime {
 	public static final String USABLE_MEMORY_START    = "$usable-memory-start";
 	public static final String MAIN_PROGRAM_LABEL     = "$$main";
 	public static final String SEPARATOR_PRINT_FORMAT = "$print-format-separator";
+	public static final String OVER_PRINT_FORMAT 	  = "$print-format-over";
+	public static final String AND_PRINT_FORMAT 	  = "$print-format-and";
+	public static final String MINUS_SIGN_PRINT_FORMAT= "$print-format-minus-sign";
+
 	public static final String OPEN_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-open-square-bracket";
 	public static final String CLOSE_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-close-square-bracket";
 
@@ -76,6 +80,12 @@ public class RunTime {
 		frag.add(DataS, "[");
 		frag.add(DLabel, CLOSE_SQUARE_BRACKET_PRINT_FORMAT);
 		frag.add(DataS, "]");
+		frag.add(DLabel, OVER_PRINT_FORMAT);
+		frag.add(DataS, "/");
+		frag.add(DLabel, AND_PRINT_FORMAT);
+		frag.add(DataS, "_");
+		frag.add(DLabel, MINUS_SIGN_PRINT_FORMAT);
+		frag.add(DataS, "-");
 		return frag;
 	}
 	

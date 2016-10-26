@@ -7,6 +7,7 @@ public enum PrimitiveType implements Type {
 	STRING(4),
 	INTEGER(4),
 	FLOATING(8),
+	RATIONAL(8),
 	ERROR(0),			// use as a value when a syntax error has occurred
 	NO_TYPE(0, "");		// use as a value when no type has been assigned.
 	
@@ -51,7 +52,7 @@ public enum PrimitiveType implements Type {
 		else if(Lexeme.equals(Keyword.STRING.getLexeme())) return PrimitiveType.STRING;
 		else if(Lexeme.equals(Keyword.INTEGER.getLexeme())) return PrimitiveType.INTEGER;
 		else if(Lexeme.equals(Keyword.FLOATING.getLexeme())) return PrimitiveType.FLOATING;
-//		else if(Lexeme.equals(RATIONAL)) return PrimitiveType.RATIONAL;
+		else if(Lexeme.equals(Keyword.RATIONAL.getLexeme())) return PrimitiveType.RATIONAL;
 		else return PrimitiveType.ERROR;
 	}
 }

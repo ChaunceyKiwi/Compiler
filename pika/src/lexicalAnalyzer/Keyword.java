@@ -21,6 +21,7 @@ public enum Keyword implements Lextant {
 	STRING("string"),
 	INTEGER("int"),
 	FLOATING("float"),
+	RATIONAL("rat"),
 	
 	// for array type
 	LENGTH("length"),
