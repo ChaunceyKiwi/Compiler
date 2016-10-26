@@ -2,8 +2,6 @@ package asmCodeGenerator;
 
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.GENERATES_VALUE;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
-
-
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import asmCodeGenerator.runtime.MemoryManager;
 import semanticAnalyzer.types.PrimitiveType;
@@ -12,7 +10,7 @@ import semanticAnalyzer.types.Type;
 public class RationalHelper {
 	public static ASMCodeFragment performOverPuntuator(ASMCodeFragment arg1, ASMCodeFragment arg2,
 			String GCDCalculation, String reg1ForFunction, String reg2ForFunction, 
-			String reg1, String reg2){
+			String reg1, String reg2) {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
 		// Treat a rational number as an array with 2 elements
@@ -230,6 +228,5 @@ public class RationalHelper {
 		// leave the address of array on the accumulator
 		
 		return code;
-		
 	}
 }

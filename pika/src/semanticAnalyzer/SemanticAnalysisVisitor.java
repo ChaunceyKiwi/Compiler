@@ -31,14 +31,17 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		enterProgramScope(node);
 	}
 	
+	@Override
 	public void visitLeave(ProgramNode node) {
 		leaveScope(node);
 	}
 	
+	@Override
 	public void visitEnter(BlockStatementNode node) {
 		enterSubscope(node);
 	}
 	
+	@Override
 	public void visitLeave(BlockStatementNode node) {
 		leaveScope(node);
 	}
@@ -61,11 +64,22 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
-	// statements and declarations
+	// Statements
+	
+	/*
+	 *	Statements -> PrintStatement
+	 *				  Declatation
+	 *			      AssignmentStatement
+	 *			      IfStatement 
+	 *			      WhileStatement
+	 */
+	
+	// PrintStatement
 	@Override
 	public void visitLeave(PrintStatementNode node) {
 	}
 	
+	// Declatation
 	@Override
 	public void visitLeave(DeclarationNode node) {
 		IdentifierNode identifier = (IdentifierNode) node.child(0);
@@ -90,31 +104,27 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			logError("Declaration type is neither var nor const");			
 	}
 	
-	@Override
-	public void visitLeave(TypeCastingNode node) {
-		node.setType(node.child(1).getType());
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	// assignment
+	// AssignmentStatement
 	@Override
 	public void visitLeave(AssignmentStatementNode node) {
 		assert node.nChildren() == 2;
-		
 		ParseNode target = node.child(0);
 		ParseNode initializer = node.child(1);
 		Type identifierType = target.getType();
 		Type assignmentType = initializer.getType();
 		List<Type> childTypes = Arrays.asList(identifierType, assignmentType);
-
 		setTypeAndCheckSignature(node, AssignmentStatementNode.VALUE_ASSIGNMENT, childTypes);
 	}
 	
+	// IfStatement
+	@Override
 	public void visitLeave(IfStatementNode node){
 		assert node.nChildren() >= 2;
 		checkIfExpressionIsBoolean(node.child(0));
 	}
 	
+	// WhileStatement
+	@Override
 	public void visitLeave(WhileStatementNode node){
 		assert node.nChildren() == 2;
 		checkIfExpressionIsBoolean(node.child(0));
@@ -127,7 +137,16 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	}
 
 	///////////////////////////////////////////////////////////////////////////
-	// expressions
+	// Expressions
+	
+	/* Expression -> BinaryExpression
+	 * 			  -> UnaryExpression
+	 * 			  -> TypeCastingExpression
+	 * 			  -> ArrayIndexingExpression 
+	 * 
+	 */
+	
+	// BinaryExpression
 	@Override
 	public void visitLeave(BinaryOperatorNode node) {
 		assert node.nChildren() == 2;
@@ -146,8 +165,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		return token.getLextant();
 	}
 	
-	///////////////////////////////////////////////////////////////////////////
-	// expressions
+	// Unary Expression
 	@Override
 	public void visitLeave(UnaryOperatorNode node) {
 		assert node.nChildren() == 1;
@@ -163,6 +181,14 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		return token.getLextant();
 	}
 	
+	// TypeCastingExpression
+	@Override
+	public void visitLeave(TypeCastingNode node) {
+		node.setType(node.child(1).getType());
+	}
+	
+	// ArrayIndexingExpression
+	@Override
 	public void visitLeave(ArrayIndexingNode node){
 		assert node.nChildren() == 2;
 		ParseNode left  = node.child(0);
@@ -172,15 +198,26 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
 	}
 	
+	///////////////////////////////////////////////////////////////////////////
+	// ArrayExpressions
 	
-	public void visitLeave(CopyOperatorNode node) {
-		assert node.nChildren() == 1;
-		ParseNode right = node.child(0);
-		List<Type> childTypes = Arrays.asList(right.getType());
-		
-		setTypeAndCheckSignature(node, CopyOperatorNode.ARRAY_CLONE, childTypes);
+	/* ArrayExpressions -> NewArrayTypeLengthExpression
+	 * 			  		-> ExpressionList
+	 * 			  		-> CloneExpression 
+	 * 
+	 */
+	
+	// NewArrayTypeLengthExpression
+	@Override
+	public void visitLeave(NewArrayTypeLengthNode node){
+		assert node.nChildren() == 2;
+		ParseNode left  = node.child(0);
+		ParseNode right = node.child(1);
+		List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
+		setTypeAndCheckSignature(node, NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, childTypes);
 	}
-	
+
+	//ExpressionList
 	@Override
 	public void visitLeave(ExpressionListNode node){
 		int numOfChildren = node.nChildren();
@@ -197,14 +234,20 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		}
 	}
 	
-	public void visitLeave(NewArrayTypeLengthNode node){
-		assert node.nChildren() == 2;
-		ParseNode left  = node.child(0);
-		ParseNode right = node.child(1);
-		List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
-		setTypeAndCheckSignature(node, NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, childTypes);
+	// CloneExpression
+	@Override
+	public void visitLeave(CopyOperatorNode node) {
+		assert node.nChildren() == 1;
+		ParseNode right = node.child(0);
+		List<Type> childTypes = Arrays.asList(right.getType());
+		
+		setTypeAndCheckSignature(node, CopyOperatorNode.ARRAY_CLONE, childTypes);
 	}
 	
+	///////////////////////////////////////////////////////////////////////////
+	// ArrayType
+	
+	@Override
 	public void visitLeave(TypeNode node){
 		assert node.nChildren() <= 1;
 		// Primitive Type
@@ -318,7 +361,6 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
 	private void typeCheckError(ParseNode node, List<Type> operandTypes) {
 		Token token = node.getToken();
-		
 		logError("operator " + token.getLexeme() + " not defined for types " 
 				 + operandTypes  + " at " + token.getLocation());	
 	}

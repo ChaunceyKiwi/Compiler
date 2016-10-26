@@ -241,7 +241,7 @@
         DataI        0                         
         DLabel       reg4-system               
         DataI        0                         
-        DLabel       --print-rational--2-rational-addr 
+        DLabel       --print-rational--3-rational-addr 
         DataI        0                         
         DLabel       $mmgr-tags-size           
         DataZ        4                         
@@ -343,50 +343,28 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushF        -3.14159                  
-        StoreF                                 
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% b
-        Label        --rationalize--1-rational-creation-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadF                                  
-        PushI        223092870                 
-        Duplicate                              
-        PushD        reg4-system               
-        Exchange                               
-        StoreI                                 
-        ConvertF                               
-        FMultiply                              
-        ConvertI                               
-        PushD        reg3-system               
-        Exchange                               
-        StoreI                                 
+        Label        -rational-number-1-rational-creation-begin 
         PushD        reg1-func                 
-        PushD        reg3-system               
-        LoadI                                  
+        PushI        1234                      
         Duplicate                              
         PushD        reg1-system               
         Exchange                               
         StoreI                                 
         Duplicate                              
-        JumpPos      --rationalize--1-get-abs-for-arg1 
+        JumpPos      -rational-number-1-get-abs-for-arg1 
         Negate                                 
-        Label        --rationalize--1-get-abs-for-arg1 
+        Label        -rational-number-1-get-abs-for-arg1 
         StoreI                                 
         PushD        reg2-func                 
-        PushD        reg4-system               
-        LoadI                                  
+        PushI        -2345                     
         Duplicate                              
         PushD        reg2-system               
         Exchange                               
         StoreI                                 
         Duplicate                              
-        JumpPos      --rationalize--1-get-abs-for-arg2 
+        JumpPos      -rational-number-1-get-abs-for-arg2 
         Negate                                 
-        Label        --rationalize--1-get-abs-for-arg2 
+        Label        -rational-number-1-get-abs-for-arg2 
         StoreI                                 
         Call         GCDCalculation            
         PushD        reg1-func                 
@@ -416,20 +394,103 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        --rationalize--1-rational-creation-end 
+        Label        -rational-number-1-rational-creation-end 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% b
+        Label        --rationalize--2-rational-creation-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        reg3-system               
+        Exchange                               
+        StoreI                                 
+        PushI        270                       
+        Duplicate                              
+        PushD        reg4-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg3-system               
+        LoadI                                  
+        LoadI                                  
+        Multiply                               
+        PushD        reg3-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Divide                                 
+        PushD        reg3-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg3-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rationalize--2-get-abs-for-arg1 
+        Negate                                 
+        Label        --rationalize--2-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushD        reg4-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rationalize--2-get-abs-for-arg2 
+        Negate                                 
+        Label        --rationalize--2-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --rationalize--2-rational-creation-end 
         StoreI                                 
         PushD        $global-memory-block      
         PushI        8                         
         Add                                    %% b
         LoadI                                  
-        Label        --print-rational--2--begin- 
-        PushD        --print-rational--2-rational-addr 
+        Label        --print-rational--3--begin- 
+        PushD        --print-rational--3-rational-addr 
         Exchange                               
         StoreI                                 
-        PushD        --print-rational--2-rational-addr 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         LoadI                                  
-        PushD        --print-rational--2-rational-addr 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         PushI        4                         
         Add                                    
@@ -437,61 +498,61 @@
         Divide                                 
         Duplicate                              
         Duplicate                              
-        JumpFalse    --print-rational--2-jumpLabel3 
+        JumpFalse    --print-rational--3-jumpLabel3 
         PushD        $print-format-integer     
         Printf                                 
-        Jump         --print-rational--2-joinLabel 
-        Label        --print-rational--2-jumpLabel3 
-        PushD        --print-rational--2-rational-addr 
+        Jump         --print-rational--3-joinLabel 
+        Label        --print-rational--3-jumpLabel3 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         LoadI                                  
-        PushD        --print-rational--2-rational-addr 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         PushI        4                         
         Add                                    
         LoadI                                  
         Multiply                               
-        JumpPos      --print-rational--2-joinLabel 
+        JumpPos      --print-rational--3-joinLabel 
         PushD        $print-format-minus-sign  
         Printf                                 
-        Label        --print-rational--2-joinLabel 
-        PushD        --print-rational--2-rational-addr 
+        Label        --print-rational--3-joinLabel 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         PushI        4                         
         Add                                    
         LoadI                                  
         Multiply                               
-        PushD        --print-rational--2-rational-addr 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         LoadI                                  
         Exchange                               
         Subtract                               
         Duplicate                              
-        JumpFalse    --print-rational--2--end- 
-        PushD        --print-rational--2-rational-addr 
+        JumpFalse    --print-rational--3--end- 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         LoadI                                  
-        JumpPos      --print-rational--2-jumpLabel1 
+        JumpPos      --print-rational--3-jumpLabel1 
         Negate                                 
-        Label        --print-rational--2-jumpLabel1 
+        Label        --print-rational--3-jumpLabel1 
         PushD        $print-format-and         
         Printf                                 
         PushD        $print-format-integer     
         Printf                                 
         PushD        $print-format-over        
         Printf                                 
-        PushD        --print-rational--2-rational-addr 
+        PushD        --print-rational--3-rational-addr 
         LoadI                                  
         PushI        4                         
         Add                                    
         LoadI                                  
         Duplicate                              
-        JumpPos      --print-rational--2-jumpLabel2 
+        JumpPos      --print-rational--3-jumpLabel2 
         Negate                                 
-        Label        --print-rational--2-jumpLabel2 
+        Label        --print-rational--3-jumpLabel2 
         PushD        $print-format-integer     
         Printf                                 
-        Label        --print-rational--2--end- 
+        Label        --print-rational--3--end- 
         Halt                                   
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
@@ -862,19 +923,19 @@
         LoadI                                  
         Return                                 
         Label        GCDCalculation            
-        Label        --GCD-Calculation--3--function-begin- 
-        Label        --GCD-Calculation--3--loop-begin- 
+        Label        --GCD-Calculation--4--function-begin- 
+        Label        --GCD-Calculation--4--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--4--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--4--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--3--positive-case- 
-        Label        --GCD-Calculation--3--not-positive-case- 
+        JumpPos      --GCD-Calculation--4--positive-case- 
+        Label        --GCD-Calculation--4--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -883,8 +944,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--positive-case- 
+        Jump         --GCD-Calculation--4--join- 
+        Label        --GCD-Calculation--4--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -893,11 +954,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--join- 
-        Jump         --GCD-Calculation--3--loop-begin- 
-        Label        --GCD-Calculation--3--loop-end- 
+        Jump         --GCD-Calculation--4--join- 
+        Label        --GCD-Calculation--4--join- 
+        Jump         --GCD-Calculation--4--loop-begin- 
+        Label        --GCD-Calculation--4--loop-end- 
         Add                                    
         Exchange                               
         Return                                 
-        Label        --GCD-Calculation--3--function-end- 
+        Label        --GCD-Calculation--4--function-end- 
