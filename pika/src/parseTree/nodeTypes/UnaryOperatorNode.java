@@ -7,7 +7,10 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class UnaryOperatorNode extends ParseNode {
+	public final static String ARRAY_LENGTH = "array_length";
+	public final static String BOOLEAN_NOT = "boolean_not";
 
+	
 	public UnaryOperatorNode(Token token) {
 		super(token);
 		assert(token instanceof LextantToken);

@@ -3,6 +3,9 @@ import asmCodeGenerator.codeStorage.*;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
 import semanticAnalyzer.types.ArrayType;
+import semanticAnalyzer.types.Type;
+import semanticAnalyzer.types.TypeVariable;
+
 import java.util.List;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
@@ -302,6 +305,86 @@ public class ArrayHelper {
 		code.add(Label, endFetchingLabel);
 		code.add(Label, endLabel);
 		return code;
+	}
+	
+	public static ASMCodeFragment appendPrintCodeForArrayType(ArrayType type) {
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+		
+		Type subType = type.getSubType();
+		if(subType instanceof TypeVariable){
+			subType = ((TypeVariable)subType).getSubtype();
+		}
+			
+		int subTypeSize = type.getSubType().getSize();
+		Labeller labeller = new Labeller("-print-array-");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String loopBeginLabel = labeller.newLabel("-loop-begin-");
+		String loopEndLabel = labeller.newLabel("-loop-end-");
+		String loopCounterLabel = labeller.newLabel("-loop-counter-");
+		
+		code.add(Label, beginLabel);
+		// get the address of the array
+		code.add(Duplicate);
+		
+		// store the length of array as the loop counter
+		code.append(pushArrayLength(labeller.newLabel("-push-array-length")));
+		createLoopCounter(code, loopCounterLabel);
+		
+		// get the address of first element
+		code.add(PushI, ArrayType.header_size);
+		code.add(Add);
+		
+		code.add(PushD, RunTime.OPEN_SQUARE_BRACKET_PRINT_FORMAT);
+		code.add(Printf);
+		code.add(Label, loopBeginLabel);
+		code.add(PushD, loopCounterLabel);
+		code.add(LoadI);
+		
+		// Counter counts from length to 0
+		// If counter is 0, then exit loop
+		code.add(JumpFalse, loopEndLabel);
+		
+		code.add(Duplicate);	
+		code.add(PushI, subTypeSize);
+		code.add(Add);
+		code.add(Exchange);		
+		code.add(LoadI);
+		
+		if(subType.isReferenceType()) {
+			code.append(appendPrintCodeForArrayType((ArrayType)subType));
+		}
+		else {
+			String format = PrintStatementGenerator.printFormat(subType);
+			code.add(PushD, format);
+			code.add(Printf);
+		}
+		// Decrement the counter by 1
+		Macros.decrementInteger(code, loopCounterLabel);
+		
+		// Print separator and space if not last element
+		code.add(PushD, loopCounterLabel);
+		code.add(LoadI);
+		code.add(JumpFalse, loopEndLabel);
+		code.add(PushD, RunTime.SEPARATOR_PRINT_FORMAT);
+		code.add(Printf);
+		code.add(PushD, RunTime.SPACE_PRINT_FORMAT);
+		code.add(Printf);
+		
+		code.add(Jump, loopBeginLabel);
+		code.add(Label, loopEndLabel);
+		code.add(Pop);
+		code.add(PushD, RunTime.CLOSE_SQUARE_BRACKET_PRINT_FORMAT);
+		code.add(Printf);
+		code.add(Label, endLabel);
+		
+		return code;
+	}
+	
+	private static void createLoopCounter(ASMCodeFragment code, String label){
+		code.add(DLabel, label);
+		code.add(DataI, 0);
+		Macros.storeITo(code, label);
 	}
 	
 	public static ASMCodeFragment pushArrayLength(String label){

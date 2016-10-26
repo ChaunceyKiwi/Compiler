@@ -5,6 +5,7 @@ import java.util.List;
 
 import lexicalAnalyzer.Keyword;
 import lexicalAnalyzer.Lextant;
+import lexicalAnalyzer.Punctuator;
 import logging.PikaLogger;
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
@@ -71,6 +72,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	 *			      AssignmentStatement
 	 *			      IfStatement 
 	 *			      WhileStatement
+	 *				  ReleaseStatement
 	 */
 	
 	// PrintStatement
@@ -129,6 +131,16 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		checkIfExpressionIsBoolean(node.child(0));
 	}
 	
+	// ReleaseStatement
+	@Override
+	public void visitLeave(ReleaseStatementNode node){
+		assert node.nChildren() == 1;
+		Type type = node.child(0).getType();
+		if(!(type instanceof ArrayType)) {
+			releaseTypeError(node);
+		}
+	}
+	
 	public void checkIfExpressionIsBoolean(ParseNode node){
 		if(node.getType() != PrimitiveType.BOOLEAN){
 			controlFlowError(node);
@@ -167,11 +179,15 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	@Override
 	public void visitLeave(UnaryOperatorNode node) {
 		assert node.nChildren() == 1;
-		ParseNode right = node.child(0);
-		List<Type> childTypes = Arrays.asList(right.getType());
+		List<Type> childTypes = Arrays.asList(node.child(0).getType());
 		
 		Lextant operator = operatorFor(node);
-		setTypeAndCheckSignature(node, operator, childTypes);
+		if(operator == Keyword.LENGTH){
+			setTypeAndCheckSignature(node, UnaryOperatorNode.ARRAY_LENGTH, childTypes);
+		}
+		else if(operator == Punctuator.NOT){
+			setTypeAndCheckSignature(node, UnaryOperatorNode.BOOLEAN_NOT, childTypes);
+		}
 	}
 	
 	private Lextant operatorFor(UnaryOperatorNode node) {
@@ -228,10 +244,12 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			node.setType(PrimitiveType.NO_TYPE);
 		}else{
 			Type[] types = new Type[numOfChildren];
+			
 			// need type check here
 			for(int i = 0; i < numOfChildren; i++){
 				types[i] = node.child(i).getType();
 			}
+			
 			node.setType(new ArrayType(types[0], node.nChildren()));
 		}
 	}
@@ -371,6 +389,10 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	private void controlFlowError(ParseNode node){
 		logError(node.getToken().getLexeme() + " Statement Expression Error");
+	}
+	
+	private void releaseTypeError(ParseNode node){
+		logError(node.getToken().getLexeme() + " Release Type Error");
 	}
 	
 	private void logError(String message) {

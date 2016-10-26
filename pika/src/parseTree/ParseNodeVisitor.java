@@ -53,6 +53,9 @@ public interface ParseNodeVisitor {
 	void visitEnter(ArrayIndexingNode node);
 	void visitLeave(ArrayIndexingNode node);
 	
+	void visitEnter(ReleaseStatementNode node);
+	void visitLeave(ReleaseStatementNode node);
+	
 	// leaf nodes: visitLeaf only
 	void visit(BooleanConstantNode node);
 	void visit(TypeCastedToNode node);
@@ -187,6 +190,13 @@ public interface ParseNodeVisitor {
 			defaultVisitEnter(node);
 		}
 		public void visitLeave(WhileStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		public void visitEnter(ReleaseStatementNode node){
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(ReleaseStatementNode node) {
 			defaultVisitLeave(node);
 		}
 		

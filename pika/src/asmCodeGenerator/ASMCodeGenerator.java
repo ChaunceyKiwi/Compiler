@@ -10,6 +10,7 @@ import asmCodeGenerator.ArrayHelper;
 import asmCodeGenerator.RationalHelper;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
+import lexicalAnalyzer.Keyword;
 import lexicalAnalyzer.Lextant;
 import lexicalAnalyzer.Punctuator;
 import parseTree.*;
@@ -214,6 +215,7 @@ public class ASMCodeGenerator {
 		 *			      AssignmentStatement
 		 *			      IfStatement 
 		 *			      WhileStatement
+		 *				  ReleaseStatement
 		 */
 		
 		// PrintStatement
@@ -284,6 +286,12 @@ public class ASMCodeGenerator {
 			code.append(trueDoStatement);
 			code.add(Jump, beginLabel);
 			code.add(Label, endOfWhileStatementLabel);
+		}
+		
+		public void visitLeave(ReleaseStatementNode node){
+			newVoidCode(node);
+			code.append(removeValueCode(node.child(0)));
+			
 		}
 		
 		
@@ -479,15 +487,20 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitLeave(UnaryOperatorNode node) {
+			newValueCode(node);
 			Lextant operator = node.getOperator();
+			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 
-			// Comparison Operator
 			if (operator == Punctuator.NOT) {
-				newValueCode(node);
-				ASMCodeFragment arg1 = removeValueCode(node.child(0));
 				code.append(arg1);		
 				code.add(BNegate);
-			}			
+			}
+			
+			if (operator == Keyword.LENGTH ) {
+				Labeller labeller = new Labeller("-get-array-length");
+				code.append(arg1);		
+				code.append(ArrayHelper.pushArrayLength(labeller.newLabel("push-array-length")));
+			}	
 		}
 		
 		public void visitLeave(TypeCastingNode node){

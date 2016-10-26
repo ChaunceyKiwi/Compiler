@@ -13,6 +13,7 @@ import parseTree.nodeTypes.AssignmentStatementNode;
 import parseTree.nodeTypes.CopyOperatorNode;
 import parseTree.nodeTypes.NewArrayTypeLengthNode;
 import parseTree.nodeTypes.TypeCastingNode;
+import parseTree.nodeTypes.UnaryOperatorNode;
 
 
 public class FunctionSignatures extends ArrayList<FunctionSignature> {
@@ -170,8 +171,8 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 			new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
-		new FunctionSignatures(Punctuator.NOT,
-			new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+		new FunctionSignatures(UnaryOperatorNode.BOOLEAN_NOT,
+			new FunctionSignature(UnaryOperatorNode.BOOLEAN_NOT, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
 		/////////////////////////////////////////////////////////////////////////////////
@@ -211,6 +212,10 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		new FunctionSignatures(AssignmentStatementNode.VALUE_ASSIGNMENT,
 				new FunctionSignature(AssignmentStatementNode.VALUE_ASSIGNMENT,
 						typeVariable, typeVariable, typeVariable)
+		);
+		
+		new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,
+				new FunctionSignature(UnaryOperatorNode.ARRAY_LENGTH, typeVariable, PrimitiveType.INTEGER)
 		);
 		
 	}

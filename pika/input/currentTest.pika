@@ -1,5 +1,6 @@
 exec {
-    var a := [3.3 / 5.8 | int].
+    var a := 3 // 4.
+    var b := a //// 4.
 
-    print a.
+    print b.
 }
