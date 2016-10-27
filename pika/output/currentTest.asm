@@ -228,7 +228,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        4                         
+        DataZ        8                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -341,19 +341,133 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
+        Label        -rational-number-1-rational-creation-begin 
+        PushD        reg1-func                 
         PushI        3                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
         StoreI                                 
-        PushD        $global-memory-block      
+        Duplicate                              
+        JumpPos      -rational-number-1-get-abs-for-arg1 
+        Negate                                 
+        Label        -rational-number-1-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushI        4                         
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      -rational-number-1-get-abs-for-arg2 
+        Negate                                 
+        Label        -rational-number-1-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
         PushI        0                         
-        Add                                    %% a
-        PushI        99                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -rational-number-1-rational-creation-end 
         StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
+        Label        --print-rational--2--begin- 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        LoadI                                  
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Divide                                 
+        Duplicate                              
+        Duplicate                              
+        JumpFalse    --print-rational--2-jumpLabel3 
         PushD        $print-format-integer     
         Printf                                 
+        Jump         --print-rational--2-joinLabel 
+        Label        --print-rational--2-jumpLabel3 
+        PushD        reg1-system               
+        LoadI                                  
+        LoadI                                  
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpPos      --print-rational--2-joinLabel 
+        PushD        $print-format-minus-sign  
+        Printf                                 
+        Label        --print-rational--2-joinLabel 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg1-system               
+        LoadI                                  
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        Duplicate                              
+        JumpFalse    --print-rational--2--end- 
+        PushD        reg1-system               
+        LoadI                                  
+        LoadI                                  
+        JumpPos      --print-rational--2-jumpLabel1 
+        Negate                                 
+        Label        --print-rational--2-jumpLabel1 
+        PushD        $print-format-and         
+        Printf                                 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-over        
+        Printf                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Duplicate                              
+        JumpPos      --print-rational--2-jumpLabel2 
+        Negate                                 
+        Label        --print-rational--2-jumpLabel2 
+        PushD        $print-format-integer     
+        Printf                                 
+        Label        --print-rational--2--end- 
         Halt                                   
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
@@ -724,19 +838,19 @@
         LoadI                                  
         Return                                 
         Label        GCDCalculation            
-        Label        --GCD-Calculation--1--function-begin- 
-        Label        --GCD-Calculation--1--loop-begin- 
+        Label        --GCD-Calculation--3--function-begin- 
+        Label        --GCD-Calculation--3--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--1--loop-end- 
+        JumpFalse    --GCD-Calculation--3--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--1--loop-end- 
+        JumpFalse    --GCD-Calculation--3--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--1--positive-case- 
-        Label        --GCD-Calculation--1--not-positive-case- 
+        JumpPos      --GCD-Calculation--3--positive-case- 
+        Label        --GCD-Calculation--3--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -745,8 +859,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--1--join- 
-        Label        --GCD-Calculation--1--positive-case- 
+        Jump         --GCD-Calculation--3--join- 
+        Label        --GCD-Calculation--3--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -755,11 +869,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--1--join- 
-        Label        --GCD-Calculation--1--join- 
-        Jump         --GCD-Calculation--1--loop-begin- 
-        Label        --GCD-Calculation--1--loop-end- 
+        Jump         --GCD-Calculation--3--join- 
+        Label        --GCD-Calculation--3--join- 
+        Jump         --GCD-Calculation--3--loop-begin- 
+        Label        --GCD-Calculation--3--loop-end- 
         Add                                    
         Exchange                               
         Return                                 
-        Label        --GCD-Calculation--1--function-end- 
+        Label        --GCD-Calculation--3--function-end- 

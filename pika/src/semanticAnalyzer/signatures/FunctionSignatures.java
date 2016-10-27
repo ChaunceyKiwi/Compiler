@@ -50,6 +50,9 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 			}
 		}
 		
+		if(!this.get(0).ifPromotable())
+			return FunctionSignature.nullInstance();
+		
 		// If not, we check if promoting one argument 
 		// will allow a signature to match
 		int skip = 0;
@@ -107,8 +110,6 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 			}
 		}
 		
-
-		
 		return FunctionSignature.nullInstance();
 	}
 	
@@ -143,145 +144,145 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		TypeVariable typeVariable = new TypeVariable();
 		
 		/////////////////////////////////////////////////////////////////////////////////
-		// Arithmetic Operator
+		// Arithmetic Operator (all promotable)
 		new FunctionSignatures(Punctuator.ADD,
-		    new FunctionSignature(ASMOpcode.Add, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-		    new FunctionSignature(ASMOpcode.FAdd, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+		    new FunctionSignature(ASMOpcode.Add, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+		    new FunctionSignature(ASMOpcode.FAdd, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
 		);
 		
 		new FunctionSignatures(Punctuator.SUBTRACT,
-			new FunctionSignature(ASMOpcode.Subtract, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-			new FunctionSignature(ASMOpcode.FSubtract, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+			new FunctionSignature(ASMOpcode.Subtract, true ,PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+			new FunctionSignature(ASMOpcode.FSubtract, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
 		);
 		
 		new FunctionSignatures(Punctuator.MULTIPLY,
-			new FunctionSignature(ASMOpcode.Multiply, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-			new FunctionSignature(ASMOpcode.FMultiply, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+			new FunctionSignature(ASMOpcode.Multiply, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+			new FunctionSignature(ASMOpcode.FMultiply, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
 		);
 		
+		new FunctionSignatures(Punctuator.DIVIDE,
+				new FunctionSignature(ASMOpcode.Divide, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(ASMOpcode.FDivide, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+		);
+		
+		/////////////////////////////////////////////////////////////////////////////////
+		// Rational Number Operator(all promotable)
+		
 		new FunctionSignatures(Punctuator.OVER,
-			new FunctionSignature(Punctuator.OVER, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.RATIONAL)
+			new FunctionSignature(Punctuator.OVER, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.RATIONAL)
 		);
 		
 		new FunctionSignatures(Punctuator.EXPRESSOVER,
-				new FunctionSignature(Punctuator.EXPRESSOVER, PrimitiveType.RATIONAL, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-				new FunctionSignature(Punctuator.EXPRESSOVER, PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.INTEGER)
+				new FunctionSignature(Punctuator.EXPRESSOVER, true, PrimitiveType.RATIONAL, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(Punctuator.EXPRESSOVER, true, PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.INTEGER)
 		);
 		
 		new FunctionSignatures(Punctuator.RATIONALIZE,
-				new FunctionSignature(Punctuator.RATIONALIZE, PrimitiveType.RATIONAL, PrimitiveType.INTEGER, PrimitiveType.RATIONAL),
-				new FunctionSignature(Punctuator.RATIONALIZE, PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.RATIONAL)
+				new FunctionSignature(Punctuator.RATIONALIZE, true, PrimitiveType.RATIONAL, PrimitiveType.INTEGER, PrimitiveType.RATIONAL),
+				new FunctionSignature(Punctuator.RATIONALIZE, true, PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.RATIONAL)
 		);
 		
 		/////////////////////////////////////////////////////////////////////////////////
-		// Rational Number Operator
-		new FunctionSignatures(Punctuator.DIVIDE,
-				new FunctionSignature(ASMOpcode.Divide, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-				new FunctionSignature(ASMOpcode.FDivide, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
-		);
-		
-		
-		/////////////////////////////////////////////////////////////////////////////////
-		// Comparison Operator
+		// Comparison Operator (promotable)
 		
 		new FunctionSignatures(Punctuator.LESSER,
-			new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.INTEGER,  PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.LESSEROREQUAL,
-			new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.EQUAL,
-			new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.NOTEQUAL,
-			new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.GREATER,
-			new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.GREATEROREQUAL,
-			new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
 		);
 		
 		/////////////////////////////////////////////////////////////////////////////////
-		// Boolean Operator
+		// Boolean Operator (all promotable)
 		
 		new FunctionSignatures(Punctuator.AND,
-			new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.OR,
-			new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(UnaryOperatorNode.BOOLEAN_NOT,
-			new FunctionSignature(UnaryOperatorNode.BOOLEAN_NOT, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			new FunctionSignature(UnaryOperatorNode.BOOLEAN_NOT, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
 		/////////////////////////////////////////////////////////////////////////////////
 		// Other Operator
 		new FunctionSignatures(TypeCastingNode.TYPE_CASTING,
 				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
-						PrimitiveType.CHARACTER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+						false, PrimitiveType.CHARACTER,  PrimitiveType.INTEGER, PrimitiveType.INTEGER),
 				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
-						PrimitiveType.INTEGER, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER),
+						false, PrimitiveType.INTEGER, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER),
 				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
-						PrimitiveType.INTEGER, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+						false, PrimitiveType.INTEGER, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
 				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
-						PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+						false, PrimitiveType.FLOATING, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
 				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
-						PrimitiveType.INTEGER, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+						false, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
 				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
-						PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
-				new FunctionSignature(TypeCastingNode.TYPE_CASTING,
+						false, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+				new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, 
 						typeVariable, typeVariable, typeVariable)
 		);
 		
 		new FunctionSignatures(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION,
 				new FunctionSignature(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION,
-					new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable))
+						false, new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable))
 		);
 		
 		new FunctionSignatures(CopyOperatorNode.ARRAY_CLONE,
 				new FunctionSignature(CopyOperatorNode.ARRAY_CLONE,
-					new ArrayType(typeVariable), new ArrayType(typeVariable))
+						false, new ArrayType(typeVariable), new ArrayType(typeVariable))
 		);
 		
 		new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING,
 				new FunctionSignature(ArrayIndexingNode.ARRAY_INDEXING,
-						new ArrayType(typeVariable), PrimitiveType.INTEGER, typeVariable)
+						false, new ArrayType(typeVariable), PrimitiveType.INTEGER, typeVariable)
 		);
 		
 		new FunctionSignatures(AssignmentStatementNode.VALUE_ASSIGNMENT,
-				new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
-				new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER),
-				new FunctionSignature(1, PrimitiveType.STRING, PrimitiveType.STRING, PrimitiveType.STRING),
-				new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-				new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
-				new FunctionSignature(1, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
+				new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+				new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER),
+				new FunctionSignature(1, true, PrimitiveType.STRING, PrimitiveType.STRING, PrimitiveType.STRING),
+				new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+				new FunctionSignature(1, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
 		);
 		
 		new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,
-				new FunctionSignature(UnaryOperatorNode.ARRAY_LENGTH, typeVariable, PrimitiveType.INTEGER)
+				new FunctionSignature(UnaryOperatorNode.ARRAY_LENGTH, false, typeVariable, PrimitiveType.INTEGER)
 		);		
 	}
 }

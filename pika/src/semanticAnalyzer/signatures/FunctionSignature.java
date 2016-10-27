@@ -9,14 +9,20 @@ public class FunctionSignature {
 	private static final boolean ALL_TYPES_ACCEPT_ERROR_TYPES = true;
 	private Type resultType;
 	private Type[] paramTypes;
+	private boolean promotable;
 	Object whichVariant;
 	
 	///////////////////////////////////////////////////////////////
 	// construction
 	
-	public FunctionSignature(Object whichVariant, Type ...types) {
+	public boolean ifPromotable() {
+		return promotable;
+	}
+	
+	public FunctionSignature(Object whichVariant, Boolean promotable, Type ...types) {
 		assert(types.length >= 1);
 		storeParamTypes(types);
+		this.promotable = promotable;
 		resultType = types[types.length-1];
 		this.whichVariant = whichVariant;
 	}
@@ -69,7 +75,7 @@ public class FunctionSignature {
 	}
 	
 	// Null object pattern
-	private static FunctionSignature neverMatchedSignature = new FunctionSignature(1, PrimitiveType.ERROR) {
+	private static FunctionSignature neverMatchedSignature = new FunctionSignature(1, false, PrimitiveType.ERROR) {
 		public boolean accepts(List<Type> types) {
 			return false;
 		}
