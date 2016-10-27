@@ -616,7 +616,14 @@ public class Parser {
 		}
 		
 		expect(Punctuator.OPEN_SQUARE_BRACKET);
-		ParseNode expressionToBeCasted = parseExpression();
+		
+		ParseNode expressionToBeCasted;
+		if(startsExpression(nowReading)){
+			expressionToBeCasted = parseExpression();
+		}else{
+			expressionToBeCasted = null;
+		}
+		
 		Token verticalBarToken = nowReading;
 		if(verticalBarToken.isLextant(Punctuator.VERITICAL_BAR)){
 			expect(Punctuator.VERITICAL_BAR);
@@ -666,7 +673,11 @@ public class Parser {
 		}
 		
 		ParseNode expressionListNode = new ExpressionListNode(nowReading);
-		expressionListNode.appendChild(firstNode);
+		
+		if(firstNode != null){
+			expressionListNode.appendChild(firstNode);
+		}
+
 		while(nowReading.isLextant(Punctuator.SEPARATOR)){
 			readToken();
 			ParseNode expressionNode = parseExpression();

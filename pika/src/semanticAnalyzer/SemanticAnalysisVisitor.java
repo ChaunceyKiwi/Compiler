@@ -247,7 +247,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		int numOfChildren = node.nChildren();
 		
 		if(numOfChildren == 0) {
-			node.setType(PrimitiveType.NO_TYPE);
+			expressionNoElementError(node);
 		}else{
 			Type[] types = new Type[numOfChildren];
 			
@@ -258,7 +258,6 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 					expressionElementDifferentTypeError(node);
 				}
 			}
-			
 			node.setType(new ArrayType(types[0], node.nChildren()));
 		}
 	}
@@ -406,6 +405,10 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	private void expressionElementDifferentTypeError(ParseNode node){
 		logError(node.getToken().getLexeme() + " expression list different type Error");
+	}
+	
+	private void expressionNoElementError(ParseNode node){
+		logError(node.getToken().getLexeme() + " expression no element Error");
 	}
 	
 	private void logError(String message) {
