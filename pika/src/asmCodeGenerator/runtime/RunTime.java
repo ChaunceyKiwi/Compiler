@@ -35,6 +35,9 @@ public class RunTime {
 	public static final String ARRAY_INDEX_NEGATIVE_ERROR = "$$array-index-negative";
 	public static final String ARRAY_INDEX_EXCEED_BOUND_ERROR = "$$array-index-exceed-bound";
 	
+	// Rational Related
+	public static final String RATIONAL_DENOMINATOR_ZERO_ERROR = "$$rational-denominator-zero";
+	
 	private ASMCodeFragment environmentASM() {
 		ASMCodeFragment result = new ASMCodeFragment(GENERATES_VOID);
 		result.append(jumpToMain());
@@ -99,9 +102,10 @@ public class RunTime {
 		arraySizeNegativeError(frag);
 		arrayIndexNegativeError(frag);
 		arrayIndexExceedBoundError(frag);
-		
+		rationalDenominatorZeroError(frag);
 		return frag;
 	}
+	
 	private ASMCodeFragment generalRuntimeError(ASMCodeFragment frag) {
 		String generalErrorMessage = "$errors-general-message";
 
@@ -114,14 +118,24 @@ public class RunTime {
 		frag.add(Halt);
 		return frag;
 	}
+	
 	private void integerDivideByZeroError(ASMCodeFragment frag) {
 		String intDivideByZeroMessage = "$errors-int-divide-by-zero";
 		
 		frag.add(DLabel, intDivideByZeroMessage);
 		frag.add(DataS, "integer divide by zero");
-		
 		frag.add(Label, INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR);
 		frag.add(PushD, intDivideByZeroMessage);
+		frag.add(Jump, GENERAL_RUNTIME_ERROR);
+	}
+	
+	private void rationalDenominatorZeroError(ASMCodeFragment frag) {
+		String rationalDenominatorZeroMessage = "$errors-rational-denominator-zero";
+		
+		frag.add(DLabel, rationalDenominatorZeroMessage);
+		frag.add(DataS, "rational can not have a zero denominator");
+		frag.add(Label, RATIONAL_DENOMINATOR_ZERO_ERROR);
+		frag.add(PushD, rationalDenominatorZeroMessage);
 		frag.add(Jump, GENERAL_RUNTIME_ERROR);
 	}
 	

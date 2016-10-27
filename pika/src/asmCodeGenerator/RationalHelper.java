@@ -39,6 +39,8 @@ public class RationalHelper {
 		code.add(PushD, reg2ForFunction);
 		code.append(arg2);
 		code.add(Duplicate);
+		code.add(JumpFalse, RunTime.RATIONAL_DENOMINATOR_ZERO_ERROR);
+		code.add(Duplicate);
 		Macros.storeITo(code, reg2);
 		code.add(Duplicate);
 		code.add(JumpPos, getAbsForArg2);
@@ -151,6 +153,8 @@ public class RationalHelper {
 
 			// get n*d
 			code.append(arg2);
+			code.add(Duplicate);
+			code.add(JumpFalse, RunTime.RATIONAL_DENOMINATOR_ZERO_ERROR);
 			code.add(Duplicate);
 			Macros.storeITo(code, reg4);
 			code.add(PushD, reg3);
