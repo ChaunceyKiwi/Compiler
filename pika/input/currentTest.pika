@@ -1,9 +1,3 @@
-# should print [2,7,8]
-
 exec {
-    var calf1 := [1, 2, 3, 4, 5].
-    var calf2 := [^a^].
-    calf2 := calf1.
-    var cmp := calf1 != calf2.
-    print cmp.
+    print [[[1,3,5,7,8],[1,3,5,7,8]],[[1,3,5,7,8],[1,3,5,^a^,8]],[[1,3,5,7,8],[1,3,5,7,8]]].
 }
