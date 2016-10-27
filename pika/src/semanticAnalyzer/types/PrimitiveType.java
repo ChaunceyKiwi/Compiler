@@ -33,6 +33,10 @@ public enum PrimitiveType implements Type {
 		return infoString;
 	}
 	
+	public Type getRidOfVariable() {
+		return this;
+	}
+	
 	public void resetTypeVariable() { }
 	
 	public boolean match(Type type) {

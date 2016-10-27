@@ -54,6 +54,13 @@ public class ArrayType implements Type{
 		length = nChildren;
 	}
 	
+	public Type getRidOfVariable() {
+		if(subType instanceof TypeVariable) {
+			subType = ((TypeVariable) subType).getSubtype();
+		}
+		return this;
+	}
+	
 	public void resetTypeVariable(){
 		subType.resetTypeVariable();
 	}

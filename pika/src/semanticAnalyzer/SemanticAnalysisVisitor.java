@@ -369,7 +369,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		// the operands of operation should obey the rule in the signature
 		if(signatures.accepts(childTypes)) {
 			FunctionSignature signature = FunctionSignatures.signature(signatures.getKey(), childTypes);
-			Type resultType = signature.resultType();
+			Type resultType = signature.resultType().getRidOfVariable();
 			node.setSignature(signature);			
 			node.setType(resultType);
 		}else {

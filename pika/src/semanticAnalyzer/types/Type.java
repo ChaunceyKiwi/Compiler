@@ -14,4 +14,6 @@ public interface Type {
 	public boolean match(Type type);
 	
 	public void resetTypeVariable();
+	
+	public Type getRidOfVariable();
 }

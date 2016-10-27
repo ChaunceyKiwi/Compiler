@@ -27,6 +27,10 @@ public final class TypeVariable implements Type {
 		subType = null;
 	}
 	
+	public Type getRidOfVariable() {
+		return subType;
+	}
+	
 	public boolean match(Type type){
 		if(subType == null){
 			setSubType(type);

@@ -1,8 +1,9 @@
-# error_copy
+# should print [2,7,8]
 
 exec {
-    const calf := [[1,3,4],[2,7,8]].
-    var foal := clone calf[1].
-
-    print foal.
+    var calf := new [int] (3).
+    calf[0] := 9.
+    calf[1] := 9.
+    calf[2] := 6.
+    print calf.
 }
