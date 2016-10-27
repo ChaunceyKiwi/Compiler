@@ -12,4 +12,6 @@ public interface Type {
 	public boolean isReferenceType();	
 	
 	public boolean match(Type type);
+	
+	public void resetTypeVariable();
 }

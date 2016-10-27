@@ -23,6 +23,10 @@ public final class TypeVariable implements Type {
 		return "";
 	}
 	
+	public void resetTypeVariable(){
+		subType = null;
+	}
+	
 	public boolean match(Type type){
 		if(subType == null){
 			setSubType(type);

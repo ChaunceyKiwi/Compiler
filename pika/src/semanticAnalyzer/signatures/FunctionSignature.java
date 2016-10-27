@@ -55,6 +55,11 @@ public class FunctionSignature {
 		if(types.size() != paramTypes.length) {
 			return false;
 		}
+		
+        // initialize
+        for (Type paramType : paramTypes) {
+            paramType.resetTypeVariable();
+        }
 			
 		for(int i = 0; i < paramTypes.length; i++) {
 			if(!assignableTo(paramTypes[i], types.get(i))) {
