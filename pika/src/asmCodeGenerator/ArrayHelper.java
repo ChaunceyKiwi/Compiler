@@ -3,6 +3,7 @@ import asmCodeGenerator.codeStorage.*;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
 import semanticAnalyzer.types.ArrayType;
+import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 import semanticAnalyzer.types.TypeVariable;
 
@@ -355,6 +356,10 @@ public class ArrayHelper {
 			code.append(arrayPrint((ArrayType)subType));
 		}
 		else {
+			if(subType == PrimitiveType.STRING){
+				code.add(PushI, 12);
+				code.add(Add);
+			}
 			String format = PrintStatementGenerator.printFormat(subType);
 			code.add(PushD, format);
 			code.add(Printf);

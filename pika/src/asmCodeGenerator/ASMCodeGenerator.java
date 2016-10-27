@@ -638,6 +638,19 @@ public class ASMCodeGenerator {
 			code.add(PushI, node.getValue());
 		}
 		
+		public void visit(StringConstantNode node){
+			newValueCode(node);
+			String value = node.getValue();
+			Labeller label = new Labeller("stringConstant");
+			
+			code.add(DLabel, label.newLabel(value));
+			code.add(DataI, 6);
+			code.add(DataI, 9);
+			code.add(DataI, value.length());
+			code.add(DataS, value);
+			code.add(PushD, label.newLabel(value));
+		}
+		
 		public void visit(NewlineNode node) {
 			newVoidCode(node);
 			code.add(PushD, RunTime.NEWLINE_PRINT_FORMAT);

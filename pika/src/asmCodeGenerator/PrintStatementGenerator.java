@@ -60,8 +60,12 @@ public class PrintStatementGenerator {
 		}else {
 			format = printFormat(node.getType());
 			code.append(visitor.removeValueCode(node));
+			if(node.getType() == PrimitiveType.STRING){
+				code.add(PushI, 12);
+				code.add(Add);
+			}
+				
 		}
-		
 		convertToStringIfBoolean(node);
 		code.add(PushD, format);
 		code.add(Printf);
