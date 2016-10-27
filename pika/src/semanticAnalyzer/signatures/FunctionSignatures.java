@@ -42,11 +42,73 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 	// If such a signature is find, then stop and return it
 	// Otherwise return null 
 	public FunctionSignature acceptingSignature(List<Type> types) {
+
+		// We first check if the operands match a signature
 		for(FunctionSignature functionSignature: this) {
 			if(functionSignature.accepts(types)) {
 				return functionSignature;
 			}
 		}
+		
+		// If not, we check if promoting one argument 
+		// will allow a signature to match
+		int skip = 0;
+		if(this.get(0).getVariant() instanceof Integer) {
+			skip = (Integer)this.get(0).getVariant();
+		}
+	
+		for(int i = skip; i < types.size(); i++){
+			List<List<Type>> unaryPromotionLists = PromotionHelper.getUnaryPromotionLists(types, i);
+			List<List<Type>> matchingSet = new ArrayList<List<Type>>();
+			for(List<Type> item : unaryPromotionLists) {
+				for(FunctionSignature functionSignature: this) {
+					if(functionSignature.accepts(item)) {
+						matchingSet.add(item);
+					}
+				}
+			}
+			
+			List<Type> matching = PromotionHelper.getValidMatching(matchingSet);
+			if(matching != null){
+				for(FunctionSignature functionSignature: this) {
+					if(functionSignature.accepts(matching)) {
+						return functionSignature;
+					}
+				}
+			}
+		}
+		
+		// If still not, we check if promoting two arguments
+		// will allow a signature to match
+		if(this.get(0).getVariant() instanceof Integer) {
+			skip = (Integer)this.get(0).getVariant();
+		}
+	
+		for(int i = skip; i < types.size(); i++){
+			for(int j = i + 1; j < types.size(); j++){
+				List<List<Type>> binaryPromotionLists = PromotionHelper.getBinaryPromotionLists(types, i, j);
+				List<List<Type>> matchingSet = new ArrayList<List<Type>>();
+				for(List<Type> item : binaryPromotionLists) {
+					for(FunctionSignature functionSignature: this) {
+						if(functionSignature.accepts(item)) {
+							matchingSet.add(item);
+						}
+					}
+				}
+				
+				List<Type> matching = PromotionHelper.getValidMatching(matchingSet);
+				if(matching != null){
+					for(FunctionSignature functionSignature: this) {
+						if(functionSignature.accepts(matching)) {
+							return functionSignature;
+						}
+					}
+				}
+			}
+		}
+		
+
+		
 		return FunctionSignature.nullInstance();
 	}
 	
@@ -210,13 +272,16 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		);
 		
 		new FunctionSignatures(AssignmentStatementNode.VALUE_ASSIGNMENT,
-				new FunctionSignature(AssignmentStatementNode.VALUE_ASSIGNMENT,
-						typeVariable, typeVariable, typeVariable)
+				new FunctionSignature(1, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+				new FunctionSignature(1, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER),
+				new FunctionSignature(1, PrimitiveType.STRING, PrimitiveType.STRING, PrimitiveType.STRING),
+				new FunctionSignature(1, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+				new FunctionSignature(1, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+				new FunctionSignature(1, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
 		);
 		
 		new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,
 				new FunctionSignature(UnaryOperatorNode.ARRAY_LENGTH, typeVariable, PrimitiveType.INTEGER)
-		);
-		
+		);		
 	}
 }

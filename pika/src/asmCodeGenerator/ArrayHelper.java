@@ -447,7 +447,6 @@ public class ArrayHelper {
 		return code;
 	}
 	
-	
 	private static void createLoopCounter(ASMCodeFragment code, String label){
 		code.add(DLabel, label);
 		code.add(DataI, 0);
