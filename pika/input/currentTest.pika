@@ -1,9 +1,8 @@
 # should print [2,7,8]
 
 exec {
-    var calf := new [int] (3).
-    calf[0] := 9.
-    calf[1] := 9.
-    calf[2] := 6.
-    print calf.
+    var calf1 := [1, 2, 3, 4, 5].
+    var calf2 := calf1.
+    var cmp := calf1 != calf2.
+    print cmp.
 }

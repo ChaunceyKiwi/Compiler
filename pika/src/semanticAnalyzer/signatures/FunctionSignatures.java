@@ -209,6 +209,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
+		
 		new FunctionSignatures(Punctuator.NOTEQUAL,
 			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),

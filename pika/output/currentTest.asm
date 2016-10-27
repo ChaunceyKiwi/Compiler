@@ -270,7 +270,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        4                         
+        DataZ        9                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -282,8 +282,6 @@
         DLabel       reg3-system               
         DataI        0                         
         DLabel       reg4-system               
-        DataI        0                         
-        DLabel       --print-array--5--loop-counter- 
         DataI        0                         
         DLabel       $mmgr-tags-size           
         DataZ        4                         
@@ -387,23 +385,23 @@
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% calf
-        Label        -empty-array-creation-1-array-creation-begin 
-        Label        -empty-array-creation-1-array-creation-get-length 
-        PushI        3                         
+        Add                                    %% calf1
+        Label        --expr-list--1-array-creation-begin 
+        Label        --expr-list--1-array-creation-get-length 
+        PushI        5                         
         Duplicate                              
         Duplicate                              
         PushD        reg1-system               
         Exchange                               
         StoreI                                 
         JumpNeg      $$array-size-negative     
-        Label        -empty-array-creation-1-array-creation-size 
+        Label        --expr-list--1-array-creation-size 
         PushI        4                         
         Multiply                               
         PushI        16                        
         Add                                    
         Call         -mem-manager-allocate     
-        Label        -empty-array-creation-1-array-creation-type 
+        Label        --expr-list--1-array-creation-type 
         Duplicate                              
         PushI        7                         
         Exchange                               
@@ -411,7 +409,7 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -empty-array-creation-1-array-creation-status 
+        Label        --expr-list--1-array-creation-status 
         Duplicate                              
         PushI        0                         
         Exchange                               
@@ -419,7 +417,7 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -empty-array-creation-1-array-creation-subtype-size 
+        Label        --expr-list--1-array-creation-subtype-size 
         Duplicate                              
         PushI        4                         
         Exchange                               
@@ -427,7 +425,7 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -empty-array-creation-1-array-creation-length 
+        Label        --expr-list--1-array-creation-length 
         Duplicate                              
         PushD        reg1-system               
         LoadI                                  
@@ -436,158 +434,90 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -empty-array-creation-1-array-creation-end 
-        StoreI                                 
-        Label        --array-indexing--2-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% calf
-        LoadI                                  
-        Duplicate                              
-        PushI        0                         
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--2-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--2-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--2-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        reg1-system               
-        LoadI                                  
-        PushI        4                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--2-array-index-fetching-end 
-        Label        --array-indexing--2-array-index-end 
-        PushI        9                         
-        StoreI                                 
-        Label        --array-indexing--3-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% calf
-        LoadI                                  
+        Label        --expr-list--1-array-creation-end 
+        Label        --expr-list--1-array-initialization-begin 
         Duplicate                              
         PushI        1                         
-        Duplicate                              
-        PushD        reg1-system               
         Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpNeg      $$array-index-negative    
-        Exchange                               
-        Label        --array-indexing--3-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--3-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--3-array-index-fetching-begin 
         PushI        16                        
         Add                                    
-        PushD        reg1-system               
-        LoadI                                  
-        PushI        4                         
-        Multiply                               
-        Add                                    
-        Label        --array-indexing--3-array-index-fetching-end 
-        Label        --array-indexing--3-array-index-end 
-        PushI        9                         
+        Exchange                               
         StoreI                                 
-        Label        --array-indexing--4-array-index-begin 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% calf
-        LoadI                                  
         Duplicate                              
         PushI        2                         
-        Duplicate                              
-        PushD        reg1-system               
+        Exchange                               
+        PushI        20                        
+        Add                                    
         Exchange                               
         StoreI                                 
         Duplicate                              
-        JumpNeg      $$array-index-negative    
+        PushI        3                         
         Exchange                               
-        Label        --array-indexing--4-array-length 
-        PushI        12                        
+        PushI        24                        
         Add                                    
-        LoadI                                  
         Exchange                               
-        Subtract                               
-        JumpPos      --array-indexing--4-array-index-fetching-begin 
-        Jump         $$array-index-exceed-bound 
-        Label        --array-indexing--4-array-index-fetching-begin 
-        PushI        16                        
-        Add                                    
-        PushD        reg1-system               
-        LoadI                                  
+        StoreI                                 
+        Duplicate                              
         PushI        4                         
-        Multiply                               
+        Exchange                               
+        PushI        28                        
         Add                                    
-        Label        --array-indexing--4-array-index-fetching-end 
-        Label        --array-indexing--4-array-index-end 
-        PushI        6                         
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        5                         
+        Exchange                               
+        PushI        32                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--1-array-initialization-end 
         StoreI                                 
         PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% calf
-        LoadI                                  
-        Label        --print-array--5--begin-  
-        Duplicate                              
-        Label        --print-array--5--push-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        PushD        --print-array--5--loop-counter- 
-        Exchange                               
-        StoreI                                 
-        PushI        16                        
-        Add                                    
-        PushD        $print-format-open-square-bracket 
-        Printf                                 
-        Label        --print-array--5--loop-begin- 
-        PushD        --print-array--5--loop-counter- 
-        LoadI                                  
-        JumpFalse    --print-array--5--loop-end- 
-        Duplicate                              
         PushI        4                         
-        Add                                    
-        Exchange                               
+        Add                                    %% calf2
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% calf1
         LoadI                                  
-        PushD        $print-format-integer     
-        Printf                                 
-        PushI        -1                        
-        PushD        --print-array--5--loop-counter- 
-        LoadI                                  
-        Add                                    
-        PushD        --print-array--5--loop-counter- 
-        Exchange                               
         StoreI                                 
-        PushD        --print-array--5--loop-counter- 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% cmp
+        Label        -compare-2-arg1           
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% calf1
         LoadI                                  
-        JumpFalse    --print-array--5--loop-end- 
-        PushD        $print-format-separator   
+        Label        -compare-2-arg2           
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% calf2
+        LoadI                                  
+        Label        -compare-2-sub            
+        Subtract                               
+        JumpFalse    -compare-2-false          
+        Jump         -compare-2-true           
+        Label        -compare-2-true           
+        PushI        1                         
+        Jump         -compare-2-join           
+        Label        -compare-2-false          
+        PushI        0                         
+        Jump         -compare-2-join           
+        Label        -compare-2-join           
+        StoreC                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% cmp
+        LoadC                                  
+        JumpTrue     -print-boolean-3-true     
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-3-join     
+        Label        -print-boolean-3-true     
+        PushD        $boolean-true-string      
+        Label        -print-boolean-3-join     
+        PushD        $print-format-boolean     
         Printf                                 
-        PushD        $print-format-space       
-        Printf                                 
-        Jump         --print-array--5--loop-begin- 
-        Label        --print-array--5--loop-end- 
-        Pop                                    
-        PushD        $print-format-close-square-bracket 
-        Printf                                 
-        Label        --print-array--5--end-    
         Halt                                   
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
@@ -958,28 +888,28 @@
         LoadI                                  
         Return                                 
         Label        GCDCalculation            
-        Label        --GCD-Calculation--6--function-begin- 
+        Label        --GCD-Calculation--4--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--6--check-initial-zero 
+        JumpTrue     --GCD-Calculation--4--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--6--function-end- 
-        Label        --GCD-Calculation--6--check-initial-zero 
-        Label        --GCD-Calculation--6--loop-begin- 
+        Jump         --GCD-Calculation--4--function-end- 
+        Label        --GCD-Calculation--4--check-initial-zero 
+        Label        --GCD-Calculation--4--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--6--loop-end- 
+        JumpFalse    --GCD-Calculation--4--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--6--loop-end- 
+        JumpFalse    --GCD-Calculation--4--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--6--positive-case- 
-        Label        --GCD-Calculation--6--not-positive-case- 
+        JumpPos      --GCD-Calculation--4--positive-case- 
+        Label        --GCD-Calculation--4--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -988,8 +918,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--6--join- 
-        Label        --GCD-Calculation--6--positive-case- 
+        Jump         --GCD-Calculation--4--join- 
+        Label        --GCD-Calculation--4--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -998,11 +928,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--6--join- 
-        Label        --GCD-Calculation--6--join- 
-        Jump         --GCD-Calculation--6--loop-begin- 
-        Label        --GCD-Calculation--6--loop-end- 
+        Jump         --GCD-Calculation--4--join- 
+        Label        --GCD-Calculation--4--join- 
+        Jump         --GCD-Calculation--4--loop-begin- 
+        Label        --GCD-Calculation--4--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--6--function-end- 
+        Label        --GCD-Calculation--4--function-end- 
         Exchange                               
         Return                                 
