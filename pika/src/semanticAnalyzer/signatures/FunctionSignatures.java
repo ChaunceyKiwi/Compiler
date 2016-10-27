@@ -10,6 +10,7 @@ import lexicalAnalyzer.Punctuator;
 import semanticAnalyzer.types.*;
 import parseTree.nodeTypes.ArrayIndexingNode;
 import parseTree.nodeTypes.AssignmentStatementNode;
+import parseTree.nodeTypes.BinaryOperatorNode;
 import parseTree.nodeTypes.CopyOperatorNode;
 import parseTree.nodeTypes.NewArrayTypeLengthNode;
 import parseTree.nodeTypes.TypeCastingNode;
@@ -147,22 +148,26 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		// Arithmetic Operator (all promotable)
 		new FunctionSignatures(Punctuator.ADD,
 		    new FunctionSignature(ASMOpcode.Add, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-		    new FunctionSignature(ASMOpcode.FAdd, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+		    new FunctionSignature(ASMOpcode.FAdd, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_ADD, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
 		);
 		
 		new FunctionSignatures(Punctuator.SUBTRACT,
 			new FunctionSignature(ASMOpcode.Subtract, true ,PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-			new FunctionSignature(ASMOpcode.FSubtract, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+			new FunctionSignature(ASMOpcode.FSubtract, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_SUBSTRCT, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
 		);
 		
 		new FunctionSignatures(Punctuator.MULTIPLY,
 			new FunctionSignature(ASMOpcode.Multiply, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-			new FunctionSignature(ASMOpcode.FMultiply, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+			new FunctionSignature(ASMOpcode.FMultiply, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_MULTIPLY, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
 		);
 		
 		new FunctionSignatures(Punctuator.DIVIDE,
-				new FunctionSignature(ASMOpcode.Divide, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-				new FunctionSignature(ASMOpcode.FDivide, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING)
+			new FunctionSignature(ASMOpcode.Divide, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
+			new FunctionSignature(ASMOpcode.FDivide, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_DIVIDE, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
 		);
 		
 		/////////////////////////////////////////////////////////////////////////////////

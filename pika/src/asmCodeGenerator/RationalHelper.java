@@ -330,4 +330,439 @@ public class RationalHelper {
 		
 		return code;
 	}
+	
+	// Due to 
+	public static ASMCodeFragment rationAdd(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		Labeller labeller = new Labeller("-rational-add-");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String getAbsForArg1 = labeller.newLabel("get-abs-for-arg1");
+		String getAbsForArg2 = labeller.newLabel("get-abs-for-arg2");
+		
+		
+		// Formula [m//n + o//p = (mp+no)//mp]
+		code.add(Label, beginLabel);
+		code.append(arg1);
+		code.append(arg2);
+		Macros.storeITo(code, reg1);
+		Macros.storeITo(code, reg2);
+		
+		// push mp+no
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(Multiply);
+		code.add(Add);
+		
+		// push np
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		
+		// Store n*p in reg2 denominator
+		// Store mp+no in reg1 as numerator
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// store abs(num1) in reg1
+		code.add(PushD, reg1ForFunction);
+		code.add(PushD, reg1);
+		code.add(LoadI);		
+		code.add(Duplicate);
+		Macros.storeITo(code, reg1);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg1);
+		code.add(Negate);
+		code.add(Label, getAbsForArg1);
+		code.add(StoreI);
+		
+		// store abs(num2) in reg2
+		code.add(PushD, reg2ForFunction);
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.add(Duplicate);
+		Macros.storeITo(code, reg2);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg2);
+		code.add(Negate);
+		code.add(Label, getAbsForArg2);
+		code.add(StoreI);
+		
+		// Call function to get GCD and store it in reg1
+		code.add(Call, GCDCalculation);
+		code.add(PushD, reg1ForFunction);
+		code.add(Exchange);
+		code.add(StoreI);
+		
+		// Rational number needs 8 bytes 
+		code.add(PushI, 8);
+		
+		// call the memory manager to get address allocated
+		code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+		
+		// Store first integer
+		code.add(Duplicate);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 0);
+		
+		// Store second integer
+		code.add(Duplicate);
+		code.add(PushD, reg2);
+		code.add(LoadI);	
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 4);
+		code.add(Label, endLabel);			
+		// leave the address of array on the accumulator
+				
+		return code;
+	}
+	
+	public static ASMCodeFragment rationSubtract(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
+		
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		Labeller labeller = new Labeller("-rational-subtract-");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String getAbsForArg1 = labeller.newLabel("get-abs-for-arg1");
+		String getAbsForArg2 = labeller.newLabel("get-abs-for-arg2");
+		
+		
+		// Formula [m//n + o//p = (mp-no)//mp]
+		code.add(Label, beginLabel);
+		code.append(arg1);
+		code.append(arg2);
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// push mp-no
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(Multiply);
+		code.add(Subtract);
+		
+		// push np
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		
+		// Store n*p in reg2 denominator
+		// Store mp+no in reg1 as numerator
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// store abs(num1) in reg1
+		code.add(PushD, reg1ForFunction);
+		code.add(PushD, reg1);
+		code.add(LoadI);		
+		code.add(Duplicate);
+		Macros.storeITo(code, reg1);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg1);
+		code.add(Negate);
+		code.add(Label, getAbsForArg1);
+		code.add(StoreI);
+		
+		// store abs(num2) in reg2
+		code.add(PushD, reg2ForFunction);
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.add(Duplicate);
+		Macros.storeITo(code, reg2);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg2);
+		code.add(Negate);
+		code.add(Label, getAbsForArg2);
+		code.add(StoreI);
+		
+		// Call function to get GCD and store it in reg1
+		code.add(Call, GCDCalculation);
+		code.add(PushD, reg1ForFunction);
+		code.add(Exchange);
+		code.add(StoreI);
+		
+		// Rational number needs 8 bytes 
+		code.add(PushI, 8);
+		
+		// call the memory manager to get address allocated
+		code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+		
+		// Store first integer
+		code.add(Duplicate);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 0);
+		
+		// Store second integer
+		code.add(Duplicate);
+		code.add(PushD, reg2);
+		code.add(LoadI);	
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 4);
+		code.add(Label, endLabel);			
+		// leave the address of array on the accumulator
+				
+		return code;
+	}
+	
+	public static ASMCodeFragment rationMultiply(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
+		
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		Labeller labeller = new Labeller("-rational-multiply-");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String getAbsForArg1 = labeller.newLabel("get-abs-for-arg1");
+		String getAbsForArg2 = labeller.newLabel("get-abs-for-arg2");
+		
+		
+		// Formula [m//n * o//p = (mo)//np]
+		code.add(Label, beginLabel);
+		code.append(arg1);
+		code.append(arg2);
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// push mo
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(Multiply);
+		
+		// push np
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		
+		// Store n*p in reg2 denominator
+		// Store mp+no in reg1 as numerator
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// store abs(num1) in reg1
+		code.add(PushD, reg1ForFunction);
+		code.add(PushD, reg1);
+		code.add(LoadI);		
+		code.add(Duplicate);
+		Macros.storeITo(code, reg1);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg1);
+		code.add(Negate);
+		code.add(Label, getAbsForArg1);
+		code.add(StoreI);
+		
+		// store abs(num2) in reg2
+		code.add(PushD, reg2ForFunction);
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.add(Duplicate);
+		Macros.storeITo(code, reg2);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg2);
+		code.add(Negate);
+		code.add(Label, getAbsForArg2);
+		code.add(StoreI);
+		
+		// Call function to get GCD and store it in reg1
+		code.add(Call, GCDCalculation);
+		code.add(PushD, reg1ForFunction);
+		code.add(Exchange);
+		code.add(StoreI);
+		
+		// Rational number needs 8 bytes 
+		code.add(PushI, 8);
+		
+		// call the memory manager to get address allocated
+		code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+		
+		// Store first integer
+		code.add(Duplicate);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 0);
+		
+		// Store second integer
+		code.add(Duplicate);
+		code.add(PushD, reg2);
+		code.add(LoadI);	
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 4);
+		code.add(Label, endLabel);			
+		// leave the address of array on the accumulator
+				
+		return code;
+	}
+	
+	public static ASMCodeFragment rationDivide(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		Labeller labeller = new Labeller("-rational-divide-");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String getAbsForArg1 = labeller.newLabel("get-abs-for-arg1");
+		String getAbsForArg2 = labeller.newLabel("get-abs-for-arg2");
+		
+		
+		// Formula [m//n / o//p = (mp)//no]
+		code.add(Label, beginLabel);
+		code.append(arg1);
+		code.append(arg2);
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// push mp
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		
+		// push no
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(Multiply);
+		
+		// Store n*p in reg2 denominator
+		// Store mp+no in reg1 as numerator
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// store abs(num1) in reg1
+		code.add(PushD, reg1ForFunction);
+		code.add(PushD, reg1);
+		code.add(LoadI);		
+		code.add(Duplicate);
+		Macros.storeITo(code, reg1);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg1);
+		code.add(Negate);
+		code.add(Label, getAbsForArg1);
+		code.add(StoreI);
+		
+		// store abs(num2) in reg2
+		code.add(PushD, reg2ForFunction);
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.add(Duplicate);
+		Macros.storeITo(code, reg2);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg2);
+		code.add(Negate);
+		code.add(Label, getAbsForArg2);
+		code.add(StoreI);
+		
+		// Call function to get GCD and store it in reg1
+		code.add(Call, GCDCalculation);
+		code.add(PushD, reg1ForFunction);
+		code.add(Exchange);
+		code.add(StoreI);
+		
+		// Rational number needs 8 bytes 
+		code.add(PushI, 8);
+		
+		// call the memory manager to get address allocated
+		code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+		
+		// Store first integer
+		code.add(Duplicate);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 0);
+		
+		// Store second integer
+		code.add(Duplicate);
+		code.add(PushD, reg2);
+		code.add(LoadI);	
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 4);
+		code.add(Label, endLabel);			
+		// leave the address of array on the accumulator
+				
+		return code;
+	}
+	
+	public static ASMCodeFragment pushNumerator(){
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		Macros.readIOffset(code, 0);
+		return code;
+	}
+	
+	public static ASMCodeFragment pushDenominator(){
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		Macros.readIOffset(code, 4);
+		return code;
+	}
 }

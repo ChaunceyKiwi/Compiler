@@ -7,6 +7,10 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class BinaryOperatorNode extends ParseNode {
+	public final static String RATIONAL_MULTIPLY = "ration_multiply";
+	public final static String RATIONAL_DIVIDE   = "ration_divide";
+	public final static String RATIONAL_ADD     = "ration_add";
+	public final static String RATIONAL_SUBSTRCT = "ration_substract";
 
 	public BinaryOperatorNode(Token token) {
 		super(token);

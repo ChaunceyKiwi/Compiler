@@ -471,21 +471,36 @@ public class ASMCodeGenerator {
 		private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
 			newValueCode(node);
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
-			ASMCodeFragment arg2 = removeValueCode(node.child(1));
+			ASMCodeFragment arg2 = removeValueCode(node.child(1));			
+			Object operation = node.getSignature().getVariant();
 			
-			code.append(arg1);
-			code.append(arg2);
-			
-			ASMOpcode opcode = (ASMOpcode)node.getSignature().getVariant();
-			if(opcode == Divide){
-				code.add(Duplicate);
-				code.add(JumpFalse, RunTime.INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR);
-			}else if(opcode == FDivide){
-				code.add(Duplicate);
-				code.add(JumpFZero, RunTime.FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR);
+			if(operation instanceof ASMOpcode) {
+				ASMOpcode opcode = (ASMOpcode)operation;
+				code.append(arg1);
+				code.append(arg2);
+				if(opcode == Divide) {
+					code.add(Duplicate);
+					code.add(JumpFalse, RunTime.INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR);
+				}else if(opcode == FDivide) {
+					code.add(Duplicate);
+					code.add(JumpFZero, RunTime.FLOAT_DIVIDE_BY_ZERO_RUNTIME_ERROR);
+				}
+				code.add(opcode);
+			}else if(operation instanceof String){
+				if(operation == BinaryOperatorNode.RATIONAL_ADD){
+					code.append(RationalHelper.rationAdd(arg1, arg2, 
+							GCDCalculation, reg1, reg2, reg1ForFunction, reg2ForFunction));
+				}else if(operation == BinaryOperatorNode.RATIONAL_SUBSTRCT){
+					code.append(RationalHelper.rationSubtract(arg1, arg2, 
+							GCDCalculation, reg1, reg2, reg1ForFunction, reg2ForFunction));
+				}else if(operation == BinaryOperatorNode.RATIONAL_MULTIPLY){
+					code.append(RationalHelper.rationMultiply(arg1, arg2, 
+							GCDCalculation, reg1, reg2, reg1ForFunction, reg2ForFunction));
+				}else if(operation == BinaryOperatorNode.RATIONAL_DIVIDE){
+					code.append(RationalHelper.rationDivide(arg1, arg2, 
+							GCDCalculation, reg1, reg2, reg1ForFunction, reg2ForFunction));
+				}
 			}
-			
-			code.add(opcode);
 		}
 		
 		public void visitLeave(UnaryOperatorNode node) {

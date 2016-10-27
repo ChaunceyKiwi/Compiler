@@ -453,7 +453,6 @@ public class ArrayHelper {
 		Macros.storeITo(code, label);
 	}
 	
-	
 	public static ASMCodeFragment pushArrayLength(String label){
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 		code.add(Label, label);

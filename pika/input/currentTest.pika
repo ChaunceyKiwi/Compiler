@@ -1,4 +1,4 @@
 exec {
-    var a := 3 // 4.
+    var a := (3 // 7) / (9 // 7).
     print a.
 }
