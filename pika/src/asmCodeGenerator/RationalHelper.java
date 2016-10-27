@@ -248,6 +248,8 @@ public class RationalHelper {
 		String jumpLabel2 = labeller.newLabel("jumpLabel2");
 		String jumpLabel3 = labeller.newLabel("jumpLabel3");
 		String joinLabel = labeller.newLabel("joinLabel");
+		String numeratorZeroLabel = labeller.newLabel("numerator-zero");
+
 		String addressOfRationalLabel =  ASMCodeGenerator.reg1;
 		String format = PrintStatementGenerator.printFormat(type);
 					
@@ -284,11 +286,19 @@ public class RationalHelper {
 		code.add(PushI, 4);
 		code.add(Add);
 		code.add(LoadI);
-		code.add(Multiply);
+		code.add(Multiply);		
+		code.add(Duplicate);
+		code.add(JumpTrue, numeratorZeroLabel);
+		code.add(PushI, 0);
+		code.add(PushD, format);
+		code.add(Printf);
+		code.add(Jump, endLabel);
+		code.add(Label, numeratorZeroLabel);
 		code.add(JumpPos, joinLabel);
 		code.add(PushD, RunTime.MINUS_SIGN_PRINT_FORMAT);
 		code.add(Printf);
 		code.add(Label, joinLabel);
+
 		
 		// second part b = sig(n) * (n-a*m)
 		code.add(PushD, addressOfRationalLabel);

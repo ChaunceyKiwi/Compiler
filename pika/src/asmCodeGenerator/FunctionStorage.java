@@ -16,9 +16,22 @@ public class FunctionStorage {
 		String positiveCaseLabel = labeller.newLabel("-positive-case-");
 		String notPositiveCaseLabel = labeller.newLabel("-not-positive-case-");
 		String joinLabel = labeller.newLabel("-join-");
+		String checkInitialZero = labeller.newLabel("-check-initial-zero");
 		
 		code.add(Label, funcLabel);
 		code.add(Label, beginLabel);
+		
+		// if initial case has zero, push 1 and return
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.add(Multiply);
+		code.add(JumpTrue, checkInitialZero);
+		code.add(PushI, 1);
+		code.add(Jump, endLabel);
+		code.add(Label, checkInitialZero);
+		
 		code.add(Label, loopStartLabel);
 		code.add(PushD, reg1);
 		code.add(LoadI);
@@ -54,10 +67,9 @@ public class FunctionStorage {
 		code.add(Jump, loopStartLabel);
 		code.add(Label, loopEndLabel);
 		code.add(Add);
-		code.add(Exchange);
-		code.add(Return);
 		code.add(Label, endLabel);	
-		
+		code.add(Exchange);
+		code.add(Return);		
 		return code;
 	}
 }
