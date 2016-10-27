@@ -354,6 +354,8 @@ public class ArrayHelper {
 		
 		if(subType.isReferenceType()) {
 			code.append(arrayPrint((ArrayType)subType));
+		}else if (subType == PrimitiveType.RATIONAL){
+			code.append(RationalHelper.appendPrintCodeForRational(subType));
 		}
 		else {
 			if(subType == PrimitiveType.STRING){

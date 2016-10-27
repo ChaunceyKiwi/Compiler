@@ -266,11 +266,10 @@ public class RationalHelper {
 		code.add(Add);
 		code.add(LoadI);
 		code.add(Divide);
-		code.add(Duplicate);
+
+		// if a is not zero, print it
 		code.add(Duplicate);
 		code.add(JumpFalse, jumpLabel3);
-		
-		// if a is not zero, print it
 		code.add(PushD, format);
 		code.add(Printf);
 		code.add(Jump, joinLabel);

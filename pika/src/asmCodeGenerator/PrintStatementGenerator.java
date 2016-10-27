@@ -28,10 +28,15 @@ public class PrintStatementGenerator {
 			if(child instanceof NewlineNode || child instanceof SpaceNode || child instanceof TabNode) {
 				ASMCodeFragment childCode = visitor.removeVoidCode(child);
 				code.append(childCode);
-			}else if(child.getType() instanceof ArrayType) {
+			}
+			
+			else if(child.getType() instanceof ArrayType) {
 				code.append(visitor.removeValueCode(child));
 				code.append(ArrayHelper.arrayPrint((ArrayType)child.getType()));
-			}else if(child.getType() instanceof TypeVariable) {
+			}
+			
+			
+			else if(child.getType() instanceof TypeVariable) {
 				Type subtype = ((TypeVariable)child.getType()).getSubtype();
 				if(subtype instanceof ArrayType) {
 					code.append(visitor.removeValueCode(child));
@@ -40,10 +45,15 @@ public class PrintStatementGenerator {
 				}else if(subtype instanceof PrimitiveType) {
 					appendPrintCode(child);
 				}
-			}else if(child.getType() == PrimitiveType.RATIONAL){
+			}
+			
+			
+			else if(child.getType() == PrimitiveType.RATIONAL){
 				code.append(visitor.removeValueCode(child));
 				code.append(RationalHelper.appendPrintCodeForRational(child.getType()));
 			}
+			
+			
 			else{
 				appendPrintCode(child);
 			}
