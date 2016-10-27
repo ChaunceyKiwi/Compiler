@@ -11,11 +11,7 @@ public class BinaryOperatorNode extends ParseNode {
 	public final static String RATIONAL_DIVIDE   = "ration_divide";
 	public final static String RATIONAL_ADD     = "ration_add";
 	public final static String RATIONAL_SUBSTRCT = "ration_substract";
-	public final static String ARRAY_EUQAL = "array_equal";
-	public final static String ARRAY_NOT_EUQAL = "array_not_equal";
-
-
-	
+	public final static String ARRAY_COMPARISON = "array_comparison";
 
 	public BinaryOperatorNode(Token token) {
 		super(token);

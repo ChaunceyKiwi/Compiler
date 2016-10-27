@@ -2,7 +2,8 @@
 
 exec {
     var calf1 := [1, 2, 3, 4, 5].
-    var calf2 := calf1.
+    var calf2 := [^a^].
+    calf2 := calf1.
     var cmp := calf1 != calf2.
     print cmp.
 }

@@ -209,6 +209,9 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
 		);
 		
+		new FunctionSignatures(BinaryOperatorNode.ARRAY_COMPARISON,
+				new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable), PrimitiveType.BOOLEAN)		
+		);
 		
 		new FunctionSignatures(Punctuator.NOTEQUAL,
 			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
@@ -284,7 +287,8 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 				new FunctionSignature(1, true, PrimitiveType.STRING, PrimitiveType.STRING, PrimitiveType.STRING),
 				new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.INTEGER),
 				new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.FLOATING),
-				new FunctionSignature(1, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL)
+				new FunctionSignature(1, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL),
+				new FunctionSignature(1, true, new ArrayType(typeVariable), new ArrayType(typeVariable), new ArrayType(typeVariable))
 		);
 		
 		new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,

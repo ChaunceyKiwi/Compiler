@@ -9,7 +9,11 @@ public class PromotionHelper {
 	public static List<List<Type>> getUnaryPromotionLists(List<Type> originalSignature, int indexOfArgument) {
 		List<List<Type>> unaryPromotionLists = new ArrayList<List<Type>>();
 		Type type = originalSignature.get(indexOfArgument);
-		List<Type> successorTypes = getSuccessorTypes((PrimitiveType)type);
+		
+		List<Type> successorTypes = new ArrayList<Type>();
+		if(type instanceof PrimitiveType)
+			successorTypes = getSuccessorTypes((PrimitiveType)type);
+		
 		for(Type items : successorTypes) {
 			List<Type> unaryPromotionList = new ArrayList<Type>(originalSignature);
 			unaryPromotionList.set(indexOfArgument, items);

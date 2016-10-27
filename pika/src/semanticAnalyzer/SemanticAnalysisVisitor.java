@@ -168,7 +168,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		// if both sides is array type and is comparision, skip typechecking
 		if((left.getType() instanceof ArrayType && right.getType() instanceof ArrayType &&
 				(operator == Punctuator.EQUAL || operator == Punctuator.NOTEQUAL))){
-			node.setType(PrimitiveType.BOOLEAN);
+			setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_COMPARISON, childTypes);
 		}else{
 			// Check if the operands of operation obey the rule in the signature
 			// And set type as the result type of signature
