@@ -396,7 +396,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	}
 	
 	private void controlFlowError(ParseNode node){
-		logError(node.getToken().getLexeme() + " Statement Expression Error");
+		logError(node.getToken().getLexeme() + "Statement Expression Error");
 	}
 	
 	private void releaseTypeError(ParseNode node){

@@ -109,8 +109,7 @@ public class Optimizer {
 						}
 					}
 					
-					if(prevprevInstr.getOpcode() == ASMOpcode.PushF &&
-							   prevInstr.getOpcode() == ASMOpcode.PushF){
+					if(prevprevInstr.getOpcode() == ASMOpcode.PushF && prevInstr.getOpcode() == ASMOpcode.PushF){
 								if(Instr.getOpcode() == ASMOpcode.FAdd){
 									 ASMInstruction newInstr = new ASMInstruction(ASMOpcode.PushF, (Double)(prevprevInstr.getArgument()) + (Double)(prevInstr.getArgument()));
 									 fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
@@ -194,6 +193,57 @@ public class Optimizer {
 					}
 				}
 
+			}
+		  }
+		
+			
+		prevInstr = null;
+		Instr = null;
+		for(int i = 0; (i < fragment.chunks.size()) && flag; i++){
+			for(int j = 0; (j < fragment.chunks.get(i).instructions.size()) && flag ;j++) {
+				ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+				prevInstr = Instr; indexForPIns = indexForIns;
+				Instr = instruction; indexForIns = new Tuple<Integer, Integer>(i, j);
+				if(prevInstr != null && Instr != null){
+					if(prevInstr.getOpcode() == ASMOpcode.Jump){
+						if(Instr.getOpcode() == ASMOpcode.Label){
+							if(prevInstr.getArgument().equals(Instr.getArgument())){
+								 fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());
+								 flag = false;
+								 break;
+							}
+						}
+					}
+					if(prevInstr.getOpcode() == ASMOpcode.PushI){
+						if(Instr.getOpcode() == ASMOpcode.JumpTrue){
+							if(prevInstr.getArgument().equals(1)){
+								fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
+								fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());								 flag = false;
+								break;
+							}
+						}
+					}
+					if(prevInstr.getOpcode() == ASMOpcode.PushI){
+						if(Instr.getOpcode() == ASMOpcode.JumpFalse){
+							if(!prevInstr.getArgument().equals(0)){
+								fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
+								fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());								 flag = false;
+								break;
+							}
+						}
+					}
+					if(prevInstr.getOpcode() == ASMOpcode.PushI){
+						if(Instr.getOpcode() == ASMOpcode.JumpTrue){
+							if(!prevInstr.getArgument().equals(0)){
+								ASMInstruction newInstr = new ASMInstruction(ASMOpcode.Jump, (String)Instr.getArgument());
+								fragment.chunks.get(indexForIns.x.intValue()).instructions.add(indexForIns.y.intValue()+1, newInstr);
+								fragment.chunks.get(indexForIns.x.intValue()).instructions.remove(indexForIns.y.intValue());
+								fragment.chunks.get(indexForPIns.x.intValue()).instructions.remove(indexForPIns.y.intValue());								 flag = false;
+								break;
+							}
+						}
+					}
+				}
 			}
 		  }
 		}

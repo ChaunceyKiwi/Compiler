@@ -15,7 +15,6 @@ import applications.PikaAbstractSyntaxTree;
 
 public class TestAbstractSyntaxTree extends FileFixturesTestCase {
 
-	
 	public void testAbstractSyntaxTreeFull() throws Exception {
 		tokenPrinterSingleTest(Level.FULL, AST_EXPECTED_FULL_FILENAME);
 	}
