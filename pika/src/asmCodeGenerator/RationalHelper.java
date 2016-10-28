@@ -269,14 +269,16 @@ public class RationalHelper {
 
 		// if a is not zero, print it
 		code.add(Duplicate);
+		code.add(Duplicate);
 		code.add(JumpFalse, jumpLabel3);
 		code.add(PushD, format);
 		code.add(Printf);
 		code.add(Jump, joinLabel);
 		
 		// if a is zero and sigh should be negative
-		// then print '-'
+		// then print '-' 
 		code.add(Label, jumpLabel3);
+		code.add(Pop);
 		code.add(PushD, addressOfRationalLabel);
 		code.add(LoadI);
 		code.add(LoadI);
@@ -288,6 +290,8 @@ public class RationalHelper {
 		code.add(Multiply);		
 		code.add(Duplicate);
 		code.add(JumpTrue, numeratorZeroLabel);
+		code.add(Pop);
+		code.add(Pop);
 		code.add(PushI, 0);
 		code.add(PushD, format);
 		code.add(Printf);
@@ -300,6 +304,7 @@ public class RationalHelper {
 
 		
 		// second part b = sig(n) * (n-a*m)
+		// need Push a here
 		code.add(PushD, addressOfRationalLabel);
 		code.add(LoadI);
 		code.add(PushI, 4);

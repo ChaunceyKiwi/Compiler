@@ -1,3 +1,10 @@
 exec {
-    print [[10], [], [2, 7]].
+	var a := 444 // 243.
+	#print [[_true_,_false_],[_true_,_true_,_true_],[_false_,_false_]].
+	#print [[3,6],[7,8,8],[1]].
+	#print [[3.7,6.9],[7.3,8.1,8.3],[1.4]].
+	#print [[^d^,^d^],[^d^,^d^,^d^],[^d^]].
+	#print [["rfner","rfner"],["rfner","rfner","rfner"],["rfner"]].
+
+	print [[444//233, 0// 233],[-13//334],[444//111]].
 }

@@ -350,7 +350,14 @@ public class ArrayHelper {
 		code.add(PushI, subTypeSize);
 		code.add(Add);
 		code.add(Exchange);		
-		code.add(LoadI);
+		
+		if(subType == PrimitiveType.BOOLEAN || subType == PrimitiveType.CHARACTER){
+			code.add(LoadC);
+		}else if(subType == PrimitiveType.FLOATING){
+			code.add(LoadF);
+		}else{
+			code.add(LoadI);
+		}
 		
 		if(subType.isReferenceType()) {
 			code.append(arrayPrint((ArrayType)subType));
@@ -361,6 +368,15 @@ public class ArrayHelper {
 			if(subType == PrimitiveType.STRING){
 				code.add(PushI, 12);
 				code.add(Add);
+			}else if(subType == PrimitiveType.BOOLEAN) {
+				String trueLabelForBoolean = labeller.newLabel("true-boolean");
+				String endLabelForBoolean = labeller.newLabel("join-boolean");
+				code.add(JumpTrue, trueLabelForBoolean);
+				code.add(PushD, RunTime.BOOLEAN_FALSE_STRING);
+				code.add(Jump, endLabelForBoolean);
+				code.add(Label, trueLabelForBoolean);
+				code.add(PushD, RunTime.BOOLEAN_TRUE_STRING);
+				code.add(Label, endLabelForBoolean);
 			}
 			String format = PrintStatementGenerator.printFormat(subType);
 			code.add(PushD, format);
