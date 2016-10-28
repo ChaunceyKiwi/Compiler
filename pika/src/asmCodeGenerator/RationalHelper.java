@@ -8,6 +8,8 @@ import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
+import lexicalAnalyzer.Lextant;
+import lexicalAnalyzer.Punctuator;
 
 public class RationalHelper {
 	public static ASMCodeFragment performOverPuntuator(ASMCodeFragment arg1, ASMCodeFragment arg2,
@@ -772,7 +774,156 @@ public class RationalHelper {
 		Macros.writeIOffset(code, 4);
 		code.add(Label, endLabel);			
 		// leave the address of array on the accumulator
-				
+		
+		return code;
+	}
+	
+	public static ASMCodeFragment rationalComparison(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction, Lextant operator) {
+
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+		Labeller labeller = new Labeller("-rational-comparasion-");
+		String beginLabel = labeller.newLabel("-begin-");
+		String endLabel = labeller.newLabel("-end-");
+		String getAbsForArg1 = labeller.newLabel("get-abs-for-arg1");
+		String getAbsForArg2 = labeller.newLabel("get-abs-for-arg2");
+		
+		// Formula [m//n + o//p = (mp-no)//mp]
+		code.add(Label, beginLabel);
+		code.append(arg1);
+		code.append(arg2);
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// push mp-no
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushNumerator());
+		code.add(Multiply);
+		code.add(Subtract);
+		
+		// push np
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.append(pushDenominator());
+		code.add(Multiply);
+		
+		// Store n*p in reg2 denominator
+		// Store mp+no in reg1 as numerator
+		Macros.storeITo(code, reg2);
+		Macros.storeITo(code, reg1);
+		
+		// store abs(num1) in reg1
+		code.add(PushD, reg1ForFunction);
+		code.add(PushD, reg1);
+		code.add(LoadI);		
+		code.add(Duplicate);
+		Macros.storeITo(code, reg1);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg1);
+		code.add(Negate);
+		code.add(Label, getAbsForArg1);
+		code.add(StoreI);
+		
+		// store abs(num2) in reg2
+		code.add(PushD, reg2ForFunction);
+		code.add(PushD, reg2);
+		code.add(LoadI);
+		code.add(Duplicate);
+		Macros.storeITo(code, reg2);
+		code.add(Duplicate);
+		code.add(JumpPos, getAbsForArg2);
+		code.add(Negate);
+		code.add(Label, getAbsForArg2);
+		code.add(StoreI);
+		
+		// Call function to get GCD and store it in reg1
+		code.add(Call, GCDCalculation);
+		code.add(PushD, reg1ForFunction);
+		code.add(Exchange);
+		code.add(StoreI);
+		
+		// Rational number needs 8 bytes 
+		code.add(PushI, 8);
+		
+		// call the memory manager to get address allocated
+		code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+		
+		// Store first integer
+		code.add(Duplicate);
+		code.add(PushD, reg1);
+		code.add(LoadI);
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 0);
+		
+		// Store second integer
+		code.add(Duplicate);
+		code.add(PushD, reg2);
+		code.add(LoadI);	
+		code.add(PushD, reg1ForFunction);
+		code.add(LoadI);
+		code.add(Divide);
+		code.add(Exchange);
+		Macros.writeIOffset(code, 4);
+		// leave the address of array on the accumulator
+		
+		code.add(Duplicate);
+		code.add(LoadI);
+		code.add(Exchange);
+		code.add(PushI, 4);
+		code.add(Add);
+		code.add(LoadI);
+		code.add(Multiply);
+		
+		String trueLabel  = labeller.newLabel("true");
+		String falseLabel = labeller.newLabel("false");
+		String joinLabel  = labeller.newLabel("join");
+		
+		if(operator == Punctuator.GREATER){
+			code.add(JumpPos, trueLabel);
+			code.add(Jump, falseLabel);
+		}else if (operator == Punctuator.LESSER){
+			code.add(JumpNeg, trueLabel);
+			code.add(Jump, falseLabel);
+		}else if(operator == Punctuator.LESSEROREQUAL){
+			code.add(JumpPos, falseLabel);
+			code.add(Jump, trueLabel);
+		}else if(operator == Punctuator.EQUAL){
+			code.add(JumpFalse,trueLabel);
+			code.add(Jump, falseLabel);
+		}else if(operator == Punctuator.NOTEQUAL){
+			code.add(JumpFalse,falseLabel);
+			code.add(Jump, trueLabel);
+		}else if(operator == Punctuator.GREATEROREQUAL){
+			code.add(JumpNeg, falseLabel);
+			code.add(Jump, trueLabel);
+		}
+		
+		code.add(Label, trueLabel);
+		code.add(PushI, 1);
+		code.add(Jump, joinLabel);
+		code.add(Label, falseLabel);
+		code.add(PushI, 0);
+		code.add(Jump, joinLabel);
+		code.add(Label, joinLabel);
+		code.add(Label, endLabel);			
+
 		return code;
 	}
 	

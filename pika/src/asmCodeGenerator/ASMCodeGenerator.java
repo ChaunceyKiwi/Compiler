@@ -356,73 +356,78 @@ public class ASMCodeGenerator {
 			Lextant operator = node.getOperator();
 			ASMCodeFragment arg1 = removeValueCode(node.child(0));
 			ASMCodeFragment arg2 = removeValueCode(node.child(1));
-			
-			Labeller labeller = new Labeller("compare");	
-			String startLabel = labeller.newLabel("arg1");
-			String arg2Label  = labeller.newLabel("arg2");
-			String subLabel   = labeller.newLabel("sub");
-			String trueLabel  = labeller.newLabel("true");
-			String falseLabel = labeller.newLabel("false");
-			String joinLabel  = labeller.newLabel("join");
-			
 			newValueCode(node);
-			code.add(Label, startLabel);
-			code.append(arg1);
-			code.add(Label, arg2Label);
-			code.append(arg2);
-			code.add(Label, subLabel);
 			
-			if(node.child(0).getType() == PrimitiveType.FLOATING) {
-				code.add(FSubtract);
-				if(operator == Punctuator.GREATER){
-					code.add(JumpFPos, trueLabel);
-					code.add(Jump, falseLabel);
-				}else if (operator == Punctuator.LESSER){
-					code.add(JumpFNeg, trueLabel);
-					code.add(Jump, falseLabel);
-				}else if(operator == Punctuator.LESSEROREQUAL){
-					code.add(JumpFPos, falseLabel);
-					code.add(Jump, trueLabel);
-				}else if(operator == Punctuator.EQUAL){
-					code.add(JumpFZero,trueLabel);
-					code.add(Jump, falseLabel);
-				}else if(operator == Punctuator.NOTEQUAL){
-					code.add(JumpFZero,falseLabel);
-					code.add(Jump, trueLabel);
-				}else if(operator == Punctuator.GREATEROREQUAL){
-					code.add(JumpFNeg, falseLabel);
-					code.add(Jump, trueLabel);
-				}
-			}else{
-				code.add(Subtract);
-				if(operator == Punctuator.GREATER){
-					code.add(JumpPos, trueLabel);
-					code.add(Jump, falseLabel);
-				}else if (operator == Punctuator.LESSER){
-					code.add(JumpNeg, trueLabel);
-					code.add(Jump, falseLabel);
-				}else if(operator == Punctuator.LESSEROREQUAL){
-					code.add(JumpPos, falseLabel);
-					code.add(Jump, trueLabel);
-				}else if(operator == Punctuator.EQUAL){
-					code.add(JumpFalse,trueLabel);
-					code.add(Jump, falseLabel);
-				}else if(operator == Punctuator.NOTEQUAL){
-					code.add(JumpFalse,falseLabel);
-					code.add(Jump, trueLabel);
-				}else if(operator == Punctuator.GREATEROREQUAL){
-					code.add(JumpNeg, falseLabel);
-					code.add(Jump, trueLabel);
-				}
-			}
+			if(node.child(0).getType() == PrimitiveType.RATIONAL) {
+				code.append(RationalHelper.rationalComparison(arg1, 
+					arg2, GCDCalculation, reg1, reg2, reg1ForFunction, reg2ForFunction, operator));
+			}else{			
+				Labeller labeller = new Labeller("compare");	
+				String startLabel = labeller.newLabel("arg1");
+				String arg2Label  = labeller.newLabel("arg2");
+				String subLabel   = labeller.newLabel("sub");
+				String trueLabel  = labeller.newLabel("true");
+				String falseLabel = labeller.newLabel("false");
+				String joinLabel  = labeller.newLabel("join");
 				
-			code.add(Label, trueLabel);
-			code.add(PushI, 1);
-			code.add(Jump, joinLabel);
-			code.add(Label, falseLabel);
-			code.add(PushI, 0);
-			code.add(Jump, joinLabel);
-			code.add(Label, joinLabel);
+				code.add(Label, startLabel);
+				code.append(arg1);
+				code.add(Label, arg2Label);
+				code.append(arg2);
+				code.add(Label, subLabel);
+				
+				if(node.child(0).getType() == PrimitiveType.FLOATING) {
+					code.add(FSubtract);
+					if(operator == Punctuator.GREATER){
+						code.add(JumpFPos, trueLabel);
+						code.add(Jump, falseLabel);
+					}else if (operator == Punctuator.LESSER){
+						code.add(JumpFNeg, trueLabel);
+						code.add(Jump, falseLabel);
+					}else if(operator == Punctuator.LESSEROREQUAL){
+						code.add(JumpFPos, falseLabel);
+						code.add(Jump, trueLabel);
+					}else if(operator == Punctuator.EQUAL){
+						code.add(JumpFZero,trueLabel);
+						code.add(Jump, falseLabel);
+					}else if(operator == Punctuator.NOTEQUAL){
+						code.add(JumpFZero,falseLabel);
+						code.add(Jump, trueLabel);
+					}else if(operator == Punctuator.GREATEROREQUAL){
+						code.add(JumpFNeg, falseLabel);
+						code.add(Jump, trueLabel);
+					}
+				}else{
+					code.add(Subtract);
+					if(operator == Punctuator.GREATER){
+						code.add(JumpPos, trueLabel);
+						code.add(Jump, falseLabel);
+					}else if (operator == Punctuator.LESSER){
+						code.add(JumpNeg, trueLabel);
+						code.add(Jump, falseLabel);
+					}else if(operator == Punctuator.LESSEROREQUAL){
+						code.add(JumpPos, falseLabel);
+						code.add(Jump, trueLabel);
+					}else if(operator == Punctuator.EQUAL){
+						code.add(JumpFalse,trueLabel);
+						code.add(Jump, falseLabel);
+					}else if(operator == Punctuator.NOTEQUAL){
+						code.add(JumpFalse,falseLabel);
+						code.add(Jump, trueLabel);
+					}else if(operator == Punctuator.GREATEROREQUAL){
+						code.add(JumpNeg, falseLabel);
+						code.add(Jump, trueLabel);
+					}
+				}
+					
+				code.add(Label, trueLabel);
+				code.add(PushI, 1);
+				code.add(Jump, joinLabel);
+				code.add(Label, falseLabel);
+				code.add(PushI, 0);
+				code.add(Jump, joinLabel);
+				code.add(Label, joinLabel);
+			}
 		}
 		
 		private void visitBooleanOperatorNode(BinaryOperatorNode node){

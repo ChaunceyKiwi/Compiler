@@ -196,20 +196,23 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 		new FunctionSignatures(Punctuator.LESSER,
 			new FunctionSignature(1, true, PrimitiveType.INTEGER,  PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_LESSER, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.LESSEROREQUAL,
 			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_LESSEROREQUAL, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.EQUAL,
 			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_EQUAL, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(BinaryOperatorNode.ARRAY_COMPARISON,
@@ -220,19 +223,22 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_NOTEQUAL, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.GREATER,
 			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_GREATER, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN)
 		);
 		
 		new FunctionSignatures(Punctuator.GREATEROREQUAL,
 			new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN),
 			new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING, PrimitiveType.BOOLEAN),
-			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN)
+			new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN),
+		    new FunctionSignature(BinaryOperatorNode.RATIONAL_GREATEROREQUAL, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN)
 		);
 		
 		/////////////////////////////////////////////////////////////////////////////////

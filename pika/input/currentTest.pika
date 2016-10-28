@@ -1,5 +1,11 @@
 exec {
-	var b := [120 | char].
+	var a := 4//8.
+	var b := 20//40.
 
-	print b.
+	print a > b.
+	print a >= b.
+	print a == b.
+	print a != b.
+	print a <= b.
+	print a < b.
 }

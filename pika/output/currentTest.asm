@@ -270,7 +270,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        1                         
+        DataZ        16                        
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -385,16 +385,902 @@
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
+        Add                                    %% a
+        Label        -rational-number-1-rational-creation-begin 
+        PushD        reg1-func                 
+        PushI        4                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      -rational-number-1-get-abs-for-arg1 
+        Negate                                 
+        Label        -rational-number-1-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushI        8                         
+        Duplicate                              
+        JumpFalse    $$rational-denominator-zero 
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      -rational-number-1-get-abs-for-arg2 
+        Negate                                 
+        Label        -rational-number-1-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -rational-number-1-rational-creation-end 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        8                         
         Add                                    %% b
-        PushI        120                       
-        PushI        127                       
-        BTAnd                                  
-        StoreC                                 
+        Label        -rational-number-2-rational-creation-begin 
+        PushD        reg1-func                 
+        PushI        20                        
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      -rational-number-2-get-abs-for-arg1 
+        Negate                                 
+        Label        -rational-number-2-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushI        40                        
+        Duplicate                              
+        JumpFalse    $$rational-denominator-zero 
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      -rational-number-2-get-abs-for-arg2 
+        Negate                                 
+        Label        -rational-number-2-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -rational-number-2-rational-creation-end 
+        StoreI                                 
+        Label        --rational-comparasion--3--begin- 
         PushD        $global-memory-block      
         PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $global-memory-block      
+        PushI        8                         
         Add                                    %% b
-        LoadC                                  
-        PushD        $print-format-char        
+        LoadI                                  
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        Subtract                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg1-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--3-get-abs-for-arg1 
+        Negate                                 
+        Label        --rational-comparasion--3-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushD        reg2-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--3-get-abs-for-arg2 
+        Negate                                 
+        Label        --rational-comparasion--3-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        LoadI                                  
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpPos      --rational-comparasion--3-true 
+        Jump         --rational-comparasion--3-false 
+        Label        --rational-comparasion--3-true 
+        PushI        1                         
+        Jump         --rational-comparasion--3-join 
+        Label        --rational-comparasion--3-false 
+        PushI        0                         
+        Label        --rational-comparasion--3-join 
+        Label        --rational-comparasion--3--end- 
+        JumpTrue     -print-boolean-4-true     
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-4-join     
+        Label        -print-boolean-4-true     
+        PushD        $boolean-true-string      
+        Label        -print-boolean-4-join     
+        PushD        $print-format-boolean     
+        Printf                                 
+        Label        --rational-comparasion--5--begin- 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% b
+        LoadI                                  
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        Subtract                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg1-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--5-get-abs-for-arg1 
+        Negate                                 
+        Label        --rational-comparasion--5-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushD        reg2-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--5-get-abs-for-arg2 
+        Negate                                 
+        Label        --rational-comparasion--5-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        LoadI                                  
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpNeg      --rational-comparasion--5-false 
+        Label        --rational-comparasion--5-true 
+        PushI        1                         
+        Jump         --rational-comparasion--5-join 
+        Label        --rational-comparasion--5-false 
+        PushI        0                         
+        Label        --rational-comparasion--5-join 
+        Label        --rational-comparasion--5--end- 
+        JumpTrue     -print-boolean-6-true     
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-6-join     
+        Label        -print-boolean-6-true     
+        PushD        $boolean-true-string      
+        Label        -print-boolean-6-join     
+        PushD        $print-format-boolean     
+        Printf                                 
+        Label        --rational-comparasion--7--begin- 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% b
+        LoadI                                  
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        Subtract                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg1-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--7-get-abs-for-arg1 
+        Negate                                 
+        Label        --rational-comparasion--7-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushD        reg2-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--7-get-abs-for-arg2 
+        Negate                                 
+        Label        --rational-comparasion--7-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        LoadI                                  
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpFalse    --rational-comparasion--7-true 
+        Jump         --rational-comparasion--7-false 
+        Label        --rational-comparasion--7-true 
+        PushI        1                         
+        Jump         --rational-comparasion--7-join 
+        Label        --rational-comparasion--7-false 
+        PushI        0                         
+        Label        --rational-comparasion--7-join 
+        Label        --rational-comparasion--7--end- 
+        JumpTrue     -print-boolean-8-true     
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-8-join     
+        Label        -print-boolean-8-true     
+        PushD        $boolean-true-string      
+        Label        -print-boolean-8-join     
+        PushD        $print-format-boolean     
+        Printf                                 
+        Label        --rational-comparasion--9--begin- 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% b
+        LoadI                                  
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        Subtract                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg1-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--9-get-abs-for-arg1 
+        Negate                                 
+        Label        --rational-comparasion--9-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushD        reg2-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--9-get-abs-for-arg2 
+        Negate                                 
+        Label        --rational-comparasion--9-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        LoadI                                  
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpFalse    --rational-comparasion--9-false 
+        Label        --rational-comparasion--9-true 
+        PushI        1                         
+        Jump         --rational-comparasion--9-join 
+        Label        --rational-comparasion--9-false 
+        PushI        0                         
+        Label        --rational-comparasion--9-join 
+        Label        --rational-comparasion--9--end- 
+        JumpTrue     -print-boolean-10-true    
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-10-join    
+        Label        -print-boolean-10-true    
+        PushD        $boolean-true-string      
+        Label        -print-boolean-10-join    
+        PushD        $print-format-boolean     
+        Printf                                 
+        Label        --rational-comparasion--11--begin- 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% b
+        LoadI                                  
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        Subtract                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg1-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--11-get-abs-for-arg1 
+        Negate                                 
+        Label        --rational-comparasion--11-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushD        reg2-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--11-get-abs-for-arg2 
+        Negate                                 
+        Label        --rational-comparasion--11-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        LoadI                                  
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpPos      --rational-comparasion--11-false 
+        Label        --rational-comparasion--11-true 
+        PushI        1                         
+        Jump         --rational-comparasion--11-join 
+        Label        --rational-comparasion--11-false 
+        PushI        0                         
+        Label        --rational-comparasion--11-join 
+        Label        --rational-comparasion--11--end- 
+        JumpTrue     -print-boolean-12-true    
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-12-join    
+        Label        -print-boolean-12-true    
+        PushD        $boolean-true-string      
+        Label        -print-boolean-12-join    
+        PushD        $print-format-boolean     
+        Printf                                 
+        Label        --rational-comparasion--13--begin- 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% b
+        LoadI                                  
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        Subtract                               
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-func                 
+        PushD        reg1-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--13-get-abs-for-arg1 
+        Negate                                 
+        Label        --rational-comparasion--13-get-abs-for-arg1 
+        StoreI                                 
+        PushD        reg2-func                 
+        PushD        reg2-system               
+        LoadI                                  
+        Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpPos      --rational-comparasion--13-get-abs-for-arg2 
+        Negate                                 
+        Label        --rational-comparasion--13-get-abs-for-arg2 
+        StoreI                                 
+        Call         GCDCalculation            
+        PushD        reg1-func                 
+        Exchange                               
+        StoreI                                 
+        PushI        8                         
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg1-func                 
+        LoadI                                  
+        Divide                                 
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        LoadI                                  
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        LoadI                                  
+        Multiply                               
+        JumpNeg      --rational-comparasion--13-true 
+        Jump         --rational-comparasion--13-false 
+        Label        --rational-comparasion--13-true 
+        PushI        1                         
+        Jump         --rational-comparasion--13-join 
+        Label        --rational-comparasion--13-false 
+        PushI        0                         
+        Label        --rational-comparasion--13-join 
+        Label        --rational-comparasion--13--end- 
+        JumpTrue     -print-boolean-14-true    
+        PushD        $boolean-false-string     
+        Jump         -print-boolean-14-join    
+        Label        -print-boolean-14-true    
+        PushD        $boolean-true-string      
+        Label        -print-boolean-14-join    
+        PushD        $print-format-boolean     
         Printf                                 
         Halt                                   
         Label        -mem-manager-make-tags    
@@ -766,28 +1652,28 @@
         LoadI                                  
         Return                                 
         Label        GCDCalculation            
-        Label        --GCD-Calculation--2--function-begin- 
+        Label        --GCD-Calculation--15--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--2--check-initial-zero 
+        JumpTrue     --GCD-Calculation--15--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--2--function-end- 
-        Label        --GCD-Calculation--2--check-initial-zero 
-        Label        --GCD-Calculation--2--loop-begin- 
+        Jump         --GCD-Calculation--15--function-end- 
+        Label        --GCD-Calculation--15--check-initial-zero 
+        Label        --GCD-Calculation--15--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--2--loop-end- 
+        JumpFalse    --GCD-Calculation--15--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--2--loop-end- 
+        JumpFalse    --GCD-Calculation--15--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--2--positive-case- 
-        Label        --GCD-Calculation--2--not-positive-case- 
+        JumpPos      --GCD-Calculation--15--positive-case- 
+        Label        --GCD-Calculation--15--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -796,8 +1682,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--2--join- 
-        Label        --GCD-Calculation--2--positive-case- 
+        Jump         --GCD-Calculation--15--join- 
+        Label        --GCD-Calculation--15--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -806,10 +1692,10 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Label        --GCD-Calculation--2--join- 
-        Jump         --GCD-Calculation--2--loop-begin- 
-        Label        --GCD-Calculation--2--loop-end- 
+        Label        --GCD-Calculation--15--join- 
+        Jump         --GCD-Calculation--15--loop-begin- 
+        Label        --GCD-Calculation--15--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--2--function-end- 
+        Label        --GCD-Calculation--15--function-end- 
         Exchange                               
         Return                                 
