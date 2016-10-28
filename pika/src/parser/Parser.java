@@ -548,14 +548,14 @@ public class Parser {
 		ParseNode expressionToBeIndexed = parseAtomicExpression();
 		Token nextToken = nowReading;
 		
-		if(nextToken.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
+		while(nowReading.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
 			expect(Punctuator.OPEN_SQUARE_BRACKET);
 			ParseNode expressionToGetIndex = parseExpression();
 			expect(Punctuator.CLOSE_SQUARE_BRACKET);	
-			return ArrayIndexingNode.withChildren(nextToken, expressionToBeIndexed, expressionToGetIndex);
-		}else{
-			return expressionToBeIndexed;
+			expressionToBeIndexed = ArrayIndexingNode.withChildren(nextToken, expressionToBeIndexed, expressionToGetIndex);
 		}
+
+		return expressionToBeIndexed;
 	}
 	
 	private boolean startsArrayIndexingExpression(Token token){
