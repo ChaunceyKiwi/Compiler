@@ -80,7 +80,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 						return functionSignature;
 					}
 				}
-			}else if(matching == null && matchingSet != null){
+			}else if(matching == null && matchingSet.size() > 0){
 				SemanticAnalysisVisitor.logError("Promotion failure due to multiple matchings");
 			}
 		}

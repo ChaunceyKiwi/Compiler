@@ -627,10 +627,8 @@ public class Parser {
 		Token verticalBarToken = nowReading;
 		if(verticalBarToken.isLextant(Punctuator.VERITICAL_BAR)){
 			expect(Punctuator.VERITICAL_BAR);
-			Token typeToken = nowReading;
-			readToken();
+			ParseNode typeNode = parseType();
 			expect(Punctuator.CLOSE_SQUARE_BRACKET);
-			ParseNode typeNode = new TypeCastedToNode(typeToken);
 			return TypeCastingNode.withChildren(verticalBarToken, expressionToBeCasted, typeNode);
 		}else if(verticalBarToken.isLextant(Punctuator.SEPARATOR, Punctuator.CLOSE_SQUARE_BRACKET)){
 			ParseNode expressionListNode = parseArrayExpression(expressionToBeCasted);

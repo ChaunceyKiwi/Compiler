@@ -110,6 +110,9 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	public void visitLeave(AssignmentStatementNode node) {
 		assert node.nChildren() == 2;
 		ParseNode target = node.child(0);
+		if(target instanceof IdentifierNode && ((IdentifierNode) target).getBinding().isMutable() == false){
+			assignmentToConstantError(node);
+		}
 		ParseNode initializer = node.child(1);
 		Type identifierType = target.getType();
 		Type assignmentType = initializer.getType();
@@ -409,6 +412,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	private void expressionNoElementError(ParseNode node){
 		logError(node.getToken().getLexeme() + " expression no element Error");
+	}
+	
+	private void assignmentToConstantError(ParseNode node){
+		logError(node.getToken().getLexeme() + " assignment to constant Error");
 	}
 	
 	public static void logError(String message) {
