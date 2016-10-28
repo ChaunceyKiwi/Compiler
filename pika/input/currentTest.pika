@@ -1,5 +1,6 @@
 exec {
-	var a := 3///7.
+	var a := 3.1425.
+	a := ^o^.
 
 	print a.
 }

@@ -249,7 +249,8 @@ public class RationalHelper {
 		String jumpLabel3 = labeller.newLabel("jumpLabel3");
 		String joinLabel = labeller.newLabel("joinLabel");
 		String numeratorZeroLabel = labeller.newLabel("numerator-zero");
-
+		String avoidDuplicateLabel = labeller.newLabel("avoidDuplicateLabel");
+		
 		String addressOfRationalLabel =  ASMCodeGenerator.reg1;
 		String format = PrintStatementGenerator.printFormat(type);
 					
@@ -317,6 +318,9 @@ public class RationalHelper {
 		code.add(Exchange);
 		code.add(Subtract);
 		code.add(Duplicate);
+		code.add(JumpFalse, avoidDuplicateLabel);
+		code.add(Duplicate);
+		code.add(Label, avoidDuplicateLabel);
 		code.add(JumpFalse, endLabel);
 		code.add(PushD, addressOfRationalLabel);
 		code.add(LoadI);

@@ -19,7 +19,7 @@ import symbolTable.Scope;
 import tokens.LextantToken;
 import tokens.Token;
 
-class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
+public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	@Override
 	public void visitLeave(ParseNode node) {
 		throw new RuntimeException("Node class unimplemented in SemanticAnalysisVisitor: " + node.getClass());
@@ -411,7 +411,7 @@ class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		logError(node.getToken().getLexeme() + " expression no element Error");
 	}
 	
-	private void logError(String message) {
+	public static void logError(String message) {
 		PikaLogger log = PikaLogger.getLogger("compiler.semanticAnalyzer");
 		log.severe(message);
 	}

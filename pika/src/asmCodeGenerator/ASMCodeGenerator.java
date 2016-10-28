@@ -243,9 +243,24 @@ public class ASMCodeGenerator {
 			ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
 			ASMCodeFragment rvalue = removeValueCode(node.child(1));
 			
-			code.append(lvalue);
-			code.append(rvalue);
-			code.add(opcodeForStore(type));
+			
+			if(type == PrimitiveType.RATIONAL && node.child(1).getType() != PrimitiveType.RATIONAL){
+				ASMCodeFragment rightValue = new ASMCodeFragment(GENERATES_VALUE);
+				rightValue.add(PushI, 1);
+				code.append(lvalue);
+				code.append(RationalHelper.performOverPuntuator(
+						rvalue, rightValue, GCDCalculation, reg1ForFunction, reg2ForFunction, reg1, reg2));
+				code.add(opcodeForStore(type));
+			}else if(type == PrimitiveType.FLOATING && node.child(1).getType() != PrimitiveType.FLOATING){
+				code.append(lvalue);
+				code.append(rvalue);
+				code.add(ConvertF);
+				code.add(opcodeForStore(type));
+			}else{
+				code.append(lvalue);
+				code.append(rvalue);
+				code.add(opcodeForStore(type));
+			}
 		}
 		
 		// IfStatement

@@ -15,6 +15,7 @@ import parseTree.nodeTypes.CopyOperatorNode;
 import parseTree.nodeTypes.NewArrayTypeLengthNode;
 import parseTree.nodeTypes.TypeCastingNode;
 import parseTree.nodeTypes.UnaryOperatorNode;
+import semanticAnalyzer.SemanticAnalysisVisitor;
 
 
 public class FunctionSignatures extends ArrayList<FunctionSignature> {
@@ -79,6 +80,8 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 						return functionSignature;
 					}
 				}
+			}else if(matching == null && matchingSet != null){
+				SemanticAnalysisVisitor.logError("Promotion failure due to multiple matchings");
 			}
 		}
 		
