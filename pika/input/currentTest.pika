@@ -1,11 +1,13 @@
 exec {
-	var a := 4//8.
-	var b := 20//40.
+	const width := 4.
+	const height := 7.
+	var matrix := new [[float]](width).
+	var x := 0.
+	while(x < width) {
+		matrix[x] := new[float](height).
+		x := x + 1. 
+	}
 
-	print a > b.
-	print a >= b.
-	print a == b.
-	print a != b.
-	print a <= b.
-	print a < b.
+	matrix[0] := [1.0,2.0,3.0].
+	print matrix.
 }

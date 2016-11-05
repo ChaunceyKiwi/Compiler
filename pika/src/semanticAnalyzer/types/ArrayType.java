@@ -54,10 +54,11 @@ public class ArrayType implements Type{
 		length = nChildren;
 	}
 	
-	public Type getRidOfVariable() {
+	public Type getTypeWithoutVariable() {
 		if(subType instanceof TypeVariable) {
-			subType = ((TypeVariable) subType).getSubtype();
+			return new ArrayType(((TypeVariable) subType).getSubtype());
 		}
+		
 		return this;
 	}
 	

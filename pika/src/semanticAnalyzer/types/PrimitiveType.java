@@ -33,7 +33,7 @@ public enum PrimitiveType implements Type {
 		return infoString;
 	}
 	
-	public Type getRidOfVariable() {
+	public Type getTypeWithoutVariable() {
 		return this;
 	}
 	

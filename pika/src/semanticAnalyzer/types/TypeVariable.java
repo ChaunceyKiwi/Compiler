@@ -27,7 +27,7 @@ public final class TypeVariable implements Type {
 		subType = null;
 	}
 	
-	public Type getRidOfVariable() {
+	public Type getTypeWithoutVariable() {
 		return subType;
 	}
 	
