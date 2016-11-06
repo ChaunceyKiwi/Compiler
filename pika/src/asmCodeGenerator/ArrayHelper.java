@@ -322,15 +322,14 @@ public class ArrayHelper {
 		String endLabel = labeller.newLabel("-end-");
 		String loopBeginLabel = labeller.newLabel("-loop-begin-");
 		String loopEndLabel = labeller.newLabel("-loop-end-");
-		String loopCounterLabel = labeller.newLabel("-loop-counter-");
 		
 		code.add(Label, beginLabel);
 		// get the address of the array
 		code.add(Duplicate);
 		
 		// store the length of array as the loop counter
-		code.append(pushArrayLength(labeller.newLabel("-push-array-length")));
-		createLoopCounter(code, loopCounterLabel);
+		code.append(pushArrayLength(labeller.newLabel("-push-array-length")));		
+		Macros.storeITo(code, ASMCodeGenerator.regCounter);
 		
 		// get the address of first element
 		code.add(PushI, ArrayType.header_size);
@@ -339,7 +338,7 @@ public class ArrayHelper {
 		code.add(PushD, RunTime.OPEN_SQUARE_BRACKET_PRINT_FORMAT);
 		code.add(Printf);
 		code.add(Label, loopBeginLabel);
-		code.add(PushD, loopCounterLabel);
+		code.add(PushD, ASMCodeGenerator.regCounter);
 		code.add(LoadI);
 		
 		// Counter counts from length to 0
@@ -358,6 +357,10 @@ public class ArrayHelper {
 		}else{
 			code.add(LoadI);
 		}
+		
+		code.add(PushD, ASMCodeGenerator.regCounter);
+		code.add(LoadI);
+		code.add(Exchange);
 		
 		if(subType.isReferenceType()) {
 			code.append(arrayPrint((ArrayType)subType));
@@ -382,11 +385,14 @@ public class ArrayHelper {
 			code.add(PushD, format);
 			code.add(Printf);
 		}
+		
+		Macros.storeITo(code, ASMCodeGenerator.regCounter);
+		
 		// Decrement the counter by 1
-		Macros.decrementInteger(code, loopCounterLabel);
+		Macros.decrementInteger(code, ASMCodeGenerator.regCounter);
 		
 		// Print separator and space if not last element
-		code.add(PushD, loopCounterLabel);
+		code.add(PushD, ASMCodeGenerator.regCounter);
 		code.add(LoadI);
 		code.add(JumpFalse, loopEndLabel);
 		code.add(PushD, RunTime.SEPARATOR_PRINT_FORMAT);
@@ -419,7 +425,6 @@ public class ArrayHelper {
 		String endLabel = labeller.newLabel("-end-");
 		String loopBeginLabel = labeller.newLabel("-loop-begin-");
 		String loopEndLabel = labeller.newLabel("-loop-end-");
-		String loopCounterLabel = labeller.newLabel("-loop-counter-");
 		
 		code.add(Label, beginLabel);
 		// get the address of the array
@@ -427,14 +432,14 @@ public class ArrayHelper {
 		
 		// store the length of array as the loop counter
 		code.append(pushArrayLength(labeller.newLabel("-push-array-length")));
-		createLoopCounter(code, loopCounterLabel);
+		Macros.storeITo(code, ASMCodeGenerator.regCounter);
 		
 		// get the address of first element
 		code.add(PushI, ArrayType.header_size);
 		code.add(Add);
 		
 		code.add(Label, loopBeginLabel);
-		code.add(PushD, loopCounterLabel);
+		code.add(PushD, ASMCodeGenerator.regCounter);
 		code.add(LoadI);
 		
 		// Counter counts from length to 0
@@ -447,14 +452,21 @@ public class ArrayHelper {
 		code.add(Exchange);		
 		code.add(LoadI);
 		
+		code.add(PushD, ASMCodeGenerator.regCounter);
+		code.add(LoadI);
+		code.add(Exchange);		
+		
 		if(subType.isReferenceType()) {
 			code.append(arrayRelease((ArrayType)subType));
 		}
 		else {
 			code.add(Pop);
 		}
+		
+		Macros.storeITo(code, ASMCodeGenerator.regCounter);
+
 		// Decrement the counter by 1
-		Macros.decrementInteger(code, loopCounterLabel);
+		Macros.decrementInteger(code, ASMCodeGenerator.regCounter);
 		
 		code.add(Jump, loopBeginLabel);
 		code.add(Label, loopEndLabel);
@@ -463,12 +475,6 @@ public class ArrayHelper {
 		code.add(Label, endLabel);
 		
 		return code;
-	}
-	
-	private static void createLoopCounter(ASMCodeFragment code, String label){
-		code.add(DLabel, label);
-		code.add(DataI, 0);
-		Macros.storeITo(code, label);
 	}
 	
 	public static ASMCodeFragment pushArrayLength(String label){

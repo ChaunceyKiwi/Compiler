@@ -1,13 +1,7 @@
 exec {
-	const width := 4.
-	const height := 7.
-	var matrix := new [[float]](width).
-	var x := 0.
-	while(x < width) {
-		matrix[x] := new[float](height).
-		x := x + 1. 
-	}
+	var a := [[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]].
 
-	matrix[0] := [1.0,2.0,3.0].
-	print matrix.
+	release a.
+	var b := [[3,3,3,3,3],[1,2,3,4,5],[1,2,3,4,5]].
+	print a.
 }

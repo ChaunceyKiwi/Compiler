@@ -30,6 +30,7 @@ public class ASMCodeGenerator {
 	static String reg2 = "reg2-system";
 	static String reg3 = "reg3-system";
 	static String reg4 = "reg4-system";
+	static String regCounter = "reg-counter"; 
 	static String GCDCalculation = "GCDCalculation"; 
 	
 	public static ASMCodeFragment generate(ParseNode syntaxTree) {
@@ -68,8 +69,8 @@ public class ASMCodeGenerator {
 		createRegister(code, reg1);
 		createRegister(code, reg2);
 		createRegister(code, reg3);
-		createRegister(code, reg4);
-		
+		createRegister(code, reg4);		
+		createRegister(code, regCounter);
 		return code;
 	}
 	
