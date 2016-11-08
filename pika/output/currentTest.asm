@@ -391,27 +391,58 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        PushI        3                         
+        PushI        0                         
         StoreI                                 
-        Label        --while-statement--2-begin 
-        Label        -compare-1-arg1           
+        Label        --while-statement--1-begin 
+        Label        -compare-2-arg1           
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
-        Label        -compare-1-arg2           
-        PushI        0                         
-        Label        -compare-1-sub            
+        Label        -compare-2-arg2           
+        PushI        10                        
+        Label        -compare-2-sub            
         Subtract                               
-        JumpPos      -compare-1-true           
-        Jump         -compare-1-false          
-        Label        -compare-1-true           
+        JumpNeg      -compare-2-true           
+        Jump         -compare-2-false          
+        Label        -compare-2-true           
         PushI        1                         
-        Jump         -compare-1-join           
-        Label        -compare-1-false          
+        Jump         -compare-2-join           
+        Label        -compare-2-false          
         PushI        0                         
-        Label        -compare-1-join           
-        JumpFalse    --while-statement--2-end-of-while-statement 
+        Label        -compare-2-join           
+        JumpFalse    --while-statement--1-end-of-while-statement 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushI        1                         
+        Add                                    
+        StoreI                                 
+        Label        -compare-3-arg1           
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Label        -compare-3-arg2           
+        PushI        8                         
+        Label        -compare-3-sub            
+        Subtract                               
+        JumpFalse    -compare-3-true           
+        Jump         -compare-3-false          
+        Label        -compare-3-true           
+        PushI        1                         
+        Jump         -compare-3-join           
+        Label        -compare-3-false          
+        PushI        0                         
+        Label        -compare-3-join           
+        Label        --if-statement--4-begin   
+        JumpFalse    --if-statement--4-end-of-if-statement 
+        Jump         --while-statement--1-begin 
+        Label        --if-statement--4-end-of-if-statement 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
@@ -420,18 +451,8 @@
         Printf                                 
         PushD        $print-format-space       
         Printf                                 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        PushI        1                         
-        Subtract                               
-        StoreI                                 
-        Jump         --while-statement--2-begin 
-        Label        --while-statement--2-end-of-while-statement 
+        Jump         --while-statement--1-begin 
+        Label        --while-statement--1-end-of-while-statement 
         Halt                                   
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
@@ -802,28 +823,28 @@
         LoadI                                  
         Return                                 
         Label        GCDCalculation            
-        Label        --GCD-Calculation--3--function-begin- 
+        Label        --GCD-Calculation--5--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--3--check-initial-zero 
+        JumpTrue     --GCD-Calculation--5--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--3--function-end- 
-        Label        --GCD-Calculation--3--check-initial-zero 
-        Label        --GCD-Calculation--3--loop-begin- 
+        Jump         --GCD-Calculation--5--function-end- 
+        Label        --GCD-Calculation--5--check-initial-zero 
+        Label        --GCD-Calculation--5--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--5--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--5--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--3--positive-case- 
-        Label        --GCD-Calculation--3--not-positive-case- 
+        JumpPos      --GCD-Calculation--5--positive-case- 
+        Label        --GCD-Calculation--5--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -832,8 +853,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--positive-case- 
+        Jump         --GCD-Calculation--5--join- 
+        Label        --GCD-Calculation--5--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -842,10 +863,10 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Label        --GCD-Calculation--3--join- 
-        Jump         --GCD-Calculation--3--loop-begin- 
-        Label        --GCD-Calculation--3--loop-end- 
+        Label        --GCD-Calculation--5--join- 
+        Jump         --GCD-Calculation--5--loop-begin- 
+        Label        --GCD-Calculation--5--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--3--function-end- 
+        Label        --GCD-Calculation--5--function-end- 
         Exchange                               
         Return                                 

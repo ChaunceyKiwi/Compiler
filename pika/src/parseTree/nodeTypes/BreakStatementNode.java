@@ -34,9 +34,10 @@ public class BreakStatementNode extends ParseNode {
 		loopStatementNode = node;
 	}
 	
-	public WhileStatementNode getLoopStatementNode() {
-		return loopStatementNode;
+	public String getTargetLabelForBreak(){
+		return loopStatementNode.getLabelForBreak();
 	}
+	
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors
 			

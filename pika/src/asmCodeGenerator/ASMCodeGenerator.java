@@ -82,7 +82,7 @@ public class ASMCodeGenerator {
 	
 	private ASMCodeFragment programASM() {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-		
+
 		code.add(Label, RunTime.MAIN_PROGRAM_LABEL);
 		code.append( programCode());
 		code.add(Halt);
@@ -217,6 +217,8 @@ public class ASMCodeGenerator {
 		 *			      IfStatement 
 		 *			      WhileStatement
 		 *				  ReleaseStatement
+		 *				  BreakStatement
+		 *				  ContinueStatement
 		 */
 		
 		// PrintStatement
@@ -276,7 +278,10 @@ public class ASMCodeGenerator {
 			
 			code.append(booleanResult);
 			code.add(Label, beginLabel);
-			code.add(JumpFalse, falseDoStatementLabel);
+			if(node.nChildren() == 3)
+				code.add(JumpFalse, falseDoStatementLabel);
+			else
+				code.add(JumpFalse, endOfIfStatementLabel);
 			code.append(trueDoStatement);
 			code.add(Jump, endOfIfStatementLabel);
 			if(node.nChildren() == 3){
@@ -288,13 +293,21 @@ public class ASMCodeGenerator {
 		}
 		
 		// WhileStatement
+		public void visitEnter(WhileStatementNode node){
+			Labeller labeller = new Labeller("-while-statement-");
+			String beginLabel = labeller.newLabel("begin");
+			String endOfWhileStatementLabel = labeller.newLabel("end-of-while-statement");
+			
+			node.setLabelForContinue(beginLabel);
+			node.setLabelForBreak(endOfWhileStatementLabel);
+		}
+		
 		public void visitLeave(WhileStatementNode node){
 			newVoidCode(node);
 			ASMCodeFragment booleanResult = removeValueCode(node.child(0));	
 			ASMCodeFragment trueDoStatement = removeBlockCode(node.child(1));
-			Labeller labeller = new Labeller("-while-statement-");
-			String beginLabel = labeller.newLabel("begin");
-			String endOfWhileStatementLabel = labeller.newLabel("end-of-while-statement");
+			String beginLabel = node.getLabelForContinue();
+			String endOfWhileStatementLabel = node.getLabelForBreak();
 			
 			code.add(Label, beginLabel);
 			code.append(booleanResult);
@@ -307,9 +320,18 @@ public class ASMCodeGenerator {
 		public void visitLeave(ReleaseStatementNode node){
 			newVoidCode(node);
 			code.append(removeValueCode(node.child(0)));
-			ArrayType arrayType = (ArrayType)node.child(0).getType(); 
-			
+			ArrayType arrayType = (ArrayType)node.child(0).getType(); 	
 			code.append(ArrayHelper.arrayRelease(arrayType));
+		}
+		
+		public void visitLeave(BreakStatementNode node){
+			newVoidCode(node);
+			code.add(Jump, node.getTargetLabelForBreak());
+		}
+		
+		public void visitLeave(ContinueStatementNode node){
+			newVoidCode(node);
+			code.add(Jump, node.getTargetLabelForContinue());
 		}
 		
 		

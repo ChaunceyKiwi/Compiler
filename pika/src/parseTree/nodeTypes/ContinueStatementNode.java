@@ -39,6 +39,9 @@ public class ContinueStatementNode extends ParseNode {
 		return loopStatementNode;
 	}
 	
+	public String getTargetLabelForContinue(){
+		return loopStatementNode.getLabelForContinue();
+	}
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors
 			

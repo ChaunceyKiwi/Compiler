@@ -1,8 +1,12 @@
 exec {
-	var a := 3.
-	while(a > 0) {
+	var a := 0.
+	while(a < 10) {
+		a := a + 1.
+
+		if(a == 8){
+			continue.
+		}
+
 		print a;.
-		a := a - 1.
-		break.
 	}
 }
