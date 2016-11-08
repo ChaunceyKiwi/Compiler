@@ -67,19 +67,15 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	///////////////////////////////////////////////////////////////////////////
 	// Statements
 	/*
-	 *	Statements -> PrintStatement
-	 *				  Declatation
-	 *			      AssignmentStatement
-	 *			      IfStatement 
-	 *			      WhileStatement
+	 *	Statements -> Declatation
+	 *				  AssignmentStatement 
+	 *			      IfStatement
+	 *			      WhileStatement 
+	 *			      PrintStatement
+	 *			  	  BlockStatement
 	 *				  ReleaseStatement
 	 */
-	
-	// PrintStatement
-	@Override
-	public void visitLeave(PrintStatementNode node) {
-	}
-	
+		
 	// Declatation
 	@Override
 	public void visitLeave(DeclarationNode node) {
@@ -134,6 +130,11 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		checkIfExpressionIsBoolean(node.child(0));
 	}
 	
+	// PrintStatement
+	@Override
+	public void visitLeave(PrintStatementNode node) {
+	}
+	
 	// ReleaseStatement
 	@Override
 	public void visitLeave(ReleaseStatementNode node){
@@ -142,6 +143,48 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		if(!(type instanceof ArrayType)) {
 			releaseTypeError(node);
 		}
+	}
+	
+	// BreakStatement
+	@Override
+	public void visitLeave(BreakStatementNode node){
+		assert node.nChildren() == 0;
+		
+		// Set target for loop control
+		// Report error if no loop statement found
+		ParseNode loopStatementNode = findLoopStatementNode(node);
+		if(loopStatementNode == null) {
+			loopControlFindNoLoopError(node);
+		}else {
+			node.setLoopStatementNode((WhileStatementNode)loopStatementNode);
+		}
+	}
+	
+	// ContinueStatement
+	@Override
+	public void visitLeave(ContinueStatementNode node){
+		assert node.nChildren() == 0;
+		
+		// Set target for loop control
+		// Report error if no loop statement found
+		ParseNode loopStatementNode = findLoopStatementNode(node);
+		if(loopStatementNode == null) {
+			loopControlFindNoLoopError(node);
+		}else {
+			node.setLoopStatementNode((WhileStatementNode)loopStatementNode);
+		}
+		
+	}
+	
+	public ParseNode findLoopStatementNode(ParseNode node) {
+		// Track up the node to find the loop statement
+		for(ParseNode current : node.pathToRoot()) {
+			if(current instanceof WhileStatementNode) {
+				return current;
+			}
+		}
+		
+		return null; 
 	}
 	
 	public void checkIfExpressionIsBoolean(ParseNode node){
@@ -300,29 +343,36 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	public void visit(BooleanConstantNode node) {
 		node.setType(PrimitiveType.BOOLEAN);
 	}
+	
 	@Override
 	public void visit(ErrorNode node) {
 		node.setType(PrimitiveType.ERROR);
 	}
+	
 	@Override
 	public void visit(IntegerConstantNode node) {
 		node.setType(PrimitiveType.INTEGER);
 	}
+	
 	@Override
 	public void visit(FloatingConstantNode node) {
 		node.setType(PrimitiveType.FLOATING);
 	}
+	
 	@Override
 	public void visit(CharConstantNode node) {
 		node.setType(PrimitiveType.CHARACTER);
 	}
+	
 	@Override
 	public void visit(StringConstantNode node) {
 		node.setType(PrimitiveType.STRING);
 	}
+	
 	@Override
 	public void visit(NewlineNode node) {
 	}
+	
 	@Override
 	public void visit(SpaceNode node) {
 	}
@@ -408,6 +458,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	private void expressionElementDifferentTypeError(ParseNode node){
 		logError(node.getToken().getLexeme() + " expression list different type Error");
+	}
+	
+	private void loopControlFindNoLoopError(ParseNode node){
+		logError(node.getToken().getLexeme() + " loop control cannot find loop Error");
 	}
 	
 	private void expressionNoElementError(ParseNode node){

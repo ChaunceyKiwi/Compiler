@@ -2,37 +2,41 @@ package parseTree.nodeTypes;
 
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
+import lexicalAnalyzer.Lextant;
 import tokens.LextantToken;
 import tokens.Token;
 
-public class AssignmentStatementNode extends ParseNode {
-	public final static String VALUE_ASSIGNMENT = "value_assignment";
+public class BreakStatementNode extends ParseNode {
 
-	public AssignmentStatementNode(Token token) {
+	private WhileStatementNode loopStatementNode = null; 
+
+	public BreakStatementNode(Token token) {
 		super(token);
+		assert(token instanceof LextantToken);
 	}
 
-	public AssignmentStatementNode(ParseNode node) {
+	public BreakStatementNode(ParseNode node) {
 		super(node);
 	}
 	
 	////////////////////////////////////////////////////////////
 	// attributes
-
+	
+	public Lextant getOperator() {
+		return lextantToken().getLextant();
+	}
+	
 	public LextantToken lextantToken() {
 		return (LextantToken)token;
 	}	
 	
-	////////////////////////////////////////////////////////////
-	// convenience factory
-	
-	public static AssignmentStatementNode withChildren(Token token, ParseNode target, ParseNode expression) {
-		AssignmentStatementNode node = new AssignmentStatementNode(token);
-		node.appendChild(target);
-		node.appendChild(expression);
-		return node;
+	public void setLoopStatementNode(WhileStatementNode node) {
+		loopStatementNode = node;
 	}
 	
+	public WhileStatementNode getLoopStatementNode() {
+		return loopStatementNode;
+	}
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors
 			

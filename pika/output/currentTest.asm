@@ -270,7 +270,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        8                         
+        DataZ        4                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -391,850 +391,47 @@
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
-        Label        --expr-list--4-array-creation-begin 
-        Label        --expr-list--4-array-creation-get-length 
         PushI        3                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
         StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--4-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--4-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--4-array-creation-status 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--4-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--4-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--4-array-creation-end 
-        Label        --expr-list--4-array-initialization-begin 
-        Duplicate                              
-        Label        --expr-list--1-array-creation-begin 
-        Label        --expr-list--1-array-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--1-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--1-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--1-array-creation-status 
-        Duplicate                              
-        PushI        0                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--1-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--1-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--1-array-creation-end 
-        Label        --expr-list--1-array-initialization-begin 
-        Duplicate                              
-        PushI        1                         
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        28                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        5                         
-        Exchange                               
-        PushI        32                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--1-array-initialization-end 
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        Label        --expr-list--2-array-creation-begin 
-        Label        --expr-list--2-array-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--2-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--2-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--2-array-creation-status 
-        Duplicate                              
-        PushI        0                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--2-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--2-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--2-array-creation-end 
-        Label        --expr-list--2-array-initialization-begin 
-        Duplicate                              
-        PushI        1                         
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        28                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        5                         
-        Exchange                               
-        PushI        32                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--2-array-initialization-end 
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        Label        --expr-list--3-array-creation-begin 
-        Label        --expr-list--3-array-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--3-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--3-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-status 
-        Duplicate                              
-        PushI        0                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-end 
-        Label        --expr-list--3-array-initialization-begin 
-        Duplicate                              
-        PushI        1                         
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        28                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        5                         
-        Exchange                               
-        PushI        32                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-initialization-end 
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--4-array-initialization-end 
-        StoreI                                 
+        Label        --while-statement--2-begin 
+        Label        -compare-1-arg1           
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
-        Duplicate                              
-        Label        --release-array--5--begin- 
-        Duplicate                              
-        Label        --release-array--5--push-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        16                        
-        Add                                    
-        Label        --release-array--5--loop-begin- 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --release-array--5--loop-end- 
-        Duplicate                              
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        LoadI                                  
-        PushD        reg-counter               
-        LoadI                                  
-        Exchange                               
-        Duplicate                              
-        Label        --release-array--6--begin- 
-        Duplicate                              
-        Label        --release-array--6--push-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        16                        
-        Add                                    
-        Label        --release-array--6--loop-begin- 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --release-array--6--loop-end- 
-        Duplicate                              
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        LoadI                                  
-        PushD        reg-counter               
-        LoadI                                  
-        Exchange                               
-        Pop                                    
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        -1                        
-        PushD        reg-counter               
-        LoadI                                  
-        Add                                    
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        Jump         --release-array--6--loop-begin- 
-        Label        --release-array--6--loop-end- 
-        Pop                                    
-        Call         -mem-manager-deallocate   
-        Label        --release-array--6--end-  
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        -1                        
-        PushD        reg-counter               
-        LoadI                                  
-        Add                                    
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        Jump         --release-array--5--loop-begin- 
-        Label        --release-array--5--loop-end- 
-        Pop                                    
-        Call         -mem-manager-deallocate   
-        Label        --release-array--5--end-  
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% b
-        Label        --expr-list--10-array-creation-begin 
-        Label        --expr-list--10-array-creation-get-length 
-        PushI        3                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--10-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--10-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
+        Label        -compare-1-arg2           
         PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--10-array-creation-status 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--10-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--10-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--10-array-creation-end 
-        Label        --expr-list--10-array-initialization-begin 
-        Duplicate                              
-        Label        --expr-list--7-array-creation-begin 
-        Label        --expr-list--7-array-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--7-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--7-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--7-array-creation-status 
-        Duplicate                              
-        PushI        0                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--7-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--7-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--7-array-creation-end 
-        Label        --expr-list--7-array-initialization-begin 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        28                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        32                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--7-array-initialization-end 
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        Label        --expr-list--8-array-creation-begin 
-        Label        --expr-list--8-array-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--8-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--8-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--8-array-creation-status 
-        Duplicate                              
-        PushI        0                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--8-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--8-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--8-array-creation-end 
-        Label        --expr-list--8-array-initialization-begin 
-        Duplicate                              
+        Label        -compare-1-sub            
+        Subtract                               
+        JumpPos      -compare-1-true           
+        Jump         -compare-1-false          
+        Label        -compare-1-true           
         PushI        1                         
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        28                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        5                         
-        Exchange                               
-        PushI        32                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--8-array-initialization-end 
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        Label        --expr-list--9-array-creation-begin 
-        Label        --expr-list--9-array-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --expr-list--9-array-creation-size 
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --expr-list--9-array-creation-type 
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
+        Jump         -compare-1-join           
+        Label        -compare-1-false          
         PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--9-array-creation-status 
-        Duplicate                              
-        PushI        0                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--9-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--9-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--9-array-creation-end 
-        Label        --expr-list--9-array-initialization-begin 
-        Duplicate                              
-        PushI        1                         
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        28                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        5                         
-        Exchange                               
-        PushI        32                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--9-array-initialization-end 
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--10-array-initialization-end 
-        StoreI                                 
+        Label        -compare-1-join           
+        JumpFalse    --while-statement--2-end-of-while-statement 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
-        Label        --print-array--11--begin- 
-        Duplicate                              
-        Label        --print-array--11--push-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        16                        
-        Add                                    
-        PushD        $print-format-open-square-bracket 
-        Printf                                 
-        Label        --print-array--11--loop-begin- 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --print-array--11--loop-end- 
-        Duplicate                              
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        LoadI                                  
-        PushD        reg-counter               
-        LoadI                                  
-        Exchange                               
-        Label        --print-array--12--begin- 
-        Duplicate                              
-        Label        --print-array--12--push-array-length 
-        PushI        12                        
-        Add                                    
-        LoadI                                  
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        16                        
-        Add                                    
-        PushD        $print-format-open-square-bracket 
-        Printf                                 
-        Label        --print-array--12--loop-begin- 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --print-array--12--loop-end- 
-        Duplicate                              
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        LoadI                                  
-        PushD        reg-counter               
-        LoadI                                  
-        Exchange                               
         PushD        $print-format-integer     
         Printf                                 
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        -1                        
-        PushD        reg-counter               
-        LoadI                                  
-        Add                                    
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --print-array--12--loop-end- 
-        PushD        $print-format-separator   
-        Printf                                 
         PushD        $print-format-space       
         Printf                                 
-        Jump         --print-array--12--loop-begin- 
-        Label        --print-array--12--loop-end- 
-        Pop                                    
-        PushD        $print-format-close-square-bracket 
-        Printf                                 
-        Label        --print-array--12--end-   
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        PushI        -1                        
-        PushD        reg-counter               
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
         LoadI                                  
-        Add                                    
-        PushD        reg-counter               
-        Exchange                               
+        PushI        1                         
+        Subtract                               
         StoreI                                 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --print-array--11--loop-end- 
-        PushD        $print-format-separator   
-        Printf                                 
-        PushD        $print-format-space       
-        Printf                                 
-        Jump         --print-array--11--loop-begin- 
-        Label        --print-array--11--loop-end- 
-        Pop                                    
-        PushD        $print-format-close-square-bracket 
-        Printf                                 
-        Label        --print-array--11--end-   
+        Jump         --while-statement--2-begin 
+        Label        --while-statement--2-end-of-while-statement 
         Halt                                   
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
@@ -1605,28 +802,28 @@
         LoadI                                  
         Return                                 
         Label        GCDCalculation            
-        Label        --GCD-Calculation--13--function-begin- 
+        Label        --GCD-Calculation--3--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--13--check-initial-zero 
+        JumpTrue     --GCD-Calculation--3--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--13--function-end- 
-        Label        --GCD-Calculation--13--check-initial-zero 
-        Label        --GCD-Calculation--13--loop-begin- 
+        Jump         --GCD-Calculation--3--function-end- 
+        Label        --GCD-Calculation--3--check-initial-zero 
+        Label        --GCD-Calculation--3--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--13--loop-end- 
+        JumpFalse    --GCD-Calculation--3--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--13--loop-end- 
+        JumpFalse    --GCD-Calculation--3--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--13--positive-case- 
-        Label        --GCD-Calculation--13--not-positive-case- 
+        JumpPos      --GCD-Calculation--3--positive-case- 
+        Label        --GCD-Calculation--3--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -1635,8 +832,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--13--join- 
-        Label        --GCD-Calculation--13--positive-case- 
+        Jump         --GCD-Calculation--3--join- 
+        Label        --GCD-Calculation--3--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -1645,10 +842,10 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Label        --GCD-Calculation--13--join- 
-        Jump         --GCD-Calculation--13--loop-begin- 
-        Label        --GCD-Calculation--13--loop-end- 
+        Label        --GCD-Calculation--3--join- 
+        Jump         --GCD-Calculation--3--loop-begin- 
+        Label        --GCD-Calculation--3--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--13--function-end- 
+        Label        --GCD-Calculation--3--function-end- 
         Exchange                               
         Return                                 

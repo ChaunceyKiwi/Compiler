@@ -34,8 +34,11 @@ public enum Keyword implements Lextant {
 	WHILE("while"),
 	
 	// for release statement
-	RELEASE("release");
-		
+	RELEASE("release"),
+	
+	// for while statement
+	BREAK("break"),
+	CONTINUE("continue");
 	
 	private String lexeme;
 	private Token prototype;

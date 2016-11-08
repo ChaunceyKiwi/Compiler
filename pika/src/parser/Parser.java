@@ -81,10 +81,20 @@ public class Parser {
 	}
 	
 	
-	///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 	// Statements
 	
-	// statement -> declaration | printStatement
+	/*
+	 *	Statements -> PrintStatement
+	 *				  Declatation
+	 *			      AssignmentStatement
+	 *			      IfStatement 
+	 *			      WhileStatement
+	 *				  ReleaseStatement
+	 *				  BreakStatement
+	 *				  ContinueStatement
+	 */
+	
 	private ParseNode parseStatement() {
 		if(!startsStatement(nowReading)) {
 			return syntaxErrorNode("statement");
@@ -118,6 +128,14 @@ public class Parser {
 			return parseReleaseStatement();
 		}
 		
+		if(startsBreakStatement(nowReading)){
+			return parseBreakStatement();
+		}
+		
+		if(startsContinueStatement(nowReading)){
+			return parseContinueStatement();
+		}
+		
 		return syntaxErrorNode("statement");
 	}
 	
@@ -128,7 +146,30 @@ public class Parser {
 				startsWhileStatement(token) ||
 				startsPrintStatement(token) ||
 				startsBlockStatement(token) ||
-				startsReleaseStatement(token);
+				startsReleaseStatement(token) ||
+				startsBreakStatement(token) || 
+				startsContinueStatement(token);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// PrintStatement
+	
+	// printStatement -> PRINT printExpressionList .
+	private ParseNode parsePrintStatement() {
+		if(!startsPrintStatement(nowReading)) {
+			return syntaxErrorNode("print statement");
+		}
+		PrintStatementNode result = new PrintStatementNode(nowReading);
+		
+		readToken();
+		result = parsePrintExpressionList(result);	
+		expect(Punctuator.TERMINATOR);
+		
+		return result;
+	}
+	
+	private boolean startsPrintStatement(Token token) {
+		return token.isLextant(Keyword.PRINT);
 	}
 	
 	///////////////////////////////////////////////////////////
@@ -250,27 +291,6 @@ public class Parser {
 	
 	private boolean startsWhileStatement(Token token) {
 		return token.isLextant(Keyword.WHILE);
-	}
-	
-	///////////////////////////////////////////////////////////
-	// PrintStatement
-	
-	// printStatement -> PRINT printExpressionList .
-	private ParseNode parsePrintStatement() {
-		if(!startsPrintStatement(nowReading)) {
-			return syntaxErrorNode("print statement");
-		}
-		PrintStatementNode result = new PrintStatementNode(nowReading);
-		
-		readToken();
-		result = parsePrintExpressionList(result);	
-		expect(Punctuator.TERMINATOR);
-		
-		return result;
-	}
-	
-	private boolean startsPrintStatement(Token token) {
-		return token.isLextant(Keyword.PRINT);
 	}	
 	
 	///////////////////////////////////////////////////////////
@@ -293,6 +313,46 @@ public class Parser {
 	
 	private boolean startsReleaseStatement(Token token) {
 		return token.isLextant(Keyword.RELEASE);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// Break Statement
+	
+	private ParseNode parseBreakStatement() {
+		if(!startsBreakStatement(nowReading)) {
+			return syntaxErrorNode("break statement");
+		}
+		
+		Token breakStatementToken = nowReading;
+		BreakStatementNode breakStatementNode = new BreakStatementNode(breakStatementToken);
+		readToken();
+		expect(Punctuator.TERMINATOR);				
+		
+		return breakStatementNode;
+	}
+	
+	private boolean startsBreakStatement(Token token) {
+		return token.isLextant(Keyword.BREAK);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// Continue Statement
+	
+	private ParseNode parseContinueStatement() {
+		if(!startsContinueStatement(nowReading)) {
+			return syntaxErrorNode("break statement");
+		}
+		
+		Token continueStatementToken = nowReading;
+		ContinueStatementNode continueStatementNode = new ContinueStatementNode(continueStatementToken);
+		readToken();
+		expect(Punctuator.TERMINATOR);				
+		
+		return continueStatementNode;
+	}
+	
+	private boolean startsContinueStatement(Token token) {
+		return token.isLextant(Keyword.CONTINUE);
 	}
 
 	///////////////////////////////////////////////////////////

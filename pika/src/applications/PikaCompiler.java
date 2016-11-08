@@ -74,6 +74,7 @@ public class PikaCompiler extends PikaApplication {
 		ASMCodeFragment optimized = Optimizer.optimize(code);
 		printCodeToFile(outfile, optimized);
 	}
+	
 	private static void printCodeToFile(String filename, ASMCodeFragment code)
 			throws FileNotFoundException {
 		File file = new File(filename);

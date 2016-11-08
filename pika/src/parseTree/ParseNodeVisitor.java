@@ -5,6 +5,46 @@ import parseTree.nodeTypes.*;
 // Visitor pattern with pre- and post-order visits
 public interface ParseNodeVisitor {
 	// non-leaf nodes: visitEnter and visitLeave
+	
+	///////////////////////////////////////////////////////////
+	// Constructs larger than statements
+	void visitEnter(ParseNode node);
+	void visitLeave(ParseNode node);
+	
+	void visitEnter(ProgramNode node);
+	void visitLeave(ProgramNode node);
+	
+	///////////////////////////////////////////////////////////
+	// Statement Node
+	void visitEnter(BlockStatementNode node);
+	void visitLeave(BlockStatementNode node);
+	
+	void visitEnter(PrintStatementNode node);
+	void visitLeave(PrintStatementNode node);
+	
+	void visitEnter(DeclarationNode node);
+	void visitLeave(DeclarationNode node);
+	
+	void visitEnter(AssignmentStatementNode node);
+	void visitLeave(AssignmentStatementNode node);
+	
+	void visitEnter(IfStatementNode node);
+	void visitLeave(IfStatementNode node);
+	
+	void visitEnter(WhileStatementNode node);
+	void visitLeave(WhileStatementNode node);
+	
+	void visitEnter(ReleaseStatementNode node);
+	void visitLeave(ReleaseStatementNode node);
+	
+	void visitEnter(BreakStatementNode node);
+	void visitLeave(BreakStatementNode node);
+
+	void visitEnter(ContinueStatementNode node);
+	void visitLeave(ContinueStatementNode node);
+	
+	///////////////////////////////////////////////////////////
+	// Expression Node
 	void visitEnter(BinaryOperatorNode node);
 	void visitLeave(BinaryOperatorNode node);
 	
@@ -13,24 +53,6 @@ public interface ParseNodeVisitor {
 	
 	void visitEnter(CopyOperatorNode node);
 	void visitLeave(CopyOperatorNode node);
-	
-	void visitEnter(BlockStatementNode node);
-	void visitLeave(BlockStatementNode node);
-
-	void visitEnter(DeclarationNode node);
-	void visitLeave(DeclarationNode node);
-
-	void visitEnter(AssignmentStatementNode node);
-	void visitLeave(AssignmentStatementNode node);
-	
-	void visitEnter(ParseNode node);
-	void visitLeave(ParseNode node);
-	
-	void visitEnter(PrintStatementNode node);
-	void visitLeave(PrintStatementNode node);
-	
-	void visitEnter(ProgramNode node);
-	void visitLeave(ProgramNode node);
 	
 	void visitEnter(TypeCastingNode node);
 	void visitLeave(TypeCastingNode node);
@@ -44,17 +66,8 @@ public interface ParseNodeVisitor {
 	void visitEnter(TypeNode node);
 	void visitLeave(TypeNode node);
 	
-	void visitEnter(IfStatementNode node);
-	void visitLeave(IfStatementNode node);
-	
-	void visitEnter(WhileStatementNode node);
-	void visitLeave(WhileStatementNode node);
-	
 	void visitEnter(ArrayIndexingNode node);
 	void visitLeave(ArrayIndexingNode node);
-	
-	void visitEnter(ReleaseStatementNode node);
-	void visitLeave(ReleaseStatementNode node);
 	
 	// leaf nodes: visitLeaf only
 	void visit(BooleanConstantNode node);
@@ -71,12 +84,14 @@ public interface ParseNodeVisitor {
 
 	public static class Default implements ParseNodeVisitor
 	{
+		///////////////////////////////////////////////////////////////////////////
+		// Constructs larger than statements
+		
 		public void defaultVisit(ParseNode node) {	}
 		
 		public void defaultVisitEnter(ParseNode node) {
 			defaultVisit(node);
 		}
-		
 		public void defaultVisitLeave(ParseNode node) {
 			defaultVisit(node);
 		}
@@ -84,6 +99,120 @@ public interface ParseNodeVisitor {
 		public void defaultVisitForLeaf(ParseNode node) {
 			defaultVisit(node);
 		}
+		
+		public void visitEnter(ParseNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(ParseNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		public void visitEnter(ProgramNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(ProgramNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////////////////////
+		// Statements
+		
+		/*
+		 *	Statements -> BlockStatement
+		 *				  PrintStatement
+		 *				  Declaration
+		 *			      AssignmentStatement
+		 *			      IfStatement 
+		 *			      WhileStatement
+		 *				  ReleaseStatement
+		 *				  BreakStatement
+		 *				  ContinueStatement
+		 */
+		
+		///////////////////////////////////////////////////////////
+		// BlockStatement
+		public void visitEnter(BlockStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(BlockStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// PrintStatement
+		public void visitEnter(PrintStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(PrintStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// DeclarationStatement
+		public void visitEnter(DeclarationNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(DeclarationNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// AssignmentStatement
+		public void visitEnter(AssignmentStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(AssignmentStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// IfStatement
+		public void visitEnter(IfStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(IfStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// WhileStatement
+		public void visitEnter(WhileStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(WhileStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// ReleaseStatement
+		public void visitEnter(ReleaseStatementNode node){
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(ReleaseStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// BreakStatement
+		public void visitEnter(BreakStatementNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(BreakStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// ContinueStatement
+		public void visitEnter(ContinueStatementNode node){
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(ContinueStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		
+		///////////////////////////////////////////////////////////////////////////
+		// ExpressionNode
 		
 		public void visitEnter(BinaryOperatorNode node) {
 			defaultVisitEnter(node);
@@ -106,41 +235,6 @@ public interface ParseNodeVisitor {
 			defaultVisitLeave(node);
 		}
 		
-		public void visitEnter(DeclarationNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(DeclarationNode node) {
-			defaultVisitLeave(node);
-		}
-		
-		public void visitEnter(BlockStatementNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(BlockStatementNode node) {
-			defaultVisitLeave(node);
-		}
-		
-		public void visitEnter(ParseNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(ParseNode node) {
-			defaultVisitLeave(node);
-		}
-		
-		public void visitEnter(PrintStatementNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(PrintStatementNode node) {
-			defaultVisitLeave(node);
-		}
-		
-		public void visitEnter(AssignmentStatementNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(AssignmentStatementNode node) {
-			defaultVisitLeave(node);
-		}
-		
 		public void visitEnter(TypeCastingNode node) {
 			defaultVisitEnter(node);
 		}
@@ -158,53 +252,32 @@ public interface ParseNodeVisitor {
 		public void visitEnter(NewArrayTypeLengthNode node) {
 			defaultVisitEnter(node);
 		}
+		public void visitLeave(NewArrayTypeLengthNode node) {
+			defaultVisitLeave(node);
+		}
 		
 		public void visitLeave(ArrayIndexingNode node) {
 			defaultVisitLeave(node);
 		}
-		
 		public void visitEnter(ArrayIndexingNode node) {
 			defaultVisitEnter(node);
-		}
-		
-		public void visitLeave(NewArrayTypeLengthNode node) {
-			defaultVisitLeave(node);
 		}
 		
 		public void visitEnter(TypeNode node) {
 			defaultVisitEnter(node);
 		}
-		
 		public void visitLeave(TypeNode node) {
 			defaultVisitLeave(node);
 		}
 		
-		public void visitEnter(IfStatementNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(IfStatementNode node) {
-			defaultVisitLeave(node);
-		}
-		
-		public void visitEnter(WhileStatementNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(WhileStatementNode node) {
-			defaultVisitLeave(node);
+		///////////////////////////////////////////////////////////////////////////
+		// Leaf nodes
+		public void visit(IdentifierNode node) {
+			defaultVisitForLeaf(node);
 		}
 		
-		public void visitEnter(ReleaseStatementNode node){
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(ReleaseStatementNode node) {
-			defaultVisitLeave(node);
-		}
-		
-		public void visitEnter(ProgramNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(ProgramNode node) {
-			defaultVisitLeave(node);
+		public void visit(TypeCastedToNode node) {
+			defaultVisitForLeaf(node);
 		}
 		
 		public void visit(BooleanConstantNode node) {
@@ -214,11 +287,7 @@ public interface ParseNodeVisitor {
 		public void visit(ErrorNode node) {
 			defaultVisitForLeaf(node);
 		}
-		
-		public void visit(IdentifierNode node) {
-			defaultVisitForLeaf(node);
-		}
-		
+				
 		public void visit(IntegerConstantNode node) {
 			defaultVisitForLeaf(node);
 		}
@@ -244,10 +313,6 @@ public interface ParseNodeVisitor {
 		}
 
 		public void visit(SpaceNode node) {
-			defaultVisitForLeaf(node);
-		}
-		
-		public void visit(TypeCastedToNode node) {
 			defaultVisitForLeaf(node);
 		}
 	}
