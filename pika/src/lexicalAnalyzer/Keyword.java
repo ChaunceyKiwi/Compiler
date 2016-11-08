@@ -38,7 +38,11 @@ public enum Keyword implements Lextant {
 	
 	// for while statement
 	BREAK("break"),
-	CONTINUE("continue");
+	CONTINUE("continue"),
+	
+	// for function
+	FUNC("func");
+	
 	
 	private String lexeme;
 	private Token prototype;

@@ -1,3 +1,9 @@
+func getMax <int a, int b> -> int {
+	if(a > b){
+		print a. 
+	}
+}
+
 exec {
 	var a := 0.
 	while(a < 10) {

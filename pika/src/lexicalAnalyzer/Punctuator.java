@@ -50,6 +50,9 @@ public enum Punctuator implements Lextant {
 	CLOSE_SQUARE_BRACKET("]"),
 	VERITICAL_BAR("|"),
 	
+	// For Function
+	RESULTIN("->"),
+	
 	// Null punctuator
 	NULL_PUNCTUATOR("");
 
