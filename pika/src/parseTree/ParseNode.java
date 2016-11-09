@@ -54,6 +54,10 @@ public class ParseNode {
 		return type;
 	}
 	
+	public Type getTypeByLexeme() {
+		return null;
+	}
+	
 	public void setSignature(FunctionSignature signature){
 		this.signature = signature;
 	}
@@ -68,9 +72,11 @@ public class ParseNode {
 	public Scope getScope() {
 		return scope;
 	}
+	
 	public void setScope(Scope scope) {
 		this.scope = scope;
 	}
+	
 	public boolean hasScope() {
 		return scope != null;
 	}
@@ -83,6 +89,14 @@ public class ParseNode {
 			}
 		}
 		return Scope.nullInstance();
+	}
+	
+	public Scope getRootScope() {
+		Scope scope = getLocalScope();
+		while(scope.getBaseScope() != Scope.nullInstance()) {
+			scope = scope.getBaseScope();
+		}
+		return scope;
 	}
 	
 	// If ths symbol table for current parse node has such an identifier

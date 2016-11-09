@@ -5,9 +5,13 @@ import parseTree.ParseNodeVisitor;
 import lexicalAnalyzer.Lextant;
 import tokens.LextantToken;
 import tokens.Token;
+import semanticAnalyzer.types.*;
+import parseTree.nodeTypes.LambdaNode;
 
 public class FunctionDefinitionNode extends ParseNode {
-
+	
+	private LambdaType lambdaType = null;
+	
 	public FunctionDefinitionNode(Token token) {
 		super(token);
 	}
@@ -31,7 +35,17 @@ public class FunctionDefinitionNode extends ParseNode {
 		FunctionDefinitionNode node = new FunctionDefinitionNode(token);
 		node.appendChild(identifier);
 		node.appendChild(lambda);
+		node.lambdaType = ((LambdaNode)lambda).getLambdaType();
 		return node;
+	}
+	
+	public void setLambdaType() {
+		LambdaNode lambdaNode = (LambdaNode)child(1);
+		lambdaType = lambdaNode.getLambdaType();
+	}
+	
+	public LambdaType getLambdaType() {
+		return lambdaType;
 	}
 	
 	///////////////////////////////////////////////////////////

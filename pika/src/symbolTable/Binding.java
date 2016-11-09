@@ -12,6 +12,7 @@ public class Binding {
 	private String lexeme;
 	private boolean isMutable;
 	
+	//  Binding for variable
 	public Binding(Type type, TextLocation location, MemoryLocation memoryLocation, String lexeme, boolean ismutable) {
 		super();
 		this.type = type;
@@ -19,6 +20,16 @@ public class Binding {
 		this.memoryLocation = memoryLocation;
 		this.lexeme = lexeme;
 		this.isMutable = ismutable;
+	}
+	
+	// Binding for function
+	public Binding(TextLocation location, String lexeme) {
+		super();
+		this.type = PrimitiveType.NO_TYPE;
+		this.textLocation = location;
+		this.memoryLocation = null;
+		this.lexeme = lexeme;
+		this.isMutable = false;
 	}
 	
 	public String toString() {

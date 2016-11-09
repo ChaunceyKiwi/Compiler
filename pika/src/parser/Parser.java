@@ -61,7 +61,15 @@ public class Parser {
 	}
 	
 	///////////////////////////////////////////////////////////
-	// GlobalDefinition
+	// GlobalDefinition -> functionDefinition* (my version)
+	// FunctionDefinition -> func identifier lambda
+	// lambda -> lambdaParamType blockStatement 
+	// lambdaParamType ->  <parameterList> -> type 
+	// parameterList ->  parameterSpecification*  (,)
+	// parameterSpecification ->  type identifier
+	
+	///////////////////////////////////////////////////////////
+	// GlobalDefinition -> functionDefinition*
 	private ParseNode parseGlobalDefinition() {
 		if(!startsGlobalDefinition(nowReading)) {
 			return syntaxErrorNode("global definition");
@@ -80,6 +88,8 @@ public class Parser {
 		return startsFunctionDefinition(token);
 	}
 	
+	///////////////////////////////////////////////////////////
+	// FunctionDefinition -> func identifier lambda
 	private ParseNode parseFunctionDefinition() {
 		if(!startsFunctionDefinition(nowReading)) {
 			return syntaxErrorNode("function definition");
@@ -97,6 +107,8 @@ public class Parser {
 		return token.isLextant(Keyword.FUNC);
 	}
 	
+	///////////////////////////////////////////////////////////
+	// lambda -> lambdaParamType blockStatement 
 	private ParseNode parseLambda(){
 		if(!startsLambda(nowReading)) {
 			return syntaxErrorNode("lambda");
@@ -113,6 +125,8 @@ public class Parser {
 		return startsLambdaParamType(token);
 	}
 	
+	///////////////////////////////////////////////////////////
+	// lambdaParamType ->  <parameterList> -> type 
 	private ParseNode parseLambdaParamType() {
 		if(!startsLambdaParamType(nowReading)) {
 			return syntaxErrorNode("lambda param type");
@@ -134,6 +148,8 @@ public class Parser {
 		return token.isLextant(Punctuator.LESSER);
 	}
 	
+	///////////////////////////////////////////////////////////
+	// parameterList ->  parameterSpecification*  (,)
 	private ParseNode parseParameterList() {
 		if(!startsParameterList(nowReading)) {
 			return syntaxErrorNode("parameter list");
@@ -142,7 +158,9 @@ public class Parser {
 		ParseNode parameterListNode = new ParameterListNode(nowReading);
 		
 		while(startsParameterSpecification(nowReading) || startsParameterSeparator(nowReading)) {
-			parameterListNode.appendChild(parseParameterSpecification()); 
+			ParseNode parameterSpecification = parseParameterSpecification();
+			parameterListNode.appendChild(parameterSpecification); 
+			((ParameterListNode)parameterListNode).appendToTypeList(parameterSpecification.child(0).getType());
 			parseParameterSeparator();
 		}
 		
@@ -163,8 +181,6 @@ public class Parser {
 			readToken();
 		}		
 		else if(nowReading.isLextant(Punctuator.GREATER)) {
-			// we're at the end of the bowtie and this printSeparator is not required.
-			// do nothing.  Terminator is handled in a higher-level nonterminal.
 		}
 	}
 	
@@ -172,6 +188,8 @@ public class Parser {
 		return token.isLextant(Punctuator.SEPARATOR);
 	}
 	
+	///////////////////////////////////////////////////////////
+	// parameterSpecification ->  type identifier
 	private ParseNode parseParameterSpecification() {
 		if(!startsParameterSpecification(nowReading)) {
 			return syntaxErrorNode("parameter specification");
@@ -186,11 +204,6 @@ public class Parser {
 	private boolean startsParameterSpecification(Token token) {
 		return startsType(token);
 	}
-	
-	
-	
-	
-	
 	
 	///////////////////////////////////////////////////////////
 	// blockStatement

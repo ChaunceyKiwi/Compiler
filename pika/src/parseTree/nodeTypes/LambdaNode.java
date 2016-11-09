@@ -2,11 +2,14 @@ package parseTree.nodeTypes;
 
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
+import semanticAnalyzer.types.LambdaType;
 import lexicalAnalyzer.Lextant;
 import tokens.LextantToken;
 import tokens.Token;
+import parseTree.nodeTypes.LambdaParamTypeNode;
 
-public class LambdaNode extends ParseNode {
+public class LambdaNode extends ParseNode {	
+	private LambdaType lambdaType = null;
 
 	public LambdaNode(Token token) {
 		super(token);
@@ -30,8 +33,18 @@ public class LambdaNode extends ParseNode {
 	public static LambdaNode withChildren(Token token, ParseNode lambdaParamType, ParseNode blockStatement) {
 		LambdaNode node = new LambdaNode(token);
 		node.appendChild(lambdaParamType);
+		node.lambdaType = ((LambdaParamTypeNode)lambdaParamType).getLambdaType();
 		node.appendChild(blockStatement);
 		return node;
+	}
+	
+	public void setLambdaType() {
+		LambdaParamTypeNode lambdaParamTypeNode = (LambdaParamTypeNode)child(0);
+		lambdaType = lambdaParamTypeNode.getLambdaType();
+	}
+	
+	public LambdaType getLambdaType() {
+		return lambdaType;
 	}
 	
 	///////////////////////////////////////////////////////////

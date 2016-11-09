@@ -1,4 +1,4 @@
-func getMax <int a, int b> -> int {
+func getMax <int a, [int] b> -> int {
 	if(a > b){
 		print a. 
 	}

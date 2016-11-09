@@ -30,6 +30,7 @@ public class NegativeMemoryAllocator implements MemoryAllocator {
 		updateMin();
 		return new MemoryLocation(accessor, baseAddress, currentOffset);
 	}
+	
 	private void updateMin() {
 		if(minOffset > currentOffset) {
 			minOffset = currentOffset;
@@ -50,6 +51,7 @@ public class NegativeMemoryAllocator implements MemoryAllocator {
 	public void saveState() {
 		bookmarks.add(currentOffset);
 	}
+	
 	@Override
 	public void restoreState() {
 		assert bookmarks.size() > 0;

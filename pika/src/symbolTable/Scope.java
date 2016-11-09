@@ -3,6 +3,7 @@ package symbolTable;
 import inputHandler.TextLocation;
 import logging.PikaLogger;
 import parseTree.nodeTypes.IdentifierNode;
+import parseTree.nodeTypes.FunctionDefinitionNode;
 import semanticAnalyzer.types.Type;
 import tokens.Token;
 
@@ -11,12 +12,22 @@ public class Scope {
 	private MemoryAllocator allocator;
 	private SymbolTable symbolTable;
 	
-//////////////////////////////////////////////////////////////////////
-// factories
-
+	//////////////////////////////////////////////////////////////////////
+	// factories
 	public static Scope createProgramScope() {
 		return new Scope(programScopeAllocator(), nullInstance());
 	}
+	
+	public Scope createParameterScope() {
+		return new Scope(parameterScopeAllocator(), this);
+	}
+	
+	public Scope createProcedureScope() {
+		MemoryAllocator allocator = procedureScopeAllocator();
+//		allocator.allocate(RunTime)
+		return new Scope(allocator, this);
+	}
+	
 	public Scope createSubscope() {
 		return new Scope(allocator, this);
 	}
@@ -27,40 +38,58 @@ public class Scope {
 				MemoryLocation.GLOBAL_VARIABLE_BLOCK);
 	}
 	
-//////////////////////////////////////////////////////////////////////
-// private constructor.	
+	private static MemoryAllocator parameterScopeAllocator() {
+		return new ParameterMemoryAllocator(
+				MemoryAccessMethod.INDIRECT_ACCESS_BASE,
+				MemoryLocation.FRAME_POINTER);
+	}
+	
+	private static MemoryAllocator procedureScopeAllocator() {
+		return new NegativeMemoryAllocator(
+				MemoryAccessMethod.INDIRECT_ACCESS_BASE,
+				MemoryLocation.FRAME_POINTER);
+	}
+	
+	//////////////////////////////////////////////////////////////////////
+	// private constructor.	
 	private Scope(MemoryAllocator allocator, Scope baseScope) {
 		super();
 		this.baseScope = (baseScope == null) ? this : baseScope;
 		this.symbolTable = new SymbolTable();
 		this.allocator = allocator;
-		allocator.saveState();
 	}
 	
-///////////////////////////////////////////////////////////////////////
-//  basic queries	
+	///////////////////////////////////////////////////////////////////////
+	//  basic queries	
 	public Scope getBaseScope() {
 		return baseScope;
 	}
+	
 	public MemoryAllocator getAllocationStrategy() {
 		return allocator;
 	}
+	
 	public SymbolTable getSymbolTable() {
 		return symbolTable;
 	}
 	
-///////////////////////////////////////////////////////////////////////
-//memory allocation
+	///////////////////////////////////////////////////////////////////////
+	//memory allocation
+	public void enter() {
+		allocator.saveState();
+	}
+	
 	// must call leave() when destroying/leaving a scope.
 	public void leave() {
 		allocator.restoreState();
 	}
+	
 	public int getAllocatedSize() {
 		return allocator.getMaxAllocatedSize();
 	}
 
-///////////////////////////////////////////////////////////////////////
-//bindings
+	///////////////////////////////////////////////////////////////////////
+	//bindings
 	public Binding createBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
 		Token token = identifierNode.getToken();
 		
@@ -73,13 +102,23 @@ public class Scope {
 
 		return binding;
 	}
+	
 	private Binding allocateNewBinding(Type type, TextLocation textLocation, String lexeme, boolean ismutable) {
 		MemoryLocation memoryLocation = allocator.allocate(type.getSize());
 		return new Binding(type, textLocation, memoryLocation, lexeme, ismutable);
 	}
 	
-///////////////////////////////////////////////////////////////////////
-//toString
+	public Binding createFunctionBinding(FunctionDefinitionNode funcDefNode){
+		Token token = funcDefNode.getToken();
+		String lexeme = token.getLexeme();
+		Binding binding = new Binding(token.getLocation(), lexeme);
+		symbolTable.install(lexeme, binding);
+		
+		return binding;
+	}
+	
+	///////////////////////////////////////////////////////////////////////
+	//toString
 	public String toString() {
 		String result = "scope: ";
 		result += " hash "+ hashCode() + "\n";
@@ -87,11 +126,12 @@ public class Scope {
 		return result;
 	}
 
-////////////////////////////////////////////////////////////////////////////////////
-//Null Scope object - lazy singleton (Lazy Holder) implementation pattern
+	////////////////////////////////////////////////////////////////////////////////////
+	//Null Scope object - lazy singleton (Lazy Holder) implementation pattern
 	public static Scope nullInstance() {
 		return NullScope.instance;
 	}
+	
 	private static class NullScope extends Scope {
 		private static NullScope instance = new NullScope();
 
@@ -99,23 +139,25 @@ public class Scope {
 			super(new PositiveMemoryAllocator(MemoryAccessMethod.NULL_ACCESS, "", 0),
 					null);
 		}
+		
 		public String toString() {
 			return "scope: the-null-scope";
 		}
+		
 		@Override
 		public Binding createBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
 			unscopedIdentifierError(identifierNode.getToken());
 			return super.createBinding(identifierNode, type, ismutable);
 		}
+		
 		// subscopes of null scope need their own strategy.  Assumes global block is static.
 		public Scope createSubscope() {
 			return new Scope(programScopeAllocator(), this);
 		}
 	}
 
-
-///////////////////////////////////////////////////////////////////////
-//error reporting
+	///////////////////////////////////////////////////////////////////////
+	//error reporting
 	private static void unscopedIdentifierError(Token token) {
 		PikaLogger log = PikaLogger.getLogger("compiler.scope");
 		log.severe("variable " + token.getLexeme() + 

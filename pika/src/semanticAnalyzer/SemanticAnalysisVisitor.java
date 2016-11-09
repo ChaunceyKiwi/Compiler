@@ -2,7 +2,6 @@ package semanticAnalyzer;
 
 import java.util.Arrays;
 import java.util.List;
-
 import lexicalAnalyzer.Keyword;
 import lexicalAnalyzer.Lextant;
 import lexicalAnalyzer.Punctuator;
@@ -11,9 +10,7 @@ import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
 import parseTree.nodeTypes.*;
 import semanticAnalyzer.signatures.*;
-import semanticAnalyzer.types.PrimitiveType;
-import semanticAnalyzer.types.ArrayType;
-import semanticAnalyzer.types.Type;
+import semanticAnalyzer.types.*;
 import symbolTable.Binding;
 import symbolTable.Scope;
 import tokens.LextantToken;
@@ -29,7 +26,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	// constructs larger than statements
 	@Override
 	public void visitEnter(ProgramNode node) {
-		enterProgramScope(node);
+		enterScope(node);
+		//enterProgramScope(node);
 	}
 	
 	@Override
@@ -39,7 +37,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	@Override
 	public void visitEnter(BlockStatementNode node) {
-		enterSubscope(node);
+		enterScope(node);
+		//enterSubscope(node);
 	}
 	
 	@Override
@@ -49,16 +48,20 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	///////////////////////////////////////////////////////////////////////////
 	// helper methods for scoping.
-	private void enterProgramScope(ParseNode node) {
-		Scope scope = Scope.createProgramScope();
-		node.setScope(scope);
-	}
+//	private void enterProgramScope(ParseNode node) {
+//		Scope scope = Scope.createProgramScope();
+//		node.setScope(scope);
+//	}
+//	
+//	private void enterSubscope(ParseNode node) {
+//		Scope baseScope = node.getLocalScope();
+//		Scope scope = baseScope.createSubscope();
+//		node.setScope(scope);
+//	}	
 	
-	private void enterSubscope(ParseNode node) {
-		Scope baseScope = node.getLocalScope();
-		Scope scope = baseScope.createSubscope();
-		node.setScope(scope);
-	}		
+	private void enterScope(ParseNode node) {
+		node.getScope().enter();
+	}
 	
 	private void leaveScope(ParseNode node) {
 		node.getScope().leave();
