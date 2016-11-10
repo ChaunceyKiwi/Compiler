@@ -15,5 +15,5 @@ public interface Type {
 	
 	public void resetTypeVariable();
 	
-	public Type getTypeWithoutVariable();
+	public Type getTypeWithoutVariable();	
 }

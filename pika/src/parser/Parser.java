@@ -158,9 +158,7 @@ public class Parser {
 		ParseNode parameterListNode = new ParameterListNode(nowReading);
 		
 		while(startsParameterSpecification(nowReading) || startsParameterSeparator(nowReading)) {
-			ParseNode parameterSpecification = parseParameterSpecification();
-			parameterListNode.appendChild(parameterSpecification); 
-			((ParameterListNode)parameterListNode).appendToTypeList(parameterSpecification.child(0).getType());
+			parameterListNode.appendChild(parseParameterSpecification()); 
 			parseParameterSeparator();
 		}
 		

@@ -29,6 +29,7 @@ public class SemanticAnalysisPreVisitor extends ParseNodeVisitor.Default{
 	@Override
 	public void visitEnter(FunctionDefinitionNode node) {
 		createParameterScope(node);
+		node.setLambdaType();
 		setBinding(node);
 	}
 	

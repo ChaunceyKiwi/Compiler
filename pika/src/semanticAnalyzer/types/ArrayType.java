@@ -21,6 +21,7 @@ public class ArrayType implements Type{
 	private final int length;
 	
 	private Type subType;
+	private String infoString;
 	
     public int getLength() {
 //        assert(length >= 0);
@@ -34,6 +35,7 @@ public class ArrayType implements Type{
 		is_deleted = false;
 		permanent = false;
 		length = -1;
+		infoString = infoString();
 	}
 	
 	public ArrayType(Type type){
@@ -43,6 +45,7 @@ public class ArrayType implements Type{
 		is_deleted = false;
 		permanent = false;
 		length = -1;
+		infoString = infoString();
 	}
 	
 	public ArrayType(Type type, int nChildren){
@@ -52,6 +55,7 @@ public class ArrayType implements Type{
 		is_deleted = false;
 		permanent = false;
 		length = nChildren;
+		infoString = infoString();
 	}
 	
 	public Type getTypeWithoutVariable() {
@@ -88,23 +92,10 @@ public class ArrayType implements Type{
 	
 	public int getStatus() {
 		int status = 0;
-		
-		// bit 0 immutability
-		if(immutability)
-			status += 1;
-		
-		// bit 1 sub_type_is_reference
-		if(subtype_is_reference)
-			status += 2;
-		
-		// bit 2 is_deleted
-		if(is_deleted)
-			status += 4;
-		
-		// bit 3 permanent
-		if(permanent)
-			status += 8;
-		
+		if(immutability) status += 1; 			// bit 0 immutability
+		if(subtype_is_reference) status += 2; 	// bit 1 sub_type_is_reference		
+		if(is_deleted) status += 4;				// bit 2 is_deleted
+		if(permanent) status += 8; 				// bit 3 permanent
 		return status;
 	}
 
@@ -118,8 +109,12 @@ public class ArrayType implements Type{
 	}
 
 	public String infoString() {
-		// TODO Auto-generated method stub
-		return null;
+		return "[" + subType.infoString() + "]";
+	}
+	
+	@Override
+	public String toString() {
+		return infoString();
 	}
 
 	@Override

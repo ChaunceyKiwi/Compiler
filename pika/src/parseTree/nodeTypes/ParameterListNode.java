@@ -31,8 +31,13 @@ public class ParameterListNode extends ParseNode {
 		return (LextantToken)token;
 	}	
 	
-	public void appendToTypeList(Type type) {
-		typeList.add(type);
+	public void setTypeList() {
+		for(int i = 0; i < this.nChildren(); i++) {
+			if(this.child(i).child(0) instanceof TypeNode) {
+				((TypeNode)this.child(i).child(0)).setType();
+			}
+			typeList.add(this.child(i).getType());
+		}
 	}
 	
 	public List<Type> getTypeList() {

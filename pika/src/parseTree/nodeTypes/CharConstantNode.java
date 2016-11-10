@@ -6,6 +6,7 @@ import tokens.CharToken;
 import tokens.Token;
 
 public class CharConstantNode extends ParseNode {
+	
 	public CharConstantNode(Token token) {
 		super(token);
 		assert(token instanceof CharToken);
@@ -14,9 +15,8 @@ public class CharConstantNode extends ParseNode {
 		super(node);
 	}
 
-////////////////////////////////////////////////////////////
-// attributes
-	
+	////////////////////////////////////////////////////////////
+	// attributes
 	public char getValue() {
 		return charToken().getValue();
 	}
@@ -25,9 +25,8 @@ public class CharConstantNode extends ParseNode {
 		return (CharToken)token;
 	}	
 
-///////////////////////////////////////////////////////////
-// accept a visitor
-	
+	///////////////////////////////////////////////////////////
+	// accept a visitor
 	public void accept(ParseNodeVisitor visitor) {
 		visitor.visit(this);
 	}

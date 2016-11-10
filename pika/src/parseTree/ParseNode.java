@@ -18,7 +18,7 @@ public class ParseNode {
 	FunctionSignature signature;
 
 	protected Token token;
-	Type type;					// used for expressions
+	protected Type type;					// used for expressions
 	private Scope scope;		// the scope created by this node, if any.
 
 	public ParseNode(Token token) {
@@ -52,10 +52,6 @@ public class ParseNode {
 		if(type instanceof TypeVariable)
 			type = ((TypeVariable)type).getSubtype();
 		return type;
-	}
-	
-	public Type getTypeByLexeme() {
-		return null;
 	}
 	
 	public void setSignature(FunctionSignature signature){

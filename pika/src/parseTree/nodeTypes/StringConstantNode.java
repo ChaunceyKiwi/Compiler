@@ -24,6 +24,8 @@ public class StringConstantNode extends ParseNode {
 	public StringToken stringToken() {
 		return (StringToken)token;
 	}	
+	
+	
 
 ///////////////////////////////////////////////////////////
 // accept a visitor

@@ -14,9 +14,8 @@ public class FloatingConstantNode extends ParseNode {
 		super(node);
 	}
 
-////////////////////////////////////////////////////////////
-// attributes
-	
+	////////////////////////////////////////////////////////////
+	// attributes	
 	public double getValue() {
 		return floatingToken().getValue();
 	}
@@ -25,9 +24,8 @@ public class FloatingConstantNode extends ParseNode {
 		return (FloatingToken)token;
 	}	
 
-///////////////////////////////////////////////////////////
-// accept a visitor
-	
+	///////////////////////////////////////////////////////////
+	// accept a visitor
 	public void accept(ParseNodeVisitor visitor) {
 		visitor.visit(this);
 	}

@@ -14,9 +14,8 @@ public class IntegerConstantNode extends ParseNode {
 		super(node);
 	}
 
-////////////////////////////////////////////////////////////
-// attributes
-	
+	////////////////////////////////////////////////////////////
+	// attributes	
 	public int getValue() {
 		return numberToken().getValue();
 	}
@@ -25,9 +24,8 @@ public class IntegerConstantNode extends ParseNode {
 		return (NumberToken)token;
 	}	
 
-///////////////////////////////////////////////////////////
-// accept a visitor
-	
+	///////////////////////////////////////////////////////////
+	// accept a visitor
 	public void accept(ParseNodeVisitor visitor) {
 		visitor.visit(this);
 	}

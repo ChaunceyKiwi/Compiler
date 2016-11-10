@@ -33,13 +33,13 @@ public class LambdaNode extends ParseNode {
 	public static LambdaNode withChildren(Token token, ParseNode lambdaParamType, ParseNode blockStatement) {
 		LambdaNode node = new LambdaNode(token);
 		node.appendChild(lambdaParamType);
-		node.lambdaType = ((LambdaParamTypeNode)lambdaParamType).getLambdaType();
 		node.appendChild(blockStatement);
 		return node;
 	}
 	
 	public void setLambdaType() {
 		LambdaParamTypeNode lambdaParamTypeNode = (LambdaParamTypeNode)child(0);
+		lambdaParamTypeNode.setLambdaType();
 		lambdaType = lambdaParamTypeNode.getLambdaType();
 	}
 	

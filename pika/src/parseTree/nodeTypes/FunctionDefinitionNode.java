@@ -35,12 +35,12 @@ public class FunctionDefinitionNode extends ParseNode {
 		FunctionDefinitionNode node = new FunctionDefinitionNode(token);
 		node.appendChild(identifier);
 		node.appendChild(lambda);
-		node.lambdaType = ((LambdaNode)lambda).getLambdaType();
 		return node;
 	}
 	
 	public void setLambdaType() {
 		LambdaNode lambdaNode = (LambdaNode)child(1);
+		lambdaNode.setLambdaType();
 		lambdaType = lambdaNode.getLambdaType();
 	}
 	
