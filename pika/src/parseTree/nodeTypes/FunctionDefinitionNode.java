@@ -9,7 +9,6 @@ import semanticAnalyzer.types.*;
 import parseTree.nodeTypes.LambdaNode;
 
 public class FunctionDefinitionNode extends ParseNode {
-	
 	private LambdaType lambdaType = null;
 	
 	public FunctionDefinitionNode(Token token) {

@@ -110,10 +110,11 @@ public class Scope {
 	
 	public Binding createFunctionBinding(FunctionDefinitionNode funcDefNode){
 		Token token = funcDefNode.getToken();
-		String lexeme = token.getLexeme();
-		Binding binding = new Binding(token.getLocation(), lexeme);
-		symbolTable.install(lexeme, binding);
+		String functionName = token.getLexeme();
+		Type lambdaType = funcDefNode.getLambdaType();
 		
+		Binding binding = new Binding(lambdaType, token.getLocation(), functionName);
+		symbolTable.install(functionName, binding);
 		return binding;
 	}
 	

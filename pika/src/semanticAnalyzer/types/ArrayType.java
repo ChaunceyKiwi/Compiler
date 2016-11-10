@@ -21,7 +21,6 @@ public class ArrayType implements Type{
 	private final int length;
 	
 	private Type subType;
-	private String infoString;
 	
     public int getLength() {
 //        assert(length >= 0);
@@ -35,7 +34,6 @@ public class ArrayType implements Type{
 		is_deleted = false;
 		permanent = false;
 		length = -1;
-		infoString = infoString();
 	}
 	
 	public ArrayType(Type type){
@@ -45,7 +43,6 @@ public class ArrayType implements Type{
 		is_deleted = false;
 		permanent = false;
 		length = -1;
-		infoString = infoString();
 	}
 	
 	public ArrayType(Type type, int nChildren){
@@ -55,7 +52,6 @@ public class ArrayType implements Type{
 		is_deleted = false;
 		permanent = false;
 		length = nChildren;
-		infoString = infoString();
 	}
 	
 	public Type getTypeWithoutVariable() {

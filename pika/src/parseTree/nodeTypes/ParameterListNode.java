@@ -36,7 +36,7 @@ public class ParameterListNode extends ParseNode {
 			if(this.child(i).child(0) instanceof TypeNode) {
 				((TypeNode)this.child(i).child(0)).setType();
 			}
-			typeList.add(this.child(i).getType());
+			typeList.add(this.child(i).child(0).getType());
 		}
 	}
 	

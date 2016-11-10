@@ -23,9 +23,9 @@ public class Binding {
 	}
 	
 	// Binding for function
-	public Binding(TextLocation location, String lexeme) {
+	public Binding(Type type, TextLocation location, String lexeme) {
 		super();
-		this.type = PrimitiveType.NO_TYPE;
+		this.type = type;
 		this.textLocation = location;
 		this.memoryLocation = null;
 		this.lexeme = lexeme;

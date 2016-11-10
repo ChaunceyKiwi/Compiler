@@ -4,6 +4,10 @@ import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
 import parseTree.nodeTypes.ParameterListNode;
 import semanticAnalyzer.types.LambdaType;
+import semanticAnalyzer.types.Type;
+
+import java.util.List;
+
 import lexicalAnalyzer.Lextant;
 import tokens.LextantToken;
 import tokens.Token;
@@ -41,8 +45,9 @@ public class LambdaParamTypeNode extends ParseNode {
 		ParseNode parameterList = child(0);
 		ParseNode type = child(1);
 		((ParameterListNode)parameterList).setTypeList();
-		lambdaType.setTypeList(((ParameterListNode)parameterList).getTypeList());
-		lambdaType.setResultType(type.getType());
+		((TypeNode)type).setType();
+		List<Type> _typeList = ((ParameterListNode)parameterList).getTypeList();
+		lambdaType = new LambdaType(_typeList, type.getType());
 	}
 	
 	public LambdaType getLambdaType() {

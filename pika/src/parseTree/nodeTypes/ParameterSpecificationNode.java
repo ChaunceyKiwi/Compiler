@@ -3,7 +3,6 @@ package parseTree.nodeTypes;
 import semanticAnalyzer.types.*;
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
-import parseTree.nodeTypes.*;
 import lexicalAnalyzer.Lextant;
 import tokens.LextantToken;
 import tokens.Token;
@@ -52,11 +51,9 @@ public class ParameterSpecificationNode extends ParseNode {
 			type = PrimitiveType.FLOATING;
 		}else if(typeNode instanceof TypeNode) {
 			type = ((TypeNode)typeNode).getType();
-		}
-		
+		}	
 		// To-Do add ratinoal and something else here
 	}
-	
 	
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors
