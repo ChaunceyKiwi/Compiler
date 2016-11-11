@@ -211,6 +211,7 @@ public class Parser {
 		if(!startsBlockStatement(nowReading)) {
 			return syntaxErrorNode("block statement");
 		}
+		
 		ParseNode blockStatement = new BlockStatementNode(nowReading);
 		expect(Punctuator.OPEN_BRACE);
 		
@@ -238,6 +239,8 @@ public class Parser {
 	 *			      IfStatement 
 	 *			      WhileStatement
 	 *				  ReleaseStatement
+	 *				  ReturnStatement
+	 *				  CallStatement
 	 *				  BreakStatement
 	 *				  ContinueStatement
 	 */
@@ -271,6 +274,14 @@ public class Parser {
 			return parseBlockStatement();
 		}
 		
+		if(startsReturnStatement(nowReading)){
+			return parseReturnStatement();
+		}
+		
+		if(startsCallStatement(nowReading)){
+			return parseCallStatement();
+		}
+		
 		if(startsReleaseStatement(nowReading)){
 			return parseReleaseStatement();
 		}
@@ -293,6 +304,8 @@ public class Parser {
 				startsWhileStatement(token) ||
 				startsPrintStatement(token) ||
 				startsBlockStatement(token) ||
+				startsReturnStatement(token) ||
+				startsCallStatement(token) ||
 				startsReleaseStatement(token) ||
 				startsBreakStatement(token) || 
 				startsContinueStatement(token);
@@ -460,6 +473,107 @@ public class Parser {
 	
 	private boolean startsReleaseStatement(Token token) {
 		return token.isLextant(Keyword.RELEASE);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// Return Statement
+	
+	private ParseNode parseReturnStatement() {
+		if(!startsReturnStatement(nowReading)) {
+			return syntaxErrorNode("return statement");
+		}
+		
+		Token returnStatementToken = nowReading;
+		ReturnStatementNode returnStatementNode = new ReturnStatementNode(returnStatementToken);
+		readToken();
+			
+		if(startsExpression(nowReading)) {
+			ParseNode expression = parseExpression();
+			returnStatementNode.appendChild(expression);
+		}
+		
+		expect(Punctuator.TERMINATOR);				
+		
+		return returnStatementNode;
+	}
+	
+	private boolean startsReturnStatement(Token token) {
+		return token.isLextant(Keyword.RETURN);
+	}
+	
+	///////////////////////////////////////////////////////////
+	// Call Statement
+	
+	private ParseNode parseCallStatement() {
+		if(!startsCallStatement(nowReading)) {
+			return syntaxErrorNode("call statement");
+		}
+		
+		Token callStatementToken = nowReading;
+		readToken();
+			
+		ParseNode functionInvocation = parseFunctionInvocation();
+		expect(Punctuator.TERMINATOR);				
+		
+		return CallStatementNode.withChildren(callStatementToken, functionInvocation);
+	}
+	
+	private boolean startsCallStatement(Token token) {
+		return token.isLextant(Keyword.CALL);
+	}
+	
+	private ParseNode parseFunctionInvocation() {
+		if(!startsFunctionInvocation(nowReading)) {
+			return syntaxErrorNode("function invocation");
+		}
+		
+		Token functionInvocationToken = nowReading;
+		ParseNode identifier = parseIdentifier();
+		expect(Punctuator.OPEN_BRACKET);
+		ParseNode expressionList = parseExpressionList();
+		expect(Punctuator.CLOSE_BRACKET);
+		
+		return FunctionInvocationNode.withChildren(functionInvocationToken, identifier, expressionList);
+	}
+	
+	private boolean startsFunctionInvocation(Token token) {
+		return startsIdentifier(token);
+	}
+	
+	private ParseNode parseExpressionList() {
+		if(!startsExpressionList(nowReading)) {
+			return syntaxErrorNode("expression list");
+		}
+		
+		ParseNode expressionListNode = new ExpressionListNode(nowReading);
+		
+		while(startsExpression(nowReading) || startsExpressionSeparator(nowReading)) {
+			expressionListNode.appendChild(parseExpression()); 
+			parseExpressionSeparator();
+		}
+		
+		return expressionListNode;
+	}
+	
+	private boolean startsExpressionList(Token token) {
+		return startsExpression(token);
+	}
+	
+	private void parseExpressionSeparator() {
+		if(!startsExpressionSeparator(nowReading) && !nowReading.isLextant(Punctuator.CLOSE_BRACKET)) {
+			syntaxError(nowReading, "expression separator not found Error");
+			return;
+		}
+		
+		if(nowReading.isLextant(Punctuator.SEPARATOR)) {
+			readToken();
+		}		
+		else if(nowReading.isLextant(Punctuator.CLOSE_BRACKET)) {
+		}
+	}
+	
+	private boolean startsExpressionSeparator(Token token) {
+		return token.isLextant(Punctuator.SEPARATOR);
 	}
 	
 	///////////////////////////////////////////////////////////

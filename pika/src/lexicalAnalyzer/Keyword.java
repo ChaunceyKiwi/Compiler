@@ -41,8 +41,9 @@ public enum Keyword implements Lextant {
 	CONTINUE("continue"),
 	
 	// for function
-	FUNC("func");
-	
+	FUNC("func"),
+	CALL("call"),
+	RETURN("return");
 	
 	private String lexeme;
 	private Token prototype;
