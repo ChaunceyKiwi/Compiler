@@ -1,5 +1,6 @@
 package semanticAnalyzer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lexicalAnalyzer.Keyword;
@@ -66,6 +67,69 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	private void leaveScope(ParseNode node) {
 		node.getScope().leave();
 	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	// Functions
+	/* 
+	 * 	globalDefinition -> functionDefinition* (my version)
+	 * 	functionDefinition -> func identifier lambda
+	 * 	lambda -> lambdaParamType blockStatement 
+	 * 	lambdaParamType ->  <parameterList> -> type 
+	 * 	parameterList ->  parameterSpecification*  (,)
+	 * 	parameterSpecification ->  type identifier
+	 */
+	
+	///////////////////////////////////////////////////////////////////////////
+	// FunctionDefinition
+	public void visitEnter(FunctionDefinitionNode node) {
+		enterScope(node);
+	}
+	
+	public void visitLeave(FunctionDefinitionNode node) {
+		assert node.nChildren() == 2;
+		leaveScope(node);
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	// ParameterList
+	public void visitLeave(ParameterListNode node) {
+		for(int i = 0; i < node.nChildren(); i++) {
+			ParseNode paraSpecNode = node.child(i);
+			ParseNode typeNode = paraSpecNode.child(0);
+			IdentifierNode identifierNode = (IdentifierNode)(paraSpecNode.child(1));
+			Type type = typeNode.getType();
+			Scope scope = identifierNode.getLocalScope();
+
+			identifierNode.setType(type);			
+			scope.getSymbolTable().errorIfAlreadyDefined(identifierNode.getToken());
+			addBinding(identifierNode, type, false);
+		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	// ParameterList
+	public void visitLeave(FunctionInvocationNode node) {
+		assert node.nChildren() == 2;
+		
+		IdentifierNode identifierNode = (IdentifierNode)node.child(0);
+		ExpressionListNode expressionListNode = (ExpressionListNode)node.child(1);
+		
+		List<Type> typeListFromExpNode = new ArrayList<Type>();
+		
+		for(int i = 0; i < expressionListNode.nChildren(); i++) {
+			typeListFromExpNode.add(expressionListNode.child(i).getType());
+		}
+		
+		LambdaType lambdaType = (LambdaType)identifierNode.getType();
+		Type[] typeArrayForSignature = (lambdaType.getTypeList()).toArray(new Type[(lambdaType.getTypeList()).size() + 1]);
+		typeArrayForSignature[typeArrayForSignature.length-1] = lambdaType.getResultType();
+		
+		FunctionSignatures functionSignatures = new FunctionSignatures(identifierNode.getToken().getLexeme(),
+				new FunctionSignature(1, true, typeArrayForSignature));
+		
+		setTypeAndCheckSignature(node, functionSignatures, typeListFromExpNode);
+	}
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Statements
@@ -303,9 +367,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			// need type check here
 			for(int i = 0; i < numOfChildren; i++){
 				types[i] = node.child(i).getType();
-				if(i > 0 && (!types[i].match(types[i-1]))) {
-					expressionElementDifferentTypeError(node);
-				}
 			}
 			node.setType(new ArrayType(types[0], node.nChildren()));
 		}
@@ -413,7 +474,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	private boolean isBeingDeclared(IdentifierNode node) {
 		ParseNode parent = node.getParent();
-		return (parent instanceof DeclarationNode) && (node == parent.child(0));
+		return (parent instanceof ParameterSpecificationNode) ||
+				((parent instanceof DeclarationNode) && (node == parent.child(0)));
 	}
 	
 	private void addBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
@@ -430,6 +492,19 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	private void setTypeAndCheckSignature(ParseNode node, Object operator, List<Type> childTypes){
 		FunctionSignatures signatures = FunctionSignatures.signaturesOf(operator);
 
+		// the operands of operation should obey the rule in the signature
+		if(signatures.accepts(childTypes)) {
+			FunctionSignature signature = FunctionSignatures.signature(signatures.getKey(), childTypes);
+			Type resultType = signature.resultType().getTypeWithoutVariable();
+			node.setSignature(signature);			
+			node.setType(resultType);
+		}else {
+			typeCheckError(node, childTypes);
+			node.setType(PrimitiveType.ERROR);
+		}
+	}
+	
+	private void setTypeAndCheckSignature(ParseNode node, FunctionSignatures signatures, List<Type> childTypes){
 		// the operands of operation should obey the rule in the signature
 		if(signatures.accepts(childTypes)) {
 			FunctionSignature signature = FunctionSignatures.signature(signatures.getKey(), childTypes);

@@ -57,9 +57,11 @@ public class PikaCompiler extends PikaApplication {
 		informUserNoCodeGenerated();
 		removeOldASMFile(outfile);
 	}
+	
 	private static void informUserNoCodeGenerated() {
 		System.err.println("program has errors.  no executable created.");
 	}
+	
 	private static void removeOldASMFile(String filename) {
 		File file = new File(filename);
 		if(file.exists()) {

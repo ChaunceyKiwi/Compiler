@@ -1,7 +1,11 @@
-func getMax <int a, int b> -> int {
-	if(a > b){
-		print a. 
-	}
+func getMax <int a, int b> -> float {
+	call getMin(3, 7.33). 
+
+	return.
+}
+
+func getMin <int a, float b> -> char {
+	print b. 
 
 	return.
 }

@@ -61,15 +61,19 @@ public class Parser {
 	}
 	
 	///////////////////////////////////////////////////////////
-	// GlobalDefinition -> functionDefinition* (my version)
-	// FunctionDefinition -> func identifier lambda
-	// lambda -> lambdaParamType blockStatement 
-	// lambdaParamType ->  <parameterList> -> type 
-	// parameterList ->  parameterSpecification*  (,)
-	// parameterSpecification ->  type identifier
+	// Function Related
+	
+	/* 
+	 * 	globalDefinition -> functionDefinition* (my version)
+	 * 	functionDefinition -> func identifier lambda
+	 * 	lambda -> lambdaParamType blockStatement 
+	 * 	lambdaParamType ->  <parameterList> -> type 
+	 * 	parameterList ->  parameterSpecification*  (,)
+	 * 	parameterSpecification ->  type identifier
+	 */
 	
 	///////////////////////////////////////////////////////////
-	// GlobalDefinition -> functionDefinition*
+	// globalDefinition -> functionDefinition*
 	private ParseNode parseGlobalDefinition() {
 		if(!startsGlobalDefinition(nowReading)) {
 			return syntaxErrorNode("global definition");

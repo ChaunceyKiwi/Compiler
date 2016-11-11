@@ -34,6 +34,9 @@ public interface ParseNodeVisitor {
 	void visitEnter(ParameterSpecificationNode node);
 	void visitLeave(ParameterSpecificationNode node);	
 	
+	void visitEnter(FunctionInvocationNode node);
+	void visitLeave(FunctionInvocationNode node);	
+	
 	///////////////////////////////////////////////////////////
 	// Statement Node
 	void visitEnter(BlockStatementNode node);
@@ -56,6 +59,12 @@ public interface ParseNodeVisitor {
 	
 	void visitEnter(ReleaseStatementNode node);
 	void visitLeave(ReleaseStatementNode node);
+	
+	void visitEnter(ReturnStatementNode node);
+	void visitLeave(ReturnStatementNode node);
+	
+	void visitEnter(CallStatementNode node);
+	void visitLeave(CallStatementNode node);
 	
 	void visitEnter(BreakStatementNode node);
 	void visitLeave(BreakStatementNode node);
@@ -178,6 +187,13 @@ public interface ParseNodeVisitor {
 			defaultVisitLeave(node);
 		}
 		
+		public void visitEnter(FunctionInvocationNode node) {
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(FunctionInvocationNode node) {
+			defaultVisitLeave(node);
+		}
+				
 		///////////////////////////////////////////////////////////////////////////
 		// Statements
 		
@@ -189,6 +205,8 @@ public interface ParseNodeVisitor {
 		 *			      IfStatement 
 		 *			      WhileStatement
 		 *				  ReleaseStatement
+		 *				  ReturnStatement
+		 *				  CallStatement
 		 *				  BreakStatement
 		 *				  ContinueStatement
 		 */
@@ -253,6 +271,24 @@ public interface ParseNodeVisitor {
 			defaultVisitEnter(node);
 		}
 		public void visitLeave(ReleaseStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// ReturnStatement
+		public void visitEnter(ReturnStatementNode node){
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(ReturnStatementNode node) {
+			defaultVisitLeave(node);
+		}
+		
+		///////////////////////////////////////////////////////////
+		// CallStatement
+		public void visitEnter(CallStatementNode node){
+			defaultVisitEnter(node);
+		}
+		public void visitLeave(CallStatementNode node) {
 			defaultVisitLeave(node);
 		}
 		

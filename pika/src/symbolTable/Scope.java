@@ -109,7 +109,7 @@ public class Scope {
 	}
 	
 	public Binding createFunctionBinding(FunctionDefinitionNode funcDefNode){
-		Token token = funcDefNode.getToken();
+		Token token = funcDefNode.child(0).getToken();
 		String functionName = token.getLexeme();
 		Type lambdaType = funcDefNode.getLambdaType();
 		
