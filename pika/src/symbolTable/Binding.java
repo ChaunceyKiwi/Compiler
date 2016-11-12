@@ -11,7 +11,6 @@ public class Binding {
 		FUNCTION,
 	}
 	
-	
 	private Type type;
 	private TextLocation textLocation;
 	private MemoryLocation memoryLocation;

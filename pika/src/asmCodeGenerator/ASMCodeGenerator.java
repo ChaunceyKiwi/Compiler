@@ -24,6 +24,7 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
 	ParseNode root;
+	static String functionPrefix = "$function-";
 	static String reg1ForFunction = "reg1-func";
 	static String reg2ForFunction = "reg2-func";
 	static String reg1 = "reg1-system";
@@ -212,15 +213,92 @@ public class ASMCodeGenerator {
 		// Function Related
 		
 		public void visitLeave(FunctionDefinitionNode node) {
+			newVoidCode(node);
+			Labeller labeller = new Labeller("function-definition");
 			
+			functionPreparation(labeller);
+			functionProcess(labeller, node);
+			functionLaterStage(labeller);
 		}
+		
+		public void functionPreparation(Labeller labeller) {
+			String dynamicLinkLabel = labeller.newLabel("dynamic-link");
+			String returnAddressLabel = labeller.newLabel("return-address");
+			String moveFPtoSPLabel = labeller.newLabel("move-fp-to-sp");
+
+			// decrement SP and store FP in new SP as dynamic link
+			code.add(Label, dynamicLinkLabel);
+			code.add(PushD, RunTime.FRAME_POINTER);
+			code.add(LoadI);
+			decrementStackPointer(4);
+			Macros.storeITo(code, RunTime.STACK_POINTER);
+			
+			// Store return address
+			code.add(Label, returnAddressLabel);
+			decrementStackPointer(4);
+			Macros.storeITo(code, RunTime.STACK_POINTER);
+			
+			// Move SP back to the end of dynamic link
+			incrementStackPointer(8);
+			
+			// Move FP to SP
+			code.add(Label, moveFPtoSPLabel);
+			code.add(PushD, RunTime.STACK_POINTER);
+			code.add(LoadI);
+			Macros.storeITo(code, RunTime.FRAME_POINTER);
+			
+			// Move SP to the start of return address
+			// a.k.a the end of storage for local variable
+			decrementStackPointer(8);
+		}
+		public void functionProcess(Labeller labeller, FunctionDefinitionNode node) {
+			BlockStatementNode blockStatementNode = (BlockStatementNode)node.child(1).child(1);
+			ASMCodeFragment blockStatementCode =  removeVoidCode(blockStatementNode);
+			code.append(blockStatementCode);
+		}
+		
+		public void functionLaterStage(Labeller labeller) {
+			String pushReturnAddressLabel = labeller.newLabel("push-return-address");
+			String replaceFramePointerLabel = labeller.newLabel("replace-frame-pointer");
+			String incrementSP = labeller.newLabel("increment-stack-pointer");
+			String decrementSP = labeller.newLabel("decrement-stack-pointer");
+			
+			// Push return address (at FP - 8) to ASM stack
+			code.add(Label, pushReturnAddressLabel);
+			code.add(PushD, RunTime.FRAME_POINTER);
+			code.add(LoadI);
+			Macros.readIOffset(code, -8);
+			
+			// Replace FP with dynamic link (at FP - 4)
+			code.add(Label, replaceFramePointerLabel);
+			code.add(PushD, RunTime.FRAME_POINTER);
+			code.add(Duplicate);
+			code.add(LoadI);
+			Macros.readIOffset(code, -4);
+			code.add(StoreI);
+			
+			// Exchange to put return value at the top of the ASM stack
+			code.add(Exchange);
+			
+			// Increment SP by the size of parameter scope and procedure scope
+			// incrementStackPointer(parameterScope.size() + procedureScope.size());
+			code.add(Label, incrementSP);
+			incrementStackPointer(8 + 8);
+			
+			// Decrement SP by the size of return value and store it
+			code.add(Label, decrementSP);
+			incrementStackPointer(4);
+			Macros.storeITo(code, RunTime.STACK_POINTER);
+			
+			code.add(Return);
+		}
+
 		
 		public void visitLeave(FunctionInvocationNode node) {
 			Labeller labeller = new Labeller("function-invocation");
 			String beginLabel = labeller.newLabel("begin");
 			String endLabel = labeller.newLabel("end");
 
-			
 			if(node.getType() == PrimitiveType.VOID) {
 				newVoidCode(node);
 			} else {
@@ -236,10 +314,50 @@ public class ASMCodeGenerator {
 				Type type = expr.getType();
 				ASMCodeFragment exprCode = removeValueCode(expr);
 				code.append(exprCode);
-//				pushToFrameStack();
+				pushElementToFrameStack(type);
 			}
 			
+			code.add(Call, functionPrefix + functionName.getToken().getLexeme());
 			
+			// take the return value from the location pointed at 
+			// by the stack counter and place it on the ASM stack
+			popElementFromFrameToASMStack(node.getType());
+			code.add(Label, endLabel);
+		}
+		
+		// pop element from frame stack and increment SP
+		public void popElementFromFrameToASMStack(Type type) {			
+			code.add(PushD, RunTime.STACK_POINTER);
+			code.add(LoadI);
+			code.add(opcodeForLoad(type));
+			incrementStackPointer(type.getSize());
+		}
+		
+		public void incrementStackPointer(int size) {
+			code.add(PushD, RunTime.STACK_POINTER);
+			code.add(LoadI);
+			code.add(PushI, size);
+			code.add(Add);
+			Macros.storeITo(code, RunTime.STACK_POINTER);
+		}
+		
+		public void decrementStackPointer(int size) {
+			code.add(PushD, RunTime.STACK_POINTER);
+			code.add(LoadI);
+			code.add(PushI, size);
+			code.add(Subtract);
+			Macros.storeITo(code, RunTime.STACK_POINTER);
+		}
+		
+		public void pushElementToFrameStack(Type type) {			
+			// Need a push before function
+			// Pre-decrement style (get new address)
+			decrementStackPointer(type.getSize());
+			
+			// Store the element into the address			
+			code.add(PushD, RunTime.STACK_POINTER);
+			code.add(Exchange);
+			code.add(opcodeForStore(type));	
 		}
 		
 		public void visitLeave(ReturnStatementNode node) {
@@ -671,21 +789,24 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitLeave(ExpressionListNode node){
-			newValueCode(node);
-			Labeller labeller = new Labeller("-expr-list-");
-			ArrayType arrayType = (ArrayType)(node.getType());	
-			List <ASMCodeFragment> arrayElement = new ArrayList<>();
-			
-			ASMCodeFragment lengthOfArray = new ASMCodeFragment(
-					ASMCodeFragment.CodeType.GENERATES_VALUE);
-			lengthOfArray.add(PushI, arrayType.getLength());
+			// Create array only when ExpressionList is an element of array
+			if(!(node.getParent() instanceof FunctionInvocationNode)) {
+				newValueCode(node);
+				Labeller labeller = new Labeller("-expr-list-");
+				ArrayType arrayType = (ArrayType)(node.getType());	
+				List <ASMCodeFragment> arrayElement = new ArrayList<>();
 				
-			for(int i = 0; i < node.nChildren();i++){
-				arrayElement.add(removeValueCode(node.child(i)));
+				ASMCodeFragment lengthOfArray = new ASMCodeFragment(
+						ASMCodeFragment.CodeType.GENERATES_VALUE);
+				lengthOfArray.add(PushI, arrayType.getLength());
+					
+				for(int i = 0; i < node.nChildren();i++){
+					arrayElement.add(removeValueCode(node.child(i)));
+				}
+				code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
+				code.append(ArrayHelper.arrayInitialization(arrayType, arrayElement, 
+						opcodeForStore(arrayType.getSubType()), labeller));
 			}
-			code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
-			code.append(ArrayHelper.arrayInitialization(arrayType, arrayElement, 
-					opcodeForStore(arrayType.getSubType()), labeller));
 		}
 
 		public void visitLeave(CopyOperatorNode node){
@@ -710,6 +831,20 @@ public class ASMCodeGenerator {
 			if(type == PrimitiveType.RATIONAL)  return StoreI;
 			if(type.isReferenceType()) 			return StoreI;
 			assert false: "Type " + type + " unimplemented in opcodeForStore()";
+			return null;
+		}
+		
+		private ASMOpcode opcodeForLoad(Type type) {
+			if(type instanceof TypeVariable)
+				type = ((TypeVariable)type).getSubtype();
+			if(type == PrimitiveType.INTEGER) 	return LoadI;
+			if(type == PrimitiveType.BOOLEAN)	return LoadC;
+			if(type == PrimitiveType.FLOATING)	return LoadF;
+			if(type == PrimitiveType.CHARACTER)	return LoadC;
+			if(type == PrimitiveType.STRING) 	return LoadI;
+			if(type == PrimitiveType.RATIONAL)  return LoadI;
+			if(type.isReferenceType()) 			return LoadI;
+			assert false: "Type " + type + " unimplemented in opcodeForLoad()";
 			return null;
 		}
 		

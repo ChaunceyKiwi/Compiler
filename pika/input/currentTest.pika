@@ -1,10 +1,10 @@
-func sum <int a, int b> -> float {
+func sum <int a, int b> -> int {
 	const res := a + b. 
 
 	return res.
 }
 
-func Add <int a, float b> -> float {
+func Add <int a, int b> -> int {
 	return a + b.
 }
 

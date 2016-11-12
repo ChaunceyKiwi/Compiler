@@ -2,7 +2,6 @@ package asmCodeGenerator;
 
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.GENERATES_VALUE;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
-
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 
 public class FunctionStorage {
