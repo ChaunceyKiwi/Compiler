@@ -6,11 +6,18 @@ import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 
 public class Binding {
+	public enum BindingType {
+		VARIABLE,
+		FUNCTION,
+	}
+	
+	
 	private Type type;
 	private TextLocation textLocation;
 	private MemoryLocation memoryLocation;
 	private String lexeme;
 	private boolean isMutable;
+	private BindingType bindingType;
 	
 	//  Binding for variable
 	public Binding(Type type, TextLocation location, MemoryLocation memoryLocation, String lexeme, boolean ismutable) {
@@ -20,6 +27,7 @@ public class Binding {
 		this.memoryLocation = memoryLocation;
 		this.lexeme = lexeme;
 		this.isMutable = ismutable;
+		this.bindingType = BindingType.VARIABLE;
 	}
 	
 	// Binding for function
@@ -30,6 +38,7 @@ public class Binding {
 		this.memoryLocation = null;
 		this.lexeme = lexeme;
 		this.isMutable = false;
+		this.bindingType = BindingType.FUNCTION;
 	}
 	
 	public String toString() {
@@ -45,18 +54,28 @@ public class Binding {
 	public boolean isMutable(){
 		return isMutable;
 	}
+	
 	public Type getType() {
 		return type;
 	}
+	
 	public TextLocation getLocation() {
 		return textLocation;
 	}
+	
 	public MemoryLocation getMemoryLocation() {
 		return memoryLocation;
 	}
+	
+	public BindingType getBindingType() {
+		return bindingType;
+	}
+	
 	public void generateAddress(ASMCodeFragment code) {
 		memoryLocation.generateAddress(code, "%% " + lexeme);
 	}
+	
+	
 	
 ////////////////////////////////////////////////////////////////////////////////////
 //Null Binding object

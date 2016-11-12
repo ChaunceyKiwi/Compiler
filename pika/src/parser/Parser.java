@@ -137,11 +137,9 @@ public class Parser {
 		}
 		
 		Token lambdaParamTypeToken = nowReading;
-
 		expect(Punctuator.LESSER);
 		ParseNode parameterList = parseParameterList();
 		expect(Punctuator.GREATER);
-		
 		expect(Punctuator.RESULTIN);
 		ParseNode type = parseType();
 		
@@ -1074,18 +1072,32 @@ public class Parser {
 		if(startsIntNumber(nowReading)) {
 			return parseIntNumber();
 		}
+		
 		if(startsFloatingNumber(nowReading)){
 			return parseFloatingNumber();
 		}
+		
 		if(startsChar(nowReading)){
 			return parseChar();
 		}
+		
 		if(startsString(nowReading)){
 			return parseString();
 		}
+		
 		if(startsIdentifier(nowReading)) {
-			return parseIdentifier();
+			ParseNode identifier = parseIdentifier();
+			Token token = nowReading;
+
+			if(nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
+				readToken();
+				ParseNode exprList = parseExpressionList();
+				expect(Punctuator.CLOSE_BRACKET);
+				return FunctionInvocationNode.withChildren(token, identifier, exprList);
+			}
+			return identifier;
 		}
+		
 		if(startsBooleanConstant(nowReading)) {
 			return parseBooleanConstant();
 		}

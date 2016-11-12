@@ -42,6 +42,17 @@ public class ContinueStatementNode extends ParseNode {
 	public String getTargetLabelForContinue(){
 		return loopStatementNode.getLabelForContinue();
 	}
+	
+	public static ParseNode findLoopStatementNode(ParseNode node) {
+		// Track up the node to find the loop statement
+		for(ParseNode current : node.pathToRoot()) {
+			if(current instanceof WhileStatementNode) {
+				return current;
+			}
+		}
+	
+		return null; 
+	}
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors
 			

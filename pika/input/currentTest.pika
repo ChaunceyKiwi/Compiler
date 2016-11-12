@@ -1,15 +1,15 @@
-func getMax <int a, int b> -> float {
-	call getMin(3, 7.33). 
+func sum <int a, int b> -> float {
+	const res := a + b. 
 
-	return.
+	return res.
 }
 
-func getMin <int a, float b> -> char {
-	print b. 
-
-	return.
+func Add <int a, float b> -> float {
+	return a + b.
 }
 
 exec {
-	call getMax(4, 3).
+	var nice := sum(4, 3).
+
+	print nice.
 }

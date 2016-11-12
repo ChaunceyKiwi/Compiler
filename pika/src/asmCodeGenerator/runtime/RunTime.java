@@ -21,10 +21,11 @@ public class RunTime {
 	public static final String OVER_PRINT_FORMAT 	  = "$print-format-over";
 	public static final String AND_PRINT_FORMAT 	  = "$print-format-and";
 	public static final String MINUS_SIGN_PRINT_FORMAT= "$print-format-minus-sign";
+	public static final String FRAME_POINTER 		  = "$frame-pointer";
+	public static final String STACK_POINTER 		  = "$stack-pointer";
 
 	public static final String OPEN_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-open-square-bracket";
 	public static final String CLOSE_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-close-square-bracket";
-
 	
 	public static final String GENERAL_RUNTIME_ERROR = "$$general-runtime-error";
 	public static final String INTEGER_DIVIDE_BY_ZERO_RUNTIME_ERROR = "$$i-divide-by-zero";

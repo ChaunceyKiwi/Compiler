@@ -207,6 +207,52 @@ public class ASMCodeGenerator {
 				code.append(childCode);
 			}
 		}
+		
+		///////////////////////////////////////////////////////////////////////////
+		// Function Related
+		
+		public void visitLeave(FunctionDefinitionNode node) {
+			
+		}
+		
+		public void visitLeave(FunctionInvocationNode node) {
+			Labeller labeller = new Labeller("function-invocation");
+			String beginLabel = labeller.newLabel("begin");
+			String endLabel = labeller.newLabel("end");
+
+			
+			if(node.getType() == PrimitiveType.VOID) {
+				newVoidCode(node);
+			} else {
+				newValueCode(node);
+			}
+			
+			ParseNode functionName = node.child(0);
+			ParseNode exprList = node.child(1);
+			
+			code.add(Label, beginLabel);
+			for(int i = 0; i < exprList.nChildren(); i++) {
+				ParseNode expr = exprList.child(i);
+				Type type = expr.getType();
+				ASMCodeFragment exprCode = removeValueCode(expr);
+				code.append(exprCode);
+//				pushToFrameStack();
+			}
+			
+			
+		}
+		
+		public void visitLeave(ReturnStatementNode node) {
+			// might not be void here
+			newVoidCode(node);
+			if(node.getType() != PrimitiveType.VOID) {
+				code.append(removeValueCode(node.child(0)));
+			}
+			code.add(Jump, "function_Signature");
+		}
+		
+		
+		
 
 		///////////////////////////////////////////////////////////////////////////
 		// Statements
@@ -245,7 +291,6 @@ public class ASMCodeGenerator {
 			Type type = node.getType();
 			ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
 			ASMCodeFragment rvalue = removeValueCode(node.child(1));
-			
 			
 			if(type == PrimitiveType.RATIONAL && node.child(1).getType() != PrimitiveType.RATIONAL){
 				ASMCodeFragment rightValue = new ASMCodeFragment(GENERATES_VALUE);
@@ -676,9 +721,11 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visit(IdentifierNode node) {
-			newAddressCode(node);
-			Binding binding = node.getBinding();
-			binding.generateAddress(code);
+			if(node.getBinding().getBindingType() == Binding.BindingType.VARIABLE) {
+				newAddressCode(node);
+				Binding binding = node.getBinding();
+				binding.generateAddress(code);
+			}
 		}	
 		
 		public void visit(IntegerConstantNode node) {

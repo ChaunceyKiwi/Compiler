@@ -69,15 +69,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
-	// Functions
-	/* 
-	 * 	globalDefinition -> functionDefinition* (my version)
-	 * 	functionDefinition -> func identifier lambda
-	 * 	lambda -> lambdaParamType blockStatement 
-	 * 	lambdaParamType ->  <parameterList> -> type 
-	 * 	parameterList ->  parameterSpecification*  (,)
-	 * 	parameterSpecification ->  type identifier
-	 */
+	// Functions Related
 	
 	///////////////////////////////////////////////////////////////////////////
 	// FunctionDefinition
@@ -107,7 +99,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
-	// ParameterList
+	// FunctionInvocation
 	public void visitLeave(FunctionInvocationNode node) {
 		assert node.nChildren() == 2;
 		
@@ -129,6 +121,36 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		
 		setTypeAndCheckSignature(node, functionSignatures, typeListFromExpNode);
 	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	// ReturnStatement
+	public void visitLeave(ReturnStatementNode node) {
+		assert node.nChildren() <= 1;
+		
+		FunctionDefinitionNode functionDefinitionNode = 
+				(FunctionDefinitionNode)ReturnStatementNode.findFunctionDefinitionNode(node);
+		if(functionDefinitionNode == null) {
+			returnFindNoFunctionDefinitionError(node);
+		}else {
+			node.setFunctionDefinitionNode((FunctionDefinitionNode)functionDefinitionNode);
+		}
+		
+		Type returnType;
+		if(node.nChildren() == 0) {
+			returnType = PrimitiveType.NO_TYPE;
+		}else {
+			returnType = node.child(0).getType();
+		}
+		
+		Type expectedType = functionDefinitionNode.getLambdaType().getResultType();
+		if(expectedType.match(returnType)) {
+			node.setType(expectedType);
+		}else{
+			variableReturnDifferDefinitionError(node);
+		}	
+	}
+	
+	
 	
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -219,7 +241,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		
 		// Set target for loop control
 		// Report error if no loop statement found
-		ParseNode loopStatementNode = findLoopStatementNode(node);
+		ParseNode loopStatementNode = BreakStatementNode.findLoopStatementNode(node);
 		if(loopStatementNode == null) {
 			loopControlFindNoLoopError(node);
 		}else {
@@ -234,24 +256,13 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		
 		// Set target for loop control
 		// Report error if no loop statement found
-		ParseNode loopStatementNode = findLoopStatementNode(node);
+		ParseNode loopStatementNode = ContinueStatementNode.findLoopStatementNode(node);
 		if(loopStatementNode == null) {
 			loopControlFindNoLoopError(node);
 		}else {
 			node.setLoopStatementNode((WhileStatementNode)loopStatementNode);
 		}
 		
-	}
-	
-	public ParseNode findLoopStatementNode(ParseNode node) {
-		// Track up the node to find the loop statement
-		for(ParseNode current : node.pathToRoot()) {
-			if(current instanceof WhileStatementNode) {
-				return current;
-			}
-		}
-		
-		return null; 
 	}
 	
 	public void checkIfExpressionIsBoolean(ParseNode node){
@@ -526,27 +537,35 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 				 + operandTypes  + " at " + token.getLocation());	
 	}
 	
-	private void controlFlowError(ParseNode node){
+	private void controlFlowError(ParseNode node) {
 		logError(node.getToken().getLexeme() + "Statement Expression Error");
 	}
 	
-	private void releaseTypeError(ParseNode node){
+	private void releaseTypeError(ParseNode node) {
 		logError(node.getToken().getLexeme() + " Release Type Error");
 	}
 	
-	private void expressionElementDifferentTypeError(ParseNode node){
-		logError(node.getToken().getLexeme() + " expression list different type Error");
+//	private void expressionElementDifferentTypeError(ParseNode node){
+//		logError(node.getToken().getLexeme() + " expression list different type Error");
+//	}
+	
+	private void returnFindNoFunctionDefinitionError(ParseNode node) {
+		logError(node.getToken().getLexeme() + " return cannot find its function definition Error");
 	}
 	
-	private void loopControlFindNoLoopError(ParseNode node){
+	private void variableReturnDifferDefinitionError(ParseNode node) {
+		logError(node.getToken().getLexeme() + " variable return does not match function definition error");
+	}
+	
+	private void loopControlFindNoLoopError(ParseNode node) {
 		logError(node.getToken().getLexeme() + " loop control cannot find loop Error");
 	}
 	
-	private void expressionNoElementError(ParseNode node){
+	private void expressionNoElementError(ParseNode node) {
 		logError(node.getToken().getLexeme() + " expression no element Error");
 	}
 	
-	private void assignmentToConstantError(ParseNode node){
+	private void assignmentToConstantError(ParseNode node) {
 		logError(node.getToken().getLexeme() + " assignment to constant Error");
 	}
 	
