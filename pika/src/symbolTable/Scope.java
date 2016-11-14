@@ -24,7 +24,9 @@ public class Scope {
 	
 	public Scope createProcedureScope() {
 		MemoryAllocator allocator = procedureScopeAllocator();
-//		allocator.allocate(RunTime)
+		// For procedure scopes, the runtime system will
+		// need 8 bytes of memory to store FP and SP
+		allocator.allocate(8);
 		return new Scope(allocator, this);
 	}
 	
@@ -93,8 +95,9 @@ public class Scope {
 	public Binding createBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
 		Token token = identifierNode.getToken();
 		
-		if(!ismutable)
+		if(!ismutable) {
 			symbolTable.errorIfAlreadyDefined(token);
+		}
 
 		String lexeme = token.getLexeme();
 		Binding binding = allocateNewBinding(type, token.getLocation(), lexeme, ismutable);	

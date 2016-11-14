@@ -30,6 +30,10 @@ public class MemoryLocation {
 		return offset;
 	}
 	
+	public void moveOffset(int size) {
+		offset += size;
+	}
+	
 	public String toString() {
 		return "M-" + accessor + "(" + baseAddress + ") +" + offset + "  ";
 	}

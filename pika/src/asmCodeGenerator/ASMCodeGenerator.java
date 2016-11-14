@@ -25,6 +25,7 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 public class ASMCodeGenerator {
 	ParseNode root;
 	static String functionPrefix = "$function-";
+	static String functionBodyExit = "-function-body-exit";
 	static String reg1ForFunction = "reg1-func";
 	static String reg2ForFunction = "reg2-func";
 	static String reg1 = "reg1-system";
@@ -47,13 +48,23 @@ public class ASMCodeGenerator {
 	public ASMCodeFragment makeASM() {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 		
-		code.append( MemoryManager.codeForInitialization());
-		code.append( RunTime.getEnvironment() );
-		code.append( globalVariableBlockASM() );
-		code.append( programASM() );
-		code.append( MemoryManager.codeForAfterApplication());
-		code.append( FunctionStorage.GCDCalculation(GCDCalculation, reg1ForFunction, reg2ForFunction));
+		code.append(MemoryManager.codeForInitialization());
+		code.append(FrameStackInitialization());
+		code.append(RunTime.getEnvironment());
+		code.append(globalVariableBlockASM());
+		code.append(programASM());
+		code.append(MemoryManager.codeForAfterApplication());
+		code.append(FunctionStorage.GCDCalculation(GCDCalculation, reg1ForFunction, reg2ForFunction));
 		
+		return code;
+	}
+	
+	private ASMCodeFragment FrameStackInitialization() {
+		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+		code.add(Memtop);
+		code.add(Duplicate);
+		Macros.storeITo(code, RunTime.FRAME_POINTER);		
+		Macros.storeITo(code, RunTime.STACK_POINTER);
 		return code;
 	}
 	
@@ -83,11 +94,7 @@ public class ASMCodeGenerator {
 	
 	private ASMCodeFragment programASM() {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-
-		code.add(Label, RunTime.MAIN_PROGRAM_LABEL);
 		code.append( programCode());
-		code.add(Halt);
-		
 		return code;
 	}
 	
@@ -193,11 +200,23 @@ public class ASMCodeGenerator {
 		
 		///////////////////////////////////////////////////////////////////////////
 		// constructs larger than statements
+		// Program -> globalDefinition exec blockStatement(main)
 		public void visitLeave(ProgramNode node) {
 			newVoidCode(node);
-			for(ParseNode child : node.getChildren()) {
+			
+			for(ParseNode child : node.getChildren()) {	
+				// main function start
+				if(child instanceof BlockStatementNode){
+					code.add(Label, RunTime.MAIN_PROGRAM_LABEL);
+				}
+				
 				ASMCodeFragment childCode = removeVoidCode(child);
 				code.append(childCode);
+				
+				// main function end
+				if(child instanceof BlockStatementNode){
+					code.add(Halt);
+				}
 			}
 		}
 		
@@ -211,14 +230,25 @@ public class ASMCodeGenerator {
 		
 		///////////////////////////////////////////////////////////////////////////
 		// Function Related
+		public void visitLeave(GlobalDefinitionNode node) {
+			newVoidCode(node);
+			for(ParseNode child: node.getChildren()) {
+				ASMCodeFragment childCode = removeVoidCode(child);
+				code.append(childCode);
+			}
+		}
 		
 		public void visitLeave(FunctionDefinitionNode node) {
 			newVoidCode(node);
 			Labeller labeller = new Labeller("function-definition");
+			String endLabel = labeller.newLabel("end");
+			String functionName = node.getFunctionName();
 			
+			code.add(Label, functionPrefix + functionName);
 			functionPreparation(labeller);
 			functionProcess(labeller, node);
 			functionLaterStage(labeller);
+			code.add(Label, endLabel);			
 		}
 		
 		public void functionPreparation(Labeller labeller) {
@@ -226,20 +256,17 @@ public class ASMCodeGenerator {
 			String returnAddressLabel = labeller.newLabel("return-address");
 			String moveFPtoSPLabel = labeller.newLabel("move-fp-to-sp");
 
-			// decrement SP and store FP in new SP as dynamic link
+			// store FP at SP-4 as dynamic link
 			code.add(Label, dynamicLinkLabel);
 			code.add(PushD, RunTime.FRAME_POINTER);
 			code.add(LoadI);
-			decrementStackPointer(4);
-			Macros.storeITo(code, RunTime.STACK_POINTER);
+			code.add(PushD, RunTime.STACK_POINTER);
+			Macros.writeIOffset(code, 4);
 			
-			// Store return address
+			// Store return address at SP-8
 			code.add(Label, returnAddressLabel);
-			decrementStackPointer(4);
-			Macros.storeITo(code, RunTime.STACK_POINTER);
-			
-			// Move SP back to the end of dynamic link
-			incrementStackPointer(8);
+			code.add(PushD, RunTime.STACK_POINTER);
+			Macros.writeIOffset(code, 8);
 			
 			// Move FP to SP
 			code.add(Label, moveFPtoSPLabel);
@@ -255,6 +282,7 @@ public class ASMCodeGenerator {
 			BlockStatementNode blockStatementNode = (BlockStatementNode)node.child(1).child(1);
 			ASMCodeFragment blockStatementCode =  removeVoidCode(blockStatementNode);
 			code.append(blockStatementCode);
+			code.add(Label, functionPrefix + node.getFunctionName() + functionBodyExit);
 		}
 		
 		public void functionLaterStage(Labeller labeller) {
@@ -287,7 +315,7 @@ public class ASMCodeGenerator {
 			
 			// Decrement SP by the size of return value and store it
 			code.add(Label, decrementSP);
-			incrementStackPointer(4);
+			decrementStackPointer(4);
 			Macros.storeITo(code, RunTime.STACK_POINTER);
 			
 			code.add(Return);
@@ -366,7 +394,9 @@ public class ASMCodeGenerator {
 			if(node.getType() != PrimitiveType.VOID) {
 				code.append(removeValueCode(node.child(0)));
 			}
-			code.add(Jump, "function_Signature");
+			
+			String functionName = node.getFunctionDefinitionNode().getFunctionName();
+			code.add(Jump, functionPrefix + functionName + functionBodyExit);
 		}
 		
 		

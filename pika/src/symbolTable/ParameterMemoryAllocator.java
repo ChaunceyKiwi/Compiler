@@ -10,6 +10,7 @@ public class ParameterMemoryAllocator implements MemoryAllocator {
 	int minOffset;
 	String baseAddress;
 	List<Integer> bookmarks;
+	List<MemoryLocation> memoryLocationList = new ArrayList<MemoryLocation>();
 	
 	public ParameterMemoryAllocator(MemoryAccessMethod accessor, String baseAddress, int startingOffset) {
 		this.accessor = accessor;
@@ -28,7 +29,9 @@ public class ParameterMemoryAllocator implements MemoryAllocator {
 	public MemoryLocation allocate(int sizeInBytes) {
 		currentOffset -= sizeInBytes;
 		updateMin();
-		return new MemoryLocation(accessor, baseAddress, currentOffset);
+		MemoryLocation memoryLocation = new MemoryLocation(accessor, baseAddress, currentOffset);
+		memoryLocationList.add(memoryLocation);
+		return memoryLocation;
 	}
 	
 	private void updateMin() {
@@ -55,7 +58,15 @@ public class ParameterMemoryAllocator implements MemoryAllocator {
 	@Override
 	public void restoreState() {
 		assert bookmarks.size() > 0;
-		int bookmarkIndex = bookmarks.size()-1;
+		int bookmarkIndex = bookmarks.size() - 1;
 		currentOffset = (int) bookmarks.remove(bookmarkIndex);
+		
+        // if there are no bookmarks after the remove,
+    	// it adds the maximum allocated size to all of those MemoryLocations.
+		if(bookmarkIndex == 0) {
+			for(MemoryLocation memoryLocation : memoryLocationList) {
+				memoryLocation.moveOffset(getMaxAllocatedSize());
+			}
+		}
 	}
 }

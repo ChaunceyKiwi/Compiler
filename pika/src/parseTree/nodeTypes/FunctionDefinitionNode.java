@@ -47,6 +47,10 @@ public class FunctionDefinitionNode extends ParseNode {
 		return lambdaType;
 	}
 	
+	public String getFunctionName() {
+		return child(0).getToken().getLexeme();
+	}
+	
 	///////////////////////////////////////////////////////////
 	// boilerplate for visitors
 			

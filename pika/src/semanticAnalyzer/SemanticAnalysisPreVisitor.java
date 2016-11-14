@@ -17,7 +17,8 @@ public class SemanticAnalysisPreVisitor extends ParseNodeVisitor.Default{
 	
 	@Override
 	public void visitEnter(BlockStatementNode node) {
-		if(node.getParent() instanceof FunctionDefinitionNode) {
+		if(node.getParent() instanceof LambdaNode) {
+			// if it is a function body
 			createProcedureScope(node);
 		}else {
 			createSubscope(node);

@@ -1,15 +1,11 @@
 func sum <int a, int b> -> int {
-	const res := a + b. 
-
-	return res.
-}
-
-func Add <int a, int b> -> int {
+	var v1 := 1.
+	var v2 := 2.
+	var v3 := 3.
 	return a + b.
 }
 
 exec {
 	var nice := sum(4, 3).
-
 	print nice.
 }

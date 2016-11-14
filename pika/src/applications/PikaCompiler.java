@@ -73,8 +73,8 @@ public class PikaCompiler extends PikaApplication {
 	private static void generateOptimizeAndPrintCode(String outfile, ParseNode decoratedTree) 
 			throws FileNotFoundException {
 		ASMCodeFragment code = ASMCodeGenerator.generate(decoratedTree);
-		ASMCodeFragment optimized = Optimizer.optimize(code);
-		printCodeToFile(outfile, optimized);
+		//ASMCodeFragment optimized = Optimizer.optimize(code);
+		printCodeToFile(outfile, code);
 	}
 	
 	private static void printCodeToFile(String filename, ASMCodeFragment code)
