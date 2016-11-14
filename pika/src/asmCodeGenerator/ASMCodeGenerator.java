@@ -247,7 +247,7 @@ public class ASMCodeGenerator {
 			code.add(Label, functionPrefix + functionName);
 			functionPreparation(labeller);
 			functionProcess(labeller, node);
-			functionLaterStage(labeller);
+			functionLaterStage(labeller, node);
 			code.add(Label, endLabel);			
 		}
 		
@@ -255,7 +255,7 @@ public class ASMCodeGenerator {
 			String dynamicLinkLabel = labeller.newLabel("dynamic-link");
 			String returnAddressLabel = labeller.newLabel("return-address");
 			String moveFPtoSPLabel = labeller.newLabel("move-fp-to-sp");
-
+			
 			// store FP at SP-4 as dynamic link
 			code.add(Label, dynamicLinkLabel);
 			code.add(PushD, RunTime.FRAME_POINTER);
@@ -281,16 +281,25 @@ public class ASMCodeGenerator {
 		public void functionProcess(Labeller labeller, FunctionDefinitionNode node) {
 			BlockStatementNode blockStatementNode = (BlockStatementNode)node.child(1).child(1);
 			ASMCodeFragment blockStatementCode =  removeVoidCode(blockStatementNode);
+			String subtractFrameSizeLabel = labeller.newLabel("subtract-frame-size");
+			int procedureScopeSize = node.child(1).child(1).getScope().getAllocatedSize();
+			
+			// The size of the frame for barge() is subtracted from the stack pointer
+			code.add(Label, subtractFrameSizeLabel);
+			decrementStackPointer(procedureScopeSize);
+			
 			code.append(blockStatementCode);
 			code.add(Label, functionPrefix + node.getFunctionName() + functionBodyExit);
 		}
 		
-		public void functionLaterStage(Labeller labeller) {
+		public void functionLaterStage(Labeller labeller, FunctionDefinitionNode node) {
 			String pushReturnAddressLabel = labeller.newLabel("push-return-address");
 			String replaceFramePointerLabel = labeller.newLabel("replace-frame-pointer");
 			String incrementSP = labeller.newLabel("increment-stack-pointer");
 			String decrementSP = labeller.newLabel("decrement-stack-pointer");
-			
+			int parameterScopeSize= node.getScope().getAllocatedSize();
+			int procedureScopeSize = node.child(1).child(1).getScope().getAllocatedSize();
+
 			// Push return address (at FP - 8) to ASM stack
 			code.add(Label, pushReturnAddressLabel);
 			code.add(PushD, RunTime.FRAME_POINTER);
@@ -311,7 +320,7 @@ public class ASMCodeGenerator {
 			// Increment SP by the size of parameter scope and procedure scope
 			// incrementStackPointer(parameterScope.size() + procedureScope.size());
 			code.add(Label, incrementSP);
-			incrementStackPointer(8 + 8);
+			incrementStackPointer(parameterScopeSize + procedureScopeSize);
 			
 			// Decrement SP by the size of return value and store it
 			code.add(Label, decrementSP);
