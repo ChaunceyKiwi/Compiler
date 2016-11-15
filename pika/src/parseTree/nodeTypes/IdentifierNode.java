@@ -11,6 +11,7 @@ import tokens.Token;
 public class IdentifierNode extends ParseNode {
 	private Binding binding;
 	private Scope declarationScope;
+	private String lambdaName = null;
 
 	public IdentifierNode(Token token) {
 		super(token);
@@ -38,9 +39,19 @@ public class IdentifierNode extends ParseNode {
 	public void setBinding(Binding binding) {
 		this.binding = binding;
 	}
+	
 	public Binding getBinding() {
 		return binding;
 	}
+	
+	public void setLambdaName(String _lambdaName) {
+		lambdaName = _lambdaName;
+	}
+	
+	public String getLambdaName() {
+		return lambdaName;
+	}
+	
 	
 ////////////////////////////////////////////////////////////
 // Speciality functions

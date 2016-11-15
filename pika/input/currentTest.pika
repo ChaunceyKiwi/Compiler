@@ -1,9 +1,6 @@
-func sum1 <int a, int b> -> int {
-	return a + b.
-	const c := 2727.
-}
-
 exec {
-	var nice := sum1(7, 3).
-	print nice.
+    var lambda := <int a, int b> -> int {return a + b.}.
+    const cool := lambda.
+
+    print cool(5, 6).
 }

@@ -15,6 +15,7 @@ public class Binding {
 	private TextLocation textLocation;
 	private MemoryLocation memoryLocation;
 	private String lexeme;
+	private String lambdaName;
 	private boolean isMutable;
 	private BindingType bindingType;
 	
@@ -27,6 +28,7 @@ public class Binding {
 		this.lexeme = lexeme;
 		this.isMutable = ismutable;
 		this.bindingType = BindingType.VARIABLE;
+		this.lambdaName = null;
 	}
 	
 	// Binding for function
@@ -38,6 +40,18 @@ public class Binding {
 		this.lexeme = lexeme;
 		this.isMutable = false;
 		this.bindingType = BindingType.FUNCTION;
+		this.lambdaName = null;
+	}
+	
+	public Binding(Type type, TextLocation location, String lexeme, String lambdaName) {
+		super();
+		this.type = type;
+		this.textLocation = location;
+		this.memoryLocation = null;
+		this.lexeme = lexeme;
+		this.isMutable = false;
+		this.bindingType = BindingType.FUNCTION;
+		this.lambdaName = lambdaName;
 	}
 	
 	public String toString() {
@@ -50,6 +64,9 @@ public class Binding {
 		return lexeme;
 	}
 	
+	public String getLambdaName() {
+		return lambdaName;
+	}
 	public boolean isMutable(){
 		return isMutable;
 	}

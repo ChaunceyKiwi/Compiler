@@ -263,9 +263,26 @@ public class ASMCodeGenerator {
 			
 			code.add(Label, functionPrefix + functionName);
 			functionPreparation(labeller);
-			functionProcess(labeller, node);
-			functionLaterStage(labeller, node);
+			functionProcess(labeller, (LambdaNode)node.child(1));
+			functionLaterStage(labeller, (LambdaNode)node.child(1));
 			code.add(Label, endLabel);			
+		}
+		
+		public void visitLeave(LambdaNode node) {
+			ParseNode parentNode = node.getParent();
+			if(parentNode instanceof DeclarationNode) {
+				newVoidCode(node);
+				Labeller labeller = new Labeller("function-definition");
+				String endLabel = labeller.newLabel("end");
+				String functionName = parentNode.child(0).getToken().getLexeme();
+				
+				code.add(Jump, endLabel);
+				code.add(Label, functionPrefix + functionName);
+				functionPreparation(labeller);
+				functionProcess(labeller, node);
+				functionLaterStage(labeller, node);
+				code.add(Label, endLabel);	
+			}
 		}
 		
 		public void functionPreparation(Labeller labeller) {
@@ -289,26 +306,28 @@ public class ASMCodeGenerator {
 			Macros.loadIFrom(code, RunTime.STACK_POINTER);
 			Macros.storeITo(code, RunTime.FRAME_POINTER);			
 		}
-		public void functionProcess(Labeller labeller, FunctionDefinitionNode node) {
-			BlockStatementNode blockStatementNode = (BlockStatementNode)node.child(1).child(1);
+		public void functionProcess(Labeller labeller, LambdaNode node) {
+			BlockStatementNode blockStatementNode = (BlockStatementNode)node.child(1);
 			ASMCodeFragment blockStatementCode =  removeVoidCode(blockStatementNode);
 			String subtractFrameSizeLabel = labeller.newLabel("subtract-frame-size");
-			int procedureScopeSize = node.child(1).child(1).getScope().getAllocatedSize();
+			String functionBodyProcessLabel = labeller.newLabel("function-body-process");
+			int procedureScopeSize = node.child(1).getScope().getAllocatedSize();
 			
 			// The size of the frame for barge() is subtracted from the stack pointer
 			code.add(Label, subtractFrameSizeLabel);
 			decrementStackPointer(procedureScopeSize);
-	
+			
+			code.add(Label, functionBodyProcessLabel);
 			code.append(blockStatementCode);
 		}
 		
-		public void functionLaterStage(Labeller labeller, FunctionDefinitionNode node) {
+		public void functionLaterStage(Labeller labeller, LambdaNode node) {
 			String pushReturnAddressLabel = labeller.newLabel("push-return-address");
 			String replaceFramePointerLabel = labeller.newLabel("replace-frame-pointer");
 			String incrementSP = labeller.newLabel("increment-stack-pointer");
 			String decrementSP = labeller.newLabel("decrement-stack-pointer");
 			int parameterScopeSize= node.getScope().getAllocatedSize();
-			int procedureScopeSize = node.child(1).child(1).getScope().getAllocatedSize();
+			int procedureScopeSize = node.child(1).getScope().getAllocatedSize();
 
 			// Push return address (at FP - 8) to ASM stack
 			code.add(Label, pushReturnAddressLabel);
@@ -351,7 +370,7 @@ public class ASMCodeGenerator {
 				newValueCode(node);
 			}
 			
-			ParseNode functionName = node.child(0);
+			String functionName = ((IdentifierNode)node.child(0)).getBinding().getLambdaName();
 			ParseNode exprList = node.child(1);
 			
 			code.add(Label, beginLabel);
@@ -363,7 +382,7 @@ public class ASMCodeGenerator {
 				pushElementToFrameStack(type);
 			}
 			
-			code.add(Call, functionPrefix + functionName.getToken().getLexeme());
+			code.add(Call, functionPrefix + functionName);
 			
 			// take the return value from the location pointed at 
 			// by the stack counter and place it on the ASM stack
@@ -436,13 +455,19 @@ public class ASMCodeGenerator {
 		// Declatation
 		public void visitLeave(DeclarationNode node) {
 			newVoidCode(node);
-			Type type = node.getType();
-			ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
-			ASMCodeFragment rvalue = removeValueCode(node.child(1));
-		
-			code.append(lvalue);
-			code.append(rvalue);
-			code.add(opcodeForStore(type));
+			if(!(node.child(1) instanceof LambdaNode)) {		
+				if(!(node.getType() instanceof LambdaType)) {
+					Type type = node.getType();
+					ASMCodeFragment lvalue = removeAddressCode(node.child(0));	
+					ASMCodeFragment rvalue = removeValueCode(node.child(1));
+				
+					code.append(lvalue);
+					code.append(rvalue);
+					code.add(opcodeForStore(type));
+				}
+			}else {
+				code.append(removeVoidCode(node.child(1)));
+			}
 		}
 		
 		// AssignmentStatement

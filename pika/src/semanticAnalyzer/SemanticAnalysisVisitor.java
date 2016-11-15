@@ -74,12 +74,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	///////////////////////////////////////////////////////////////////////////
 	// FunctionDefinition
 	public void visitEnter(FunctionDefinitionNode node) {
-		enterScope(node);
 	}
 	
 	public void visitLeave(FunctionDefinitionNode node) {
 		assert node.nChildren() == 2;
-		leaveScope(node);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -125,10 +123,13 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	///////////////////////////////////////////////////////////////////////////
 	// Lambda
 	public void visitEnter(LambdaNode node) {
-		assert node.nChildren() == 2;
-		node.setLambdaType();
+		enterScope(node);
 	}
 	
+	public void visitLeave(LambdaNode node) {
+		assert node.nChildren() == 2;
+		leaveScope(node);
+	}
 	
 	///////////////////////////////////////////////////////////////////////////
 	// ReturnStatement
@@ -187,15 +188,26 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		// If identifier has already been declared in current scope, report error.
 		scope.getSymbolTable().errorIfAlreadyDefined(identifier.getToken());
 		
-		// If identifier has not been declared in current scope, 
-		// binding it to current scope and its symbol table.
-		// If the declaration is var then variable is mutable, const then unmutuable
-		if(node.getToken().isLextant(Keyword.VAR))
-			addBinding(identifier, declarationType, true);
-		else if(node.getToken().isLextant(Keyword.CONST))
-			addBinding(identifier, declarationType, false);
-		else
-			logError("Declaration type is neither var nor const");			
+
+		
+		if(initializer instanceof LambdaNode) {
+			Binding binding = scope.createFunctionBinding(identifier, (LambdaNode)initializer);
+			identifier.setBinding(binding);
+		}else if((initializer instanceof IdentifierNode) && (initializer.getType() instanceof LambdaType)) {
+			Binding binding = scope.createFunctionBinding(identifier, declarationType,
+					((IdentifierNode)initializer).getBinding().getLexeme());
+			identifier.setBinding(binding);
+		}else {
+			// If identifier has not been declared in current scope, 
+			// binding it to current scope and its symbol table.
+			// If the declaration is var then variable is mutable, const then unmutuable
+			if(node.getToken().isLextant(Keyword.VAR))
+				addBinding(identifier, declarationType, true);
+			else if(node.getToken().isLextant(Keyword.CONST))
+				addBinding(identifier, declarationType, false);
+			else
+				logError("Declaration type is neither var nor const");	
+		}
 	}
 	
 	// AssignmentStatement

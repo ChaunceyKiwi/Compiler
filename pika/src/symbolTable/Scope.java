@@ -3,6 +3,7 @@ package symbolTable;
 import inputHandler.TextLocation;
 import logging.PikaLogger;
 import parseTree.nodeTypes.IdentifierNode;
+import parseTree.nodeTypes.LambdaNode;
 import parseTree.nodeTypes.FunctionDefinitionNode;
 import semanticAnalyzer.types.Type;
 import tokens.Token;
@@ -117,6 +118,25 @@ public class Scope {
 		Type lambdaType = funcDefNode.getLambdaType();
 		
 		Binding binding = new Binding(lambdaType, token.getLocation(), functionName);
+		symbolTable.install(functionName, binding);
+		return binding;
+	}
+	
+	public Binding createFunctionBinding(IdentifierNode identifierNode, LambdaNode lambdaNode){
+		Token token = identifierNode.getToken();
+		String functionName = token.getLexeme();
+		Type lambdaType = lambdaNode.getLambdaType();
+		
+		Binding binding = new Binding(lambdaType, token.getLocation(), functionName);
+		symbolTable.install(functionName, binding);
+		return binding;
+	}
+	
+	public Binding createFunctionBinding(IdentifierNode identifierNode, Type declarationType, String lambdaName){
+		Token token = identifierNode.getToken();
+		String functionName = token.getLexeme();
+		
+		Binding binding = new Binding(declarationType, token.getLocation(), functionName, lambdaName);
 		symbolTable.install(functionName, binding);
 		return binding;
 	}

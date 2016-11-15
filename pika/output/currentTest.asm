@@ -318,7 +318,7 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        4                         
+        DataZ        0                         
         DLabel       reg1-func                 
         DataI        0                         
         PushD        reg1-func                 
@@ -354,7 +354,9 @@
         PushD        reg-counter               
         Exchange                               
         StoreI                                 
-        Label        $function-sum1            
+        Label        $$main                    
+        Jump         -function-definition-2-end 
+        Label        $function-lambda          
         Label        -function-definition-2-dynamic-link 
         PushD        $frame-pointer            
         LoadI                                  
@@ -380,11 +382,12 @@
         Label        -function-definition-2-subtract-frame-size 
         PushD        $stack-pointer            
         LoadI                                  
-        PushI        12                        
+        PushI        8                         
         Subtract                               
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
+        Label        -function-definition-2-function-body-process 
         PushD        $frame-pointer            
         LoadI                                  
         PushI        4                         
@@ -397,12 +400,6 @@
         LoadI                                  
         Add                                    
         Jump         --block-statement--1-end-of-block-statement 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        -12                       
-        Add                                    %% c
-        PushI        2727                      
-        StoreI                                 
         Label        --block-statement--1-end-of-block-statement 
         Label        -function-definition-2-push-return-address 
         PushD        $frame-pointer            
@@ -423,7 +420,7 @@
         Label        -function-definition-2-increment-stack-pointer 
         PushD        $stack-pointer            
         LoadI                                  
-        PushI        20                        
+        PushI        16                        
         Add                                    
         PushD        $stack-pointer            
         Exchange                               
@@ -444,12 +441,8 @@
         StoreI                                 
         Return                                 
         Label        -function-definition-2-end 
-        Label        $$main                    
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% nice
         Label        -function-invocation-3-begin 
-        PushI        7                         
+        PushI        5                         
         PushD        $stack-pointer            
         LoadI                                  
         PushI        4                         
@@ -461,7 +454,7 @@
         LoadI                                  
         Exchange                               
         StoreI                                 
-        PushI        3                         
+        PushI        6                         
         PushD        $stack-pointer            
         LoadI                                  
         PushI        4                         
@@ -473,7 +466,7 @@
         LoadI                                  
         Exchange                               
         StoreI                                 
-        Call         $function-sum1            
+        Call         $function-lambda          
         PushD        $stack-pointer            
         LoadI                                  
         LoadI                                  
@@ -485,11 +478,6 @@
         Exchange                               
         StoreI                                 
         Label        -function-invocation-3-end 
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% nice
-        LoadI                                  
         PushD        $print-format-integer     
         Printf                                 
         Halt                                   
