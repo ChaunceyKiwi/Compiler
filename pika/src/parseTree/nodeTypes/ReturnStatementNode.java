@@ -7,9 +7,8 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class ReturnStatementNode extends ParseNode {	
-	private FunctionDefinitionNode functionDefinitionNode = null; 
+	private LambdaNode lambdaNode = null; 
 
-	
 	public ReturnStatementNode(Token token) {
 		super(token);
 	}
@@ -29,17 +28,18 @@ public class ReturnStatementNode extends ParseNode {
 		return (LextantToken)token;
 	}	
 	
-	public void setFunctionDefinitionNode(FunctionDefinitionNode node) {
-		functionDefinitionNode = node;
+	
+	public void setLambdaNode(LambdaNode _lambdaNode) {
+		lambdaNode = _lambdaNode;
 	}
 	
-	public FunctionDefinitionNode getFunctionDefinitionNode() {
-		return functionDefinitionNode;
+	public ParseNode getLambdaNode() {
+		return lambdaNode;
 	}
 	
-//	public String getTargetLabelForContinue(){
-//		return loopStatementNode.getLabelForContinue();
-//	}
+	public String getTargetLabelForReturn(){
+		return ((BlockStatementNode)this.getParent()).getTargetLabel();
+	}
 	
 	public static ParseNode findFunctionDefinitionNode(ParseNode node) {
 		// Track up the node to find the functionDefinitionNode

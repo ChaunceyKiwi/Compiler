@@ -11,6 +11,7 @@ import semanticAnalyzer.types.*;
 
 public class ParameterListNode extends ParseNode {
 	List<Type> typeList = new ArrayList<Type>();
+	boolean isTypeListSet = false;
 	
 	public ParameterListNode(Token token) {
 		super(token);
@@ -32,11 +33,14 @@ public class ParameterListNode extends ParseNode {
 	}	
 	
 	public void setTypeList() {
-		for(int i = 0; i < this.nChildren(); i++) {
-			if(this.child(i).child(0) instanceof TypeNode) {
-				((TypeNode)this.child(i).child(0)).setType();
+		if(!isTypeListSet) {
+			for(int i = 0; i < this.nChildren(); i++) {
+				if(this.child(i).child(0) instanceof TypeNode) {
+					((TypeNode)this.child(i).child(0)).setType();
+				}
+				typeList.add(this.child(i).child(0).getType());
 			}
-			typeList.add(this.child(i).child(0).getType());
+			isTypeListSet = true;
 		}
 	}
 	

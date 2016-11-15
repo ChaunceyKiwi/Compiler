@@ -1,8 +1,9 @@
-func sum <int a, int b> -> int {
+func sum1 <int a, int b> -> int {
 	return a + b.
+	const c := 2727.
 }
 
 exec {
-	var nice := sum(4, 3).
+	var nice := sum1(7, 3).
 	print nice.
 }

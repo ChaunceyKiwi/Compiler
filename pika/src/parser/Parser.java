@@ -894,26 +894,33 @@ public class Parser {
 			return syntaxErrorNode("atomic expression");
 		}
 		
-		if(startsParenthesesExpression(nowReading))
+		if(startsParenthesesExpression(nowReading)) {
 			return parseParenthesesExpression();
-		else if(startsTypeCastingExpression(nowReading))
+		}
+		else if(startsTypeCastingExpression(nowReading)) {
 			return parseTypeCastingExpression();
-		else if(startsArrayExpression(nowReading))
+		}
+		else if(startsArrayExpression(nowReading)) {
 			return parseArrayExpression();
-		else
+		}
+		else if(startsLambda(nowReading)){
+			return parseLambda();
+		}
+		else{
 			return parseLiteral();
+		}
 	}
 	
 	private boolean startsAtomicExpression(Token token) {
 		return startsParenthesesExpression(token) || 
 			   startsTypeCastingExpression(token) ||
 			   startsArrayExpression(token)||
+			   startsLambda(token) ||
 			   startsLiteral(token);
 	}
 	
 	///////////////////////////////////////////////////////////
 	// ParenthesesExpression
-	
 	private ParseNode parseParenthesesExpression(){
 		if(!startsParenthesesExpression(nowReading)) {
 			return syntaxErrorNode("parenthesesExpression");
@@ -932,7 +939,6 @@ public class Parser {
 	
 	///////////////////////////////////////////////////////////
 	// TypeCastingExpression
-	
 	private ParseNode parseTypeCastingExpression(){
 		if(!startsTypeCastingExpression(nowReading)){
 			return syntaxErrorNode("typeCastingExpression");
@@ -967,7 +973,6 @@ public class Parser {
 	
 	///////////////////////////////////////////////////////////
 	// ArrayExpression
-	
 	private ParseNode parseArrayExpression(){
 		if(!startsArrayExpression(nowReading)) {
 			return syntaxErrorNode("arrayExpression");

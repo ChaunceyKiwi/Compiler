@@ -354,8 +354,8 @@
         PushD        reg-counter               
         Exchange                               
         StoreI                                 
-        Label        $function-sum             
-        Label        -function-definition-1-dynamic-link 
+        Label        $function-sum1            
+        Label        -function-definition-2-dynamic-link 
         PushD        $frame-pointer            
         LoadI                                  
         PushD        $stack-pointer            
@@ -364,23 +364,23 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -function-definition-1-return-address 
+        Label        -function-definition-2-return-address 
         PushD        $stack-pointer            
         LoadI                                  
         PushI        -8                        
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -function-definition-1-move-fp-to-sp 
+        Label        -function-definition-2-move-fp-to-sp 
         PushD        $stack-pointer            
         LoadI                                  
         PushD        $frame-pointer            
         Exchange                               
         StoreI                                 
-        Label        -function-definition-1-subtract-frame-size 
+        Label        -function-definition-2-subtract-frame-size 
         PushD        $stack-pointer            
         LoadI                                  
-        PushI        8                         
+        PushI        12                        
         Subtract                               
         PushD        $stack-pointer            
         Exchange                               
@@ -396,15 +396,21 @@
         Add                                    %% b
         LoadI                                  
         Add                                    
-        Jump         $function-sum-function-body-exit 
-        Label        $function-sum-function-body-exit 
-        Label        -function-definition-1-push-return-address 
+        Jump         --block-statement--1-end-of-block-statement 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -12                       
+        Add                                    %% c
+        PushI        2727                      
+        StoreI                                 
+        Label        --block-statement--1-end-of-block-statement 
+        Label        -function-definition-2-push-return-address 
         PushD        $frame-pointer            
         LoadI                                  
         PushI        -8                        
         Add                                    
         LoadI                                  
-        Label        -function-definition-1-replace-frame-pointer 
+        Label        -function-definition-2-replace-frame-pointer 
         PushD        $frame-pointer            
         LoadI                                  
         PushI        -4                        
@@ -414,15 +420,15 @@
         Exchange                               
         StoreI                                 
         Exchange                               
-        Label        -function-definition-1-increment-stack-pointer 
+        Label        -function-definition-2-increment-stack-pointer 
         PushD        $stack-pointer            
         LoadI                                  
-        PushI        16                        
+        PushI        20                        
         Add                                    
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
-        Label        -function-definition-1-decrement-stack-pointer 
+        Label        -function-definition-2-decrement-stack-pointer 
         PushD        $stack-pointer            
         LoadI                                  
         PushI        4                         
@@ -437,13 +443,13 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        -function-definition-1-end 
+        Label        -function-definition-2-end 
         Label        $$main                    
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% nice
-        Label        -function-invocation-2-begin 
-        PushI        4                         
+        Label        -function-invocation-3-begin 
+        PushI        7                         
         PushD        $stack-pointer            
         LoadI                                  
         PushI        4                         
@@ -467,7 +473,7 @@
         LoadI                                  
         Exchange                               
         StoreI                                 
-        Call         $function-sum             
+        Call         $function-sum1            
         PushD        $stack-pointer            
         LoadI                                  
         LoadI                                  
@@ -478,7 +484,7 @@
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
-        Label        -function-invocation-2-end 
+        Label        -function-invocation-3-end 
         StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
@@ -901,28 +907,28 @@
         Return                                 
         DLabel       $heap-memory              
         Label        GCDCalculation            
-        Label        --GCD-Calculation--3--function-begin- 
+        Label        --GCD-Calculation--4--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--3--check-initial-zero 
+        JumpTrue     --GCD-Calculation--4--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--3--function-end- 
-        Label        --GCD-Calculation--3--check-initial-zero 
-        Label        --GCD-Calculation--3--loop-begin- 
+        Jump         --GCD-Calculation--4--function-end- 
+        Label        --GCD-Calculation--4--check-initial-zero 
+        Label        --GCD-Calculation--4--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--4--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--4--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--3--positive-case- 
-        Label        --GCD-Calculation--3--not-positive-case- 
+        JumpPos      --GCD-Calculation--4--positive-case- 
+        Label        --GCD-Calculation--4--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -931,8 +937,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--positive-case- 
+        Jump         --GCD-Calculation--4--join- 
+        Label        --GCD-Calculation--4--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -941,11 +947,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--join- 
-        Jump         --GCD-Calculation--3--loop-begin- 
-        Label        --GCD-Calculation--3--loop-end- 
+        Jump         --GCD-Calculation--4--join- 
+        Label        --GCD-Calculation--4--join- 
+        Jump         --GCD-Calculation--4--loop-begin- 
+        Label        --GCD-Calculation--4--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--3--function-end- 
+        Label        --GCD-Calculation--4--function-end- 
         Exchange                               
         Return                                 

@@ -123,16 +123,24 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
+	// Lambda
+	public void visitEnter(LambdaNode node) {
+		assert node.nChildren() == 2;
+		node.setLambdaType();
+	}
+	
+	
+	///////////////////////////////////////////////////////////////////////////
 	// ReturnStatement
 	public void visitLeave(ReturnStatementNode node) {
 		assert node.nChildren() <= 1;
+				
+		ParseNode lambdaNode = node.getParent().getParent();
 		
-		FunctionDefinitionNode functionDefinitionNode = 
-				(FunctionDefinitionNode)ReturnStatementNode.findFunctionDefinitionNode(node);
-		if(functionDefinitionNode == null) {
-			returnFindNoFunctionDefinitionError(node);
+		if(lambdaNode instanceof LambdaNode) {
+			node.setLambdaNode((LambdaNode)lambdaNode);
 		}else {
-			node.setFunctionDefinitionNode((FunctionDefinitionNode)functionDefinitionNode);
+			returnFindNoLambdaError(node);
 		}
 		
 		Type returnType;
@@ -142,7 +150,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			returnType = node.child(0).getType();
 		}
 		
-		Type expectedType = functionDefinitionNode.getLambdaType().getResultType();
+		Type expectedType = ((LambdaNode)lambdaNode).getLambdaType().getResultType();
 		if(expectedType.match(returnType)) {
 			node.setType(expectedType);
 		}else{
@@ -262,7 +270,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		}else {
 			node.setLoopStatementNode((WhileStatementNode)loopStatementNode);
 		}
-		
 	}
 	
 	public void checkIfExpressionIsBoolean(ParseNode node){
@@ -549,8 +556,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 //		logError(node.getToken().getLexeme() + " expression list different type Error");
 //	}
 	
-	private void returnFindNoFunctionDefinitionError(ParseNode node) {
-		logError(node.getToken().getLexeme() + " return cannot find its function definition Error");
+	private void returnFindNoLambdaError(ParseNode node) {
+		logError(node.getToken().getLexeme() + " return cannot find its lambda Error");
 	}
 	
 	private void variableReturnDifferDefinitionError(ParseNode node) {

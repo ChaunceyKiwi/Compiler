@@ -223,11 +223,25 @@ public class ASMCodeGenerator {
 			}
 		}
 		
+		public void visitEnter(BlockStatementNode node){
+			for(ParseNode child : node.getChildren()) {
+				if(child instanceof ReturnStatementNode) {
+					Labeller labeller = new Labeller("-block-statement-");
+					String endLabel = labeller.newLabel("end-of-block-statement");			
+					node.setTargetLabel(endLabel);
+					break;
+				}
+			}
+		}
+		
 		public void visitLeave(BlockStatementNode node) {
 			newVoidCode(node);
 			for(ParseNode child : node.getChildren()) {
 				ASMCodeFragment childCode = removeVoidCode(child);
 				code.append(childCode);
+			}
+			if(node.getTargetLabel() != null) {
+				code.add(Label, node.getTargetLabel());
 			}
 		}
 		
@@ -284,9 +298,8 @@ public class ASMCodeGenerator {
 			// The size of the frame for barge() is subtracted from the stack pointer
 			code.add(Label, subtractFrameSizeLabel);
 			decrementStackPointer(procedureScopeSize);
-			
+	
 			code.append(blockStatementCode);
-			code.add(Label, functionPrefix + node.getFunctionName() + functionBodyExit);
 		}
 		
 		public void functionLaterStage(Labeller labeller, FunctionDefinitionNode node) {
@@ -396,9 +409,7 @@ public class ASMCodeGenerator {
 			if(node.getType() != PrimitiveType.VOID) {
 				code.append(removeValueCode(node.child(0)));
 			}
-			
-			String functionName = node.getFunctionDefinitionNode().getFunctionName();
-			code.add(Jump, functionPrefix + functionName + functionBodyExit);
+			code.add(Jump, node.getTargetLabelForReturn());
 		}
 		
 		
