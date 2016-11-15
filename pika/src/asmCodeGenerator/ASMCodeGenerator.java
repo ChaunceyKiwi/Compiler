@@ -61,6 +61,9 @@ public class ASMCodeGenerator {
 	
 	private ASMCodeFragment FrameStackInitialization() {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+		
+		Macros.declareI(code, RunTime.FRAME_POINTER);
+		Macros.declareI(code, RunTime.STACK_POINTER);
 		code.add(Memtop);
 		code.add(Duplicate);
 		Macros.storeITo(code, RunTime.FRAME_POINTER);		
@@ -258,25 +261,19 @@ public class ASMCodeGenerator {
 			
 			// store FP at SP-4 as dynamic link
 			code.add(Label, dynamicLinkLabel);
-			code.add(PushD, RunTime.FRAME_POINTER);
-			code.add(LoadI);
-			code.add(PushD, RunTime.STACK_POINTER);
-			Macros.writeIOffset(code, 4);
+			Macros.loadIFrom(code, RunTime.FRAME_POINTER);
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
+			Macros.writeIOffset(code, -4);
 			
 			// Store return address at SP-8
 			code.add(Label, returnAddressLabel);
-			code.add(PushD, RunTime.STACK_POINTER);
-			Macros.writeIOffset(code, 8);
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
+			Macros.writeIOffset(code, -8);
 			
-			// Move FP to SP
+			// Move FP to SP (Store SP at FP)
 			code.add(Label, moveFPtoSPLabel);
-			code.add(PushD, RunTime.STACK_POINTER);
-			code.add(LoadI);
-			Macros.storeITo(code, RunTime.FRAME_POINTER);
-			
-			// Move SP to the start of return address
-			// a.k.a the end of storage for local variable
-			decrementStackPointer(8);
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
+			Macros.storeITo(code, RunTime.FRAME_POINTER);			
 		}
 		public void functionProcess(Labeller labeller, FunctionDefinitionNode node) {
 			BlockStatementNode blockStatementNode = (BlockStatementNode)node.child(1).child(1);
@@ -302,17 +299,15 @@ public class ASMCodeGenerator {
 
 			// Push return address (at FP - 8) to ASM stack
 			code.add(Label, pushReturnAddressLabel);
-			code.add(PushD, RunTime.FRAME_POINTER);
-			code.add(LoadI);
+			Macros.loadIFrom(code, RunTime.FRAME_POINTER);
 			Macros.readIOffset(code, -8);
 			
 			// Replace FP with dynamic link (at FP - 4)
-			code.add(Label, replaceFramePointerLabel);
-			code.add(PushD, RunTime.FRAME_POINTER);
-			code.add(Duplicate);
-			code.add(LoadI);
+			// Store *(FP - 4) at FP
+			code.add(Label, replaceFramePointerLabel);			
+			Macros.loadIFrom(code, RunTime.FRAME_POINTER);
 			Macros.readIOffset(code, -4);
-			code.add(StoreI);
+			Macros.storeITo(code, RunTime.FRAME_POINTER);	
 			
 			// Exchange to put return value at the top of the ASM stack
 			code.add(Exchange);
@@ -325,8 +320,9 @@ public class ASMCodeGenerator {
 			// Decrement SP by the size of return value and store it
 			code.add(Label, decrementSP);
 			decrementStackPointer(4);
-			Macros.storeITo(code, RunTime.STACK_POINTER);
-			
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
+			Macros.writeIOffset(code, 0);
+						
 			code.add(Return);
 		}
 
@@ -364,23 +360,20 @@ public class ASMCodeGenerator {
 		
 		// pop element from frame stack and increment SP
 		public void popElementFromFrameToASMStack(Type type) {			
-			code.add(PushD, RunTime.STACK_POINTER);
-			code.add(LoadI);
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
 			code.add(opcodeForLoad(type));
 			incrementStackPointer(type.getSize());
 		}
 		
 		public void incrementStackPointer(int size) {
-			code.add(PushD, RunTime.STACK_POINTER);
-			code.add(LoadI);
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
 			code.add(PushI, size);
 			code.add(Add);
 			Macros.storeITo(code, RunTime.STACK_POINTER);
 		}
 		
 		public void decrementStackPointer(int size) {
-			code.add(PushD, RunTime.STACK_POINTER);
-			code.add(LoadI);
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
 			code.add(PushI, size);
 			code.add(Subtract);
 			Macros.storeITo(code, RunTime.STACK_POINTER);
@@ -392,7 +385,7 @@ public class ASMCodeGenerator {
 			decrementStackPointer(type.getSize());
 			
 			// Store the element into the address			
-			code.add(PushD, RunTime.STACK_POINTER);
+			Macros.loadIFrom(code, RunTime.STACK_POINTER);
 			code.add(Exchange);
 			code.add(opcodeForStore(type));	
 		}
@@ -409,8 +402,7 @@ public class ASMCodeGenerator {
 		}
 		
 		
-		
-
+	
 		///////////////////////////////////////////////////////////////////////////
 		// Statements
 		/*

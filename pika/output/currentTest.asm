@@ -21,6 +21,10 @@
         PushD        $heap-first-free          
         Exchange                               
         StoreI                                 
+        DLabel       $frame-pointer            
+        DataZ        4                         
+        DLabel       $stack-pointer            
+        DataZ        4                         
         Memtop                                 
         Duplicate                              
         PushD        $frame-pointer            
@@ -355,13 +359,15 @@
         PushD        $frame-pointer            
         LoadI                                  
         PushD        $stack-pointer            
-        PushI        4                         
+        LoadI                                  
+        PushI        -4                        
         Add                                    
         Exchange                               
         StoreI                                 
         Label        -function-definition-1-return-address 
         PushD        $stack-pointer            
-        PushI        8                         
+        LoadI                                  
+        PushI        -8                        
         Add                                    
         Exchange                               
         StoreI                                 
@@ -371,24 +377,13 @@
         PushD        $frame-pointer            
         Exchange                               
         StoreI                                 
+        Label        -function-definition-1-subtract-frame-size 
         PushD        $stack-pointer            
         LoadI                                  
         PushI        8                         
         Subtract                               
         PushD        $stack-pointer            
         Exchange                               
-        StoreI                                 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        -4                        
-        Add                                    %% v1
-        PushI        1                         
-        StoreI                                 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        -8                        
-        Add                                    %% v2
-        PushI        2                         
         StoreI                                 
         PushD        $frame-pointer            
         LoadI                                  
@@ -411,11 +406,12 @@
         LoadI                                  
         Label        -function-definition-1-replace-frame-pointer 
         PushD        $frame-pointer            
-        Duplicate                              
         LoadI                                  
         PushI        -4                        
         Add                                    
         LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
         StoreI                                 
         Exchange                               
         Label        -function-definition-1-increment-stack-pointer 
@@ -435,6 +431,9 @@
         Exchange                               
         StoreI                                 
         PushD        $stack-pointer            
+        LoadI                                  
+        PushI        0                         
+        Add                                    
         Exchange                               
         StoreI                                 
         Return                                 
@@ -453,6 +452,7 @@
         Exchange                               
         StoreI                                 
         PushD        $stack-pointer            
+        LoadI                                  
         Exchange                               
         StoreI                                 
         PushI        3                         
@@ -464,6 +464,7 @@
         Exchange                               
         StoreI                                 
         PushD        $stack-pointer            
+        LoadI                                  
         Exchange                               
         StoreI                                 
         Call         $function-sum             
