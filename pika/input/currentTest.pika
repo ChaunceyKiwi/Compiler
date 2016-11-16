@@ -1,12 +1,4 @@
-func mutiply1 <int a, int b> -> int {
-	return sum2(a, b).
-}
-
-func sum2 <int a, int b> -> int {
-	return a * b.
-}
-
 exec {
-	var nice := mutiply1(3, 7).
+	var nice := <int a, int b> -> int {return a * b.} (6, 6).
 	print nice.
 }

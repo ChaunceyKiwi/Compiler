@@ -282,6 +282,18 @@ public class ASMCodeGenerator {
 				functionProcess(labeller, node);
 				functionLaterStage(labeller, node);
 				code.add(Label, endLabel);	
+			}else if(parentNode instanceof FunctionInvocationNode) {
+				newVoidCode(node);
+				Labeller labeller = new Labeller("function-definition");
+				String endLabel = labeller.newLabel("end");
+				String functionName = ((FunctionInvocationNode)parentNode).getCallLabel();
+				
+				code.add(Jump, endLabel);
+				code.add(Label, functionPrefix + functionName);
+				functionPreparation(labeller);
+				functionProcess(labeller, node);
+				functionLaterStage(labeller, node);
+				code.add(Label, endLabel);	
 			}
 		}
 		
@@ -357,12 +369,18 @@ public class ASMCodeGenerator {
 						
 			code.add(Return);
 		}
-
+		
+		public void visitEnter(FunctionInvocationNode node) {
+			Labeller labeller = new Labeller("function-invocation");
+			node.setBeginLabel(labeller.newLabel("begin")); 
+			node.setEndLabel(labeller.newLabel("end")); 
+			node.setCallLabel(labeller.newLabel("call")); 
+		}
 		
 		public void visitLeave(FunctionInvocationNode node) {
-			Labeller labeller = new Labeller("function-invocation");
-			String beginLabel = labeller.newLabel("begin");
-			String endLabel = labeller.newLabel("end");
+			String beginLabel = node.getBeginLabel();
+			String endLabel = node.getEndLabel();
+			String callLabel = node.getCallLabel();
 
 			if(node.getType() == PrimitiveType.VOID) {
 				newVoidCode(node);
@@ -370,7 +388,7 @@ public class ASMCodeGenerator {
 				newValueCode(node);
 			}
 			
-			String functionName = ((IdentifierNode)node.child(0)).getBinding().getLexeme();
+			ParseNode expressionNode = node.child(0);
 			ParseNode exprList = node.child(1);
 			
 			code.add(Label, beginLabel);
@@ -382,7 +400,16 @@ public class ASMCodeGenerator {
 				pushElementToFrameStack(type);
 			}
 			
-			code.add(Call, functionPrefix + functionName);
+			// Either IdentifierNode or LambdaNode
+			if(expressionNode instanceof IdentifierNode) {		
+				String functionName = ((IdentifierNode)expressionNode).getBinding().getLambdaName();
+				code.add(Call, functionPrefix + functionName);
+			}else {
+				LambdaNode lambdaNode = (LambdaNode)expressionNode;
+				ASMCodeFragment childCode = removeVoidCode(lambdaNode);
+				code.append(childCode);
+				code.add(Call, functionPrefix + callLabel);
+			}
 			
 			// take the return value from the location pointed at 
 			// by the stack counter and place it on the ASM stack

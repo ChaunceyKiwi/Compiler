@@ -530,12 +530,12 @@ public class Parser {
 		}
 		
 		Token functionInvocationToken = nowReading;
-		ParseNode identifier = parseIdentifier();
+		ParseNode expression = parseExpression();
 		expect(Punctuator.OPEN_BRACKET);
 		ParseNode expressionList = parseExpressionList();
 		expect(Punctuator.CLOSE_BRACKET);
 		
-		return FunctionInvocationNode.withChildren(functionInvocationToken, identifier, expressionList);
+		return FunctionInvocationNode.withChildren(functionInvocationToken, expression, expressionList);
 	}
 	
 	private boolean startsFunctionInvocation(Token token) {
@@ -896,19 +896,26 @@ public class Parser {
 		
 		if(startsParenthesesExpression(nowReading)) {
 			return parseParenthesesExpression();
-		}
-		else if(startsTypeCastingExpression(nowReading)) {
+		}else if(startsTypeCastingExpression(nowReading)) {
 			return parseTypeCastingExpression();
-		}
-		else if(startsArrayExpression(nowReading)) {
+		}else if(startsArrayExpression(nowReading)) {
 			return parseArrayExpression();
-		}
-		else if(startsLambda(nowReading)){
-			return parseLambda();
+		}else if(startsLambda(nowReading)){
+			ParseNode lambda = parseLambda();
+			Token token = nowReading;
+			
+			if(nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
+				readToken();
+				ParseNode exprList = parseExpressionList();
+				expect(Punctuator.CLOSE_BRACKET);
+				return FunctionInvocationNode.withChildren(token, lambda, exprList);
+			}
+			
+			return lambda;
 		}
 		else{
 			return parseLiteral();
-		}
+		}	
 	}
 	
 	private boolean startsAtomicExpression(Token token) {
@@ -1091,16 +1098,7 @@ public class Parser {
 		}
 		
 		if(startsIdentifier(nowReading)) {
-			ParseNode identifier = parseIdentifier();
-			Token token = nowReading;
-
-			if(nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
-				readToken();
-				ParseNode exprList = parseExpressionList();
-				expect(Punctuator.CLOSE_BRACKET);
-				return FunctionInvocationNode.withChildren(token, identifier, exprList);
-			}
-			return identifier;
+			return parseIdentifier();
 		}
 		
 		if(startsBooleanConstant(nowReading)) {

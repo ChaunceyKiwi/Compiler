@@ -67,8 +67,8 @@ public class BasicBlockManager {
 		for(Triplet<Integer, Integer, String> link : linkSet) {
 			BasicBlock fromBlock = getBasicBlockFromLineNumber(link.x);
 			BasicBlock toBlock = getBasicBlockFromLineNumber(link.y);
-			fromBlock.addOuterNeighbours(toBlock, link.z);
-			toBlock.addInnerNeighbours(fromBlock, link.z);
+			fromBlock.addOutNeighbors(toBlock, link.z);
+			toBlock.addInNeighbors(fromBlock, link.z);
 		}
 	}
 	

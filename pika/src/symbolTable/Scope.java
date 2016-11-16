@@ -117,7 +117,7 @@ public class Scope {
 		String functionName = token.getLexeme();
 		Type lambdaType = funcDefNode.getLambdaType();
 		
-		Binding binding = new Binding(lambdaType, token.getLocation(), functionName);
+		Binding binding = new Binding(lambdaType, token.getLocation(), functionName, functionName);
 		symbolTable.install(functionName, binding);
 		return binding;
 	}
@@ -127,7 +127,7 @@ public class Scope {
 		String functionName = token.getLexeme();
 		Type lambdaType = lambdaNode.getLambdaType();
 		
-		Binding binding = new Binding(lambdaType, token.getLocation(), functionName);
+		Binding binding = new Binding(lambdaType, token.getLocation(), functionName, functionName);
 		symbolTable.install(functionName, binding);
 		return binding;
 	}

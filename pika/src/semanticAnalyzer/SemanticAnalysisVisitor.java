@@ -100,21 +100,29 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	// FunctionInvocation
 	public void visitLeave(FunctionInvocationNode node) {
 		assert node.nChildren() == 2;
-		
-		IdentifierNode identifierNode = (IdentifierNode)node.child(0);
+		ParseNode expressionNode = node.child(0);
+		assert (expressionNode instanceof IdentifierNode) || (expressionNode instanceof LambdaNode); 
 		ExpressionListNode expressionListNode = (ExpressionListNode)node.child(1);
-		
 		List<Type> typeListFromExpNode = new ArrayList<Type>();
+		LambdaType lambdaType;
 		
 		for(int i = 0; i < expressionListNode.nChildren(); i++) {
 			typeListFromExpNode.add(expressionListNode.child(i).getType());
 		}
 		
-		LambdaType lambdaType = (LambdaType)identifierNode.getType();
+		// Either IdentifierNode or LambdaNode
+		if(expressionNode instanceof IdentifierNode) {		
+			IdentifierNode identifierNode = (IdentifierNode)expressionNode;
+			lambdaType = (LambdaType)identifierNode.getType();
+		}else {
+			LambdaNode lambdaNode = (LambdaNode)expressionNode;
+			lambdaType = (LambdaType)lambdaNode.getType();
+		}
+		
 		Type[] typeArrayForSignature = (lambdaType.getTypeList()).toArray(new Type[(lambdaType.getTypeList()).size() + 1]);
 		typeArrayForSignature[typeArrayForSignature.length-1] = lambdaType.getResultType();
 		
-		FunctionSignatures functionSignatures = new FunctionSignatures(identifierNode.getToken().getLexeme(),
+		FunctionSignatures functionSignatures = new FunctionSignatures(expressionNode.getToken().getLexeme(),
 				new FunctionSignature(1, true, typeArrayForSignature));
 		
 		setTypeAndCheckSignature(node, functionSignatures, typeListFromExpNode);
@@ -187,8 +195,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		
 		// If identifier has already been declared in current scope, report error.
 		scope.getSymbolTable().errorIfAlreadyDefined(identifier.getToken());
-		
-
 		
 		if(initializer instanceof LambdaNode) {
 			Binding binding = scope.createFunctionBinding(identifier, (LambdaNode)initializer);
