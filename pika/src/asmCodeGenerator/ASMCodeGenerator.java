@@ -370,7 +370,7 @@ public class ASMCodeGenerator {
 				newValueCode(node);
 			}
 			
-			String functionName = ((IdentifierNode)node.child(0)).getBinding().getLambdaName();
+			String functionName = ((IdentifierNode)node.child(0)).getBinding().getLexeme();
 			ParseNode exprList = node.child(1);
 			
 			code.add(Label, beginLabel);

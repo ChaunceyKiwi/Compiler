@@ -318,7 +318,7 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        0                         
+        DataZ        4                         
         DLabel       reg1-func                 
         DataI        0                         
         PushD        reg1-func                 
@@ -354,10 +354,8 @@
         PushD        reg-counter               
         Exchange                               
         StoreI                                 
-        Label        $$main                    
-        Jump         -function-definition-2-end 
-        Label        $function-lambda          
-        Label        -function-definition-2-dynamic-link 
+        Label        $function-mutiply1        
+        Label        -function-definition-3-dynamic-link 
         PushD        $frame-pointer            
         LoadI                                  
         PushD        $stack-pointer            
@@ -366,20 +364,20 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -function-definition-2-return-address 
+        Label        -function-definition-3-return-address 
         PushD        $stack-pointer            
         LoadI                                  
         PushI        -8                        
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        -function-definition-2-move-fp-to-sp 
+        Label        -function-definition-3-move-fp-to-sp 
         PushD        $stack-pointer            
         LoadI                                  
         PushD        $frame-pointer            
         Exchange                               
         StoreI                                 
-        Label        -function-definition-2-subtract-frame-size 
+        Label        -function-definition-3-subtract-frame-size 
         PushD        $stack-pointer            
         LoadI                                  
         PushI        8                         
@@ -387,27 +385,61 @@
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
-        Label        -function-definition-2-function-body-process 
+        Label        -function-definition-3-function-body-process 
+        Label        -function-invocation-2-begin 
         PushD        $frame-pointer            
         LoadI                                  
         PushI        4                         
         Add                                    %% a
         LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
         PushD        $frame-pointer            
         LoadI                                  
         PushI        0                         
         Add                                    %% b
         LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Call         $function-sum2            
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
         Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-2-end 
         Jump         --block-statement--1-end-of-block-statement 
         Label        --block-statement--1-end-of-block-statement 
-        Label        -function-definition-2-push-return-address 
+        Label        -function-definition-3-push-return-address 
         PushD        $frame-pointer            
         LoadI                                  
         PushI        -8                        
         Add                                    
         LoadI                                  
-        Label        -function-definition-2-replace-frame-pointer 
+        Label        -function-definition-3-replace-frame-pointer 
         PushD        $frame-pointer            
         LoadI                                  
         PushI        -4                        
@@ -417,7 +449,7 @@
         Exchange                               
         StoreI                                 
         Exchange                               
-        Label        -function-definition-2-increment-stack-pointer 
+        Label        -function-definition-3-increment-stack-pointer 
         PushD        $stack-pointer            
         LoadI                                  
         PushI        16                        
@@ -425,7 +457,7 @@
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
-        Label        -function-definition-2-decrement-stack-pointer 
+        Label        -function-definition-3-decrement-stack-pointer 
         PushD        $stack-pointer            
         LoadI                                  
         PushI        4                         
@@ -440,9 +472,98 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        -function-definition-2-end 
-        Label        -function-invocation-3-begin 
-        PushI        5                         
+        Label        -function-definition-3-end 
+        Label        $function-sum2            
+        Label        -function-definition-5-dynamic-link 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -function-definition-5-return-address 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -function-definition-5-move-fp-to-sp 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-definition-5-subtract-frame-size 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        8                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-definition-5-function-body-process 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        0                         
+        Add                                    %% b
+        LoadI                                  
+        Multiply                               
+        Jump         --block-statement--4-end-of-block-statement 
+        Label        --block-statement--4-end-of-block-statement 
+        Label        -function-definition-5-push-return-address 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        LoadI                                  
+        Label        -function-definition-5-replace-frame-pointer 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Exchange                               
+        Label        -function-definition-5-increment-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        16                        
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-definition-5-decrement-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Return                                 
+        Label        -function-definition-5-end 
+        Label        $$main                    
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% nice
+        Label        -function-invocation-6-begin 
+        PushI        3                         
         PushD        $stack-pointer            
         LoadI                                  
         PushI        4                         
@@ -454,7 +575,7 @@
         LoadI                                  
         Exchange                               
         StoreI                                 
-        PushI        6                         
+        PushI        7                         
         PushD        $stack-pointer            
         LoadI                                  
         PushI        4                         
@@ -466,7 +587,7 @@
         LoadI                                  
         Exchange                               
         StoreI                                 
-        Call         $function-lambda          
+        Call         $function-mutiply1        
         PushD        $stack-pointer            
         LoadI                                  
         LoadI                                  
@@ -477,7 +598,12 @@
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
-        Label        -function-invocation-3-end 
+        Label        -function-invocation-6-end 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% nice
+        LoadI                                  
         PushD        $print-format-integer     
         Printf                                 
         Halt                                   
@@ -895,28 +1021,28 @@
         Return                                 
         DLabel       $heap-memory              
         Label        GCDCalculation            
-        Label        --GCD-Calculation--4--function-begin- 
+        Label        --GCD-Calculation--7--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--4--check-initial-zero 
+        JumpTrue     --GCD-Calculation--7--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--4--function-end- 
-        Label        --GCD-Calculation--4--check-initial-zero 
-        Label        --GCD-Calculation--4--loop-begin- 
+        Jump         --GCD-Calculation--7--function-end- 
+        Label        --GCD-Calculation--7--check-initial-zero 
+        Label        --GCD-Calculation--7--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--4--loop-end- 
+        JumpFalse    --GCD-Calculation--7--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--4--loop-end- 
+        JumpFalse    --GCD-Calculation--7--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--4--positive-case- 
-        Label        --GCD-Calculation--4--not-positive-case- 
+        JumpPos      --GCD-Calculation--7--positive-case- 
+        Label        --GCD-Calculation--7--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -925,8 +1051,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--4--join- 
-        Label        --GCD-Calculation--4--positive-case- 
+        Jump         --GCD-Calculation--7--join- 
+        Label        --GCD-Calculation--7--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -935,11 +1061,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--4--join- 
-        Label        --GCD-Calculation--4--join- 
-        Jump         --GCD-Calculation--4--loop-begin- 
-        Label        --GCD-Calculation--4--loop-end- 
+        Jump         --GCD-Calculation--7--join- 
+        Label        --GCD-Calculation--7--join- 
+        Jump         --GCD-Calculation--7--loop-begin- 
+        Label        --GCD-Calculation--7--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--4--function-end- 
+        Label        --GCD-Calculation--7--function-end- 
         Exchange                               
         Return                                 
