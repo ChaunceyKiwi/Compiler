@@ -38,17 +38,16 @@ public class ReturnStatementNode extends ParseNode {
 	}
 	
 	public String getTargetLabelForReturn(){
-		return ((BlockStatementNode)this.getParent()).getTargetLabel();
+		return ((BlockStatementNode)lambdaNode.child(1)).getTargetLabel();
 	}
 	
-	public static ParseNode findFunctionDefinitionNode(ParseNode node) {
-		// Track up the node to find the functionDefinitionNode
+	public ParseNode findLambdaNode(ParseNode node) {
+		// Track up the node to find the lambdaNode
 		for(ParseNode current : node.pathToRoot()) {
-			if(current instanceof FunctionDefinitionNode) {
+			if(current instanceof LambdaNode) {
 				return current;
 			}
 		}
-	
 		return null; 
 	}
 	

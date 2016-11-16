@@ -144,7 +144,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	public void visitLeave(ReturnStatementNode node) {
 		assert node.nChildren() <= 1;
 				
-		ParseNode lambdaNode = node.getParent().getParent();
+		ParseNode lambdaNode = node.findLambdaNode(node);
 		
 		if(lambdaNode instanceof LambdaNode) {
 			node.setLambdaNode((LambdaNode)lambdaNode);

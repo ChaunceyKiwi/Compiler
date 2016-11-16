@@ -224,14 +224,11 @@ public class ASMCodeGenerator {
 		}
 		
 		public void visitEnter(BlockStatementNode node){
-			for(ParseNode child : node.getChildren()) {
-				if(child instanceof ReturnStatementNode) {
-					Labeller labeller = new Labeller("-block-statement-");
-					String endLabel = labeller.newLabel("end-of-block-statement");			
-					node.setTargetLabel(endLabel);
-					break;
-				}
-			}
+			if(node.getParent() instanceof LambdaNode) {
+				Labeller labeller = new Labeller("-block-statement-");
+				String endLabel = labeller.newLabel("end-of-block-statement");			
+				node.setTargetLabel(endLabel);
+			}			
 		}
 		
 		public void visitLeave(BlockStatementNode node) {

@@ -1,4 +1,13 @@
+func pax<int a, int b> -> int {
+	if(a < b) {
+		return a.
+	}
+	return b.
+}
+
 exec {
-	var nice := <int a, int b> -> int {return a * b.} (6, 6).
-	print nice.
+	const a := 11.
+	const b := 14.
+
+	print pax(a,b).
 }

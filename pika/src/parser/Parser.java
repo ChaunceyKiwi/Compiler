@@ -1098,7 +1098,16 @@ public class Parser {
 		}
 		
 		if(startsIdentifier(nowReading)) {
-			return parseIdentifier();
+			ParseNode identifier = parseIdentifier();
+			Token token = nowReading;
+
+			if(nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
+				readToken();
+				ParseNode exprList = parseExpressionList();
+				expect(Punctuator.CLOSE_BRACKET);
+				return FunctionInvocationNode.withChildren(token, identifier, exprList);
+			}
+			return identifier;
 		}
 		
 		if(startsBooleanConstant(nowReading)) {
