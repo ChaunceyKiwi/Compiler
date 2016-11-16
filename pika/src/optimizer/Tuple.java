@@ -11,6 +11,7 @@ public class Tuple<X, Y> {
     
     @Override
     public String toString(){
+    	// infoString as <x, y>
     	return "<" + x +", "+ y + ">";
     }
 }
