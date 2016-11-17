@@ -1,6 +1,7 @@
 package optimizer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,16 +14,17 @@ import asmCodeGenerator.codeStorage.ASMOpcode;
 public class BasicBlockManager {
 	private List<BasicBlock> blocks;
 	private BasicBlock startBlock;
+	private int sizeInBlocks = 0;
 	
-	private static Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String,Integer>>();
-	private static Set<Tuple<String, Integer>> jumpSet  = new HashSet<Tuple<String,Integer>>();
-	private static Set<Triplet<String, String, Integer>> branchSet  = new HashSet<Triplet<String, String, Integer>>();
-	private static Set<Integer> blockStartSet = new HashSet<Integer>();
-	private static Set<Integer> blockEndSet = new HashSet<Integer>();
-	private static Set<Tuple<Integer,Integer>> blockSet = new HashSet<Tuple<Integer,Integer>>();
-	private static Set<Triplet<Integer, Integer, String>> linkSet  = new HashSet<Triplet<Integer, Integer, String>>();
-	private static Set<Triplet<Integer, Integer, BasicBlock>> blockRange  = new HashSet<Triplet<Integer, Integer, BasicBlock>>();
-
+	private Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String,Integer>>();
+	private Set<Tuple<String, Integer>> jumpSet  = new HashSet<Tuple<String,Integer>>();
+	private Set<Triplet<String, String, Integer>> branchSet  = new HashSet<Triplet<String, String, Integer>>();
+	private Set<Integer> blockStartSet = new HashSet<Integer>();
+	private Set<Integer> blockEndSet = new HashSet<Integer>();
+	private Set<Triplet<Integer, Integer, Integer>> blockSet = new HashSet<Triplet<Integer,Integer,Integer>>();
+	private Set<Triplet<Integer, Integer, String>> linkSet  = new HashSet<Triplet<Integer, Integer, String>>();
+	private Set<Triplet<Integer, Integer, BasicBlock>> blockRange  = new HashSet<Triplet<Integer, Integer, BasicBlock>>();
+	private int distanceTable[][];
 	
 	public BasicBlockManager() {
 		this.blocks = new ArrayList<BasicBlock>();
@@ -39,6 +41,7 @@ public class BasicBlockManager {
 	
 	public void add(BasicBlock block) {
 		this.blocks.add(block);
+		this.sizeInBlocks++;
 	}
 	
 	// Builder function
@@ -50,11 +53,35 @@ public class BasicBlockManager {
 		buildBlockSet(fragment);
 		buildBlocks(fragment);
 		setNeighbourForBlocks();
+		buildRelationTable();
+		calculateBlockDistance();
+	}
+	
+	public void buildRelationTable() {
+		distanceTable = new int[sizeInBlocks][sizeInBlocks];
+		for(int i = 0; i < sizeInBlocks; i++) {
+			for(int j = 0; j < sizeInBlocks; j++) {
+				if(i == j) {
+					distanceTable[i][j] = 0;
+				}else {
+					distanceTable[i][j] = Integer.MAX_VALUE;
+				}
+			}
+		}
+		
+		for(BasicBlock basicBlock1 : blocks) {
+			for(Tuple<BasicBlock, String> tuple : basicBlock1.getInNeighbors()) {
+				distanceTable[tuple.x.getBlockIndex()-1][basicBlock1.getBlockIndex()-1] = 1;
+			}
+			for(Tuple<BasicBlock, String> tuple : basicBlock1.getOutNeighbors()) {
+				distanceTable[basicBlock1.getBlockIndex()-1][tuple.x.getBlockIndex()-1] = 1;
+			}
+		}
 	}
 	
 	private void buildBlocks(ASMCodeFragment fragment) {
-		for(Tuple<Integer,Integer> tuple : blockSet) {
-			BasicBlock block = new BasicBlock(getCodeInRange(fragment, tuple.x, tuple.y));
+		for(Triplet<Integer,Integer, Integer> tuple : blockSet) {
+			BasicBlock block = new BasicBlock(getCodeInRange(fragment, tuple.x, tuple.y), tuple.z);
 			this.add(block);
 			blockRange.add(new Triplet<Integer, Integer, BasicBlock>(tuple.x, tuple.y, block));
 			if(tuple.x == 1) {
@@ -180,6 +207,7 @@ public class BasicBlockManager {
 	
 	private void buildBlockSet(ASMCodeFragment fragment) {
 		int lineNumCount = 1;
+		int blockIndex = 1;
 		int begin = 0;
 		int end = 0;
 		boolean previousIsJump = false;
@@ -194,7 +222,8 @@ public class BasicBlockManager {
 				if(blockEndSet.contains(lineNumCount)) {
 					end = lineNumCount;
 					if(blockStartSet.contains(begin)) {
-						blockSet.add(new Tuple<Integer, Integer>(begin, end));
+						blockSet.add(new Triplet<Integer, Integer, Integer>(begin, end, blockIndex));
+						blockIndex++;
 						begin++;
 						end++;
 					}
@@ -221,5 +250,22 @@ public class BasicBlockManager {
 				instruction.getOpcode() == ASMOpcode.JumpFNeg ||
 				instruction.getOpcode() == ASMOpcode.JumpFPos ||
 				instruction.getOpcode() == ASMOpcode.JumpFZero;
+	}
+	
+	private void calculateBlockDistance() {		
+		for(int k = 0; k < sizeInBlocks; k++) {
+			for(int i = 0; i < sizeInBlocks; i++) {
+				for(int j = 0; j < sizeInBlocks; j++) {
+					int distanceIJ = distanceTable[i][j];
+					int distanceIK = distanceTable[i][k];
+					int distanceKJ = distanceTable[k][j];
+					if(distanceIJ > distanceIK && distanceIJ > distanceKJ) {
+						if(distanceIJ > distanceIK + distanceKJ) {
+							distanceTable[i][j] = distanceIK + distanceKJ;
+						}
+					}
+				}
+			}
+		}
 	}
 }

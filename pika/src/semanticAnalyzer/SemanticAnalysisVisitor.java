@@ -28,7 +28,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	@Override
 	public void visitEnter(ProgramNode node) {
 		enterScope(node);
-		//enterProgramScope(node);
 	}
 	
 	@Override
@@ -39,7 +38,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	@Override
 	public void visitEnter(BlockStatementNode node) {
 		enterScope(node);
-		//enterSubscope(node);
 	}
 	
 	@Override
@@ -49,17 +47,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	///////////////////////////////////////////////////////////////////////////
 	// helper methods for scoping.
-//	private void enterProgramScope(ParseNode node) {
-//		Scope scope = Scope.createProgramScope();
-//		node.setScope(scope);
-//	}
-//	
-//	private void enterSubscope(ParseNode node) {
-//		Scope baseScope = node.getLocalScope();
-//		Scope scope = baseScope.createSubscope();
-//		node.setScope(scope);
-//	}	
-	
 	private void enterScope(ParseNode node) {
 		node.getScope().enter();
 	}
@@ -180,9 +167,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 			variableReturnDifferDefinitionError(node);
 		}	
 	}
-	
-	
-	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// Statements

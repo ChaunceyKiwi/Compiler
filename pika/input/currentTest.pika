@@ -3,5 +3,6 @@ func fin<int a, int b> -> int {
 }
 
 exec {
-	var gg := (1 + 2)(3, 4).
+	var gg := fin(3, 4).
+	print gg.
 }

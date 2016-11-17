@@ -4,10 +4,10 @@ import asmCodeGenerator.codeStorage.ASMCodeFragment;
 
 public class Optimizer {
 	private ASMCodeFragment fragment;
-//	private static BasicBlockManager basicBlockManager = new BasicBlockManager();
+	private static BasicBlockManager basicBlockManager = new BasicBlockManager();
 
 	public static ASMCodeFragment optimize(ASMCodeFragment fragment) {
-//		basicBlockManager.generateBasicBlocks(fragment);
+		basicBlockManager.generateBasicBlocks(fragment);
 		return fragment;
 	}
 	
