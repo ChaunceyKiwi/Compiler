@@ -103,6 +103,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		ParseNode expressionNode = node.child(0);
 		assert (expressionNode instanceof IdentifierNode) || (expressionNode instanceof LambdaNode); 
 		ExpressionListNode expressionListNode = (ExpressionListNode)node.child(1);
+		FunctionSignatures functionSignatures;
 		List<Type> typeListFromExpNode = new ArrayList<Type>();
 		LambdaType lambdaType;
 		
@@ -113,19 +114,29 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 		// Either IdentifierNode or LambdaNode
 		if(expressionNode instanceof IdentifierNode) {		
 			IdentifierNode identifierNode = (IdentifierNode)expressionNode;
-			lambdaType = (LambdaType)identifierNode.getType();
+			Type type = identifierNode.getType();
+			if(type instanceof LambdaType) {
+				lambdaType = (LambdaType)type; 
+				functionSignatures = new FunctionSignatures(expressionNode.getToken().getLexeme(),
+						getSignaturesFromTypeArray(lambdaType));
+				setTypeAndCheckSignature(node, functionSignatures, typeListFromExpNode);
+			}else {
+				functionInvocationExpressionNotLambdaTypeError(node);
+			}
 		}else {
 			LambdaNode lambdaNode = (LambdaNode)expressionNode;
 			lambdaType = (LambdaType)lambdaNode.getType();
+			functionSignatures = new FunctionSignatures(expressionNode.getToken().getLexeme(),
+					getSignaturesFromTypeArray(lambdaType));
+			setTypeAndCheckSignature(node, functionSignatures, typeListFromExpNode);
 		}
-		
+	}
+	
+	private FunctionSignature getSignaturesFromTypeArray(LambdaType lambdaType) {
 		Type[] typeArrayForSignature = (lambdaType.getTypeList()).toArray(new Type[(lambdaType.getTypeList()).size() + 1]);
 		typeArrayForSignature[typeArrayForSignature.length-1] = lambdaType.getResultType();
 		
-		FunctionSignatures functionSignatures = new FunctionSignatures(expressionNode.getToken().getLexeme(),
-				new FunctionSignature(1, true, typeArrayForSignature));
-		
-		setTypeAndCheckSignature(node, functionSignatures, typeListFromExpNode);
+		return new FunctionSignature(1, true, typeArrayForSignature);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -588,6 +599,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	
 	private void expressionNoElementError(ParseNode node) {
 		logError(node.getToken().getLexeme() + " expression no element Error");
+	}
+	
+	private void functionInvocationExpressionNotLambdaTypeError(ParseNode node) {
+		logError(node.getToken().getLexeme() + " function invocation expression not lambda type Error");
 	}
 	
 	private void assignmentToConstantError(ParseNode node) {

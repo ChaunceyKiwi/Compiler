@@ -41,9 +41,11 @@ public class SemanticAnalysisPreVisitor extends ParseNodeVisitor.Default{
 	
 	private void setBinding(FunctionDefinitionNode node) {
 		Scope scope = node.getRootScope();
-		Binding binding = scope.createFunctionBinding(node);
-		IdentifierNode identifierNode = (IdentifierNode)node.child(0);
+		IdentifierNode identifierNode = (IdentifierNode)node.child(0);		
 		
+		scope.getSymbolTable().errorIfAlreadyDefined(identifierNode.getToken());
+		
+		Binding binding = scope.createFunctionBinding(node);
 		identifierNode.setBinding(binding);
 	}
 	
