@@ -8,7 +8,6 @@ import asmCodeGenerator.codeStorage.ASMCodeChunk;;
 public class BasicBlock {
 	private ASMCodeChunk codeChunk;
 	private boolean isTrimmed;
-	private boolean hasMutipleOutEdges;
 	private int blockIndex;
 	private List<Tuple<BasicBlock, String>> inNeighbors;
 	private List<Tuple<BasicBlock, String>> outNeighbors;
@@ -17,7 +16,6 @@ public class BasicBlock {
     public BasicBlock(ASMCodeChunk code, int blockIndex) { 
         this.codeChunk = code;
         this.isTrimmed = false;
-        this.hasMutipleOutEdges = false;
         this.inNeighbors = new ArrayList<Tuple<BasicBlock, String>>();
         this.outNeighbors = new ArrayList<Tuple<BasicBlock, String>>();
         this.blockIndex = blockIndex;
@@ -31,27 +29,28 @@ public class BasicBlock {
     	inNeighbors.add(new Tuple<BasicBlock, String>(block, condition));
     }
     
+    public void updateInNeighbors(List<Tuple<BasicBlock, String>> newInNeighbors) {
+    	inNeighbors = newInNeighbors;
+    }
+    
     public List<Tuple<BasicBlock, String>> getInNeighbors(){
     	return inNeighbors;
     }
     
     public void addOutNeighbors(BasicBlock block, String condition) {
     	outNeighbors.add(new Tuple<BasicBlock, String>(block, condition));
-    	if(outNeighbors.size() > 1) {
-    		this.hasMutipleOutEdges = true;
-    	}
+    }
+    
+    public void updateOutNeighbors(List<Tuple<BasicBlock, String>> newOutNeighbors) {
+    	outNeighbors = newOutNeighbors;
     }
     
     public List<Tuple<BasicBlock, String>> getOutNeighbors(){
     	return outNeighbors;
     } 
     
-    public boolean hasMultipleOutEdges() {
-    	return this.hasMutipleOutEdges;
-    }
-    
-    public void setAsTrimed() {
-    	this.isTrimmed = true;
+    public void setAsTrimed(Boolean isTrimmed) {
+    	this.isTrimmed = isTrimmed;
     }    
 
     public boolean hasBeenTrimed() {

@@ -42,6 +42,12 @@ public class ASMCodeChunk {
 		instructions.add(instruction);
 	}
 	
+	public void append(ASMCodeChunk codeChunk) {
+		for(ASMInstruction instruction : codeChunk.instructions) {
+			instructions.add(instruction);
+		}
+	}
+	
 	public void remove(ASMInstruction instruction) {
 		instructions.remove(instruction);
 	}

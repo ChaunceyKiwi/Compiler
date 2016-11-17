@@ -54,6 +54,41 @@ public class BasicBlockManager {
 		trimBlocks();
 		setNeighbourForBlocks();
 		unreachableCodeElimination();
+		blockMerge();
+	}
+	
+	public void blockMerge() {
+		boolean flag = true;
+		
+		while(flag) {
+			flag = false;
+			for(BasicBlock basicBlock : blocks) {
+				List<Tuple<BasicBlock, String>> inNeighbors = basicBlock.getInNeighbors();
+				List<Tuple<BasicBlock, String>> outNeighbors = basicBlock.getOutNeighbors();
+				if(inNeighbors.size() == 1) {
+					BasicBlock inNeighbor = inNeighbors.get(0).x;
+					if(inNeighbor.getOutNeighbors().size() == 1) {
+						MergeBlock(inNeighbor, basicBlock);
+						flag = true;
+						break;
+					}
+				}else if (outNeighbors.size() == 1){
+					BasicBlock outNeighbor = outNeighbors.get(0).x;
+					if(outNeighbor.getInNeighbors().size() == 1) {
+						MergeBlock(basicBlock, outNeighbor);
+						flag = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	public void MergeBlock(BasicBlock basicBlock1, BasicBlock basicBlock2) {
+		basicBlock1.updateOutNeighbors(basicBlock2.getOutNeighbors());
+		basicBlock1.setAsTrimed(basicBlock1.hasBeenTrimed() && basicBlock2.hasBeenTrimed());
+		basicBlock1.getCodeChunk().append(basicBlock2.getCodeChunk());
+		blocks.remove(basicBlock2);
 	}
 	
 	public void unreachableCodeElimination() {
@@ -97,7 +132,7 @@ public class BasicBlockManager {
 				}
 			}
 			basicBlock.updateCodeChunk(trimmedCodeChunk);
-			basicBlock.setAsTrimed();
+			basicBlock.setAsTrimed(true);
 		}
 	}
 	
