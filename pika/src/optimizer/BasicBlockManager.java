@@ -55,6 +55,110 @@ public class BasicBlockManager {
 		setNeighbourForBlocks();
 		unreachableCodeElimination();
 		blockMerge();
+		cloningToSiplify();
+		branchElimination();
+		blockMerge();
+		updateInnerNeighbors();
+	}
+	
+	public void updateInnerNeighbors() {
+		for(BasicBlock basicBlock : blocks) {
+			List<Tuple<BasicBlock, String>> neighborsToRemove = new ArrayList<Tuple<BasicBlock, String>>();
+			for(Tuple<BasicBlock, String> inNeighbor : basicBlock.getInNeighbors()) {				
+				if(!blocks.contains(inNeighbor.x) || !inNeighbor.x.isOutNeighbor(basicBlock)) {
+					neighborsToRemove.add(inNeighbor);
+				}
+			}
+			for(Tuple<BasicBlock, String> neighborToRemove : neighborsToRemove) {
+				basicBlock.getInNeighbors().remove(neighborToRemove);
+			}
+		}
+	}
+	
+	public void branchElimination() {
+		for(BasicBlock basicBlock : blocks) {
+			if(basicBlock.hasBranchOutNeighbor()) {
+				List<Tuple<BasicBlock, String>> outNeighbors = basicBlock.getOutNeighbors();
+				List<Tuple<BasicBlock, String>> neighborsToRemove = new ArrayList<Tuple<BasicBlock, String>>();
+				for(Tuple<BasicBlock, String> outNeighbor : outNeighbors) {
+					ASMInstruction instr = basicBlock.getLastInstruction();
+					String branch = outNeighbor.y;
+					
+					if(instr.getOpcode() == ASMOpcode.PushI) {
+						if(Integer.parseInt(instr.getArgument().toString()) == 0) {
+							if(branch.equals("JumpFalse")) {
+								outNeighbors = new ArrayList<Tuple<BasicBlock, String>>();
+								outNeighbors.add(new Tuple<BasicBlock, String>(outNeighbor.x, "Jump"));
+								basicBlock.updateOutNeighbors(outNeighbors);
+								updateInnerNeighbors();
+								break;
+							}else if(branch.equals("JumpTrue")) {
+								neighborsToRemove.add(outNeighbor);
+								updateInnerNeighbors();
+							}
+						}else{
+							if(branch.equals("JumpFalse")) {
+								neighborsToRemove.add(outNeighbor);
+								updateInnerNeighbors();
+							}else if(branch.equals("JumpTrue")) {
+								outNeighbors = new ArrayList<Tuple<BasicBlock, String>>();
+								outNeighbors.add(new Tuple<BasicBlock, String>(outNeighbor.x, "Jump"));
+								basicBlock.updateOutNeighbors(outNeighbors);
+								updateInnerNeighbors();
+								break;
+							}
+						}
+					}
+				}
+				
+				for(Tuple<BasicBlock, String> neighborToRemove : neighborsToRemove) {
+					outNeighbors.remove(neighborToRemove);
+				}
+			}
+		}
+	}
+	
+	public void cloningToSiplify() {
+		List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
+		
+		for(BasicBlock basicBlock : blocks) {
+			// Find a empty block with a branch end
+			if(basicBlock.getCodeChunk().instructions.size() == 0 && basicBlock.hasBranchOutNeighbor()) {
+				List<Tuple<BasicBlock, String>> inNeighbors = basicBlock.getInNeighbors();
+				// Two or more innner neighbors, all of which have only one out-neighbor
+				if(inNeighbors.size() >= 2 && allInNeighborsHaveOnlyOneOutNeighbor(inNeighbors)){
+					blocksToBeRemoved.add(basicBlock);
+					for(Tuple<BasicBlock, String> inNeighbor : inNeighbors) {
+						BasicBlock basicBlockCopy = new BasicBlock(basicBlock);
+						AppendBlock(inNeighbor.x, basicBlockCopy);
+					}
+
+					for(Tuple<BasicBlock, String> outNeighbor :basicBlock.getOutNeighbors()) {
+						List<Tuple<BasicBlock, String>> neighborsToRemove = new ArrayList<Tuple<BasicBlock, String>>();
+						for(Tuple<BasicBlock, String> inNeighbor :outNeighbor.x.getInNeighbors()) {
+							if(inNeighbor.x.getBlockIndex() == basicBlock.getBlockIndex()) {
+								neighborsToRemove.add(inNeighbor);
+							}
+						}
+						for(Tuple<BasicBlock, String> inNeighbor : neighborsToRemove) {
+							outNeighbor.x.getInNeighbors().remove(inNeighbor);
+						}
+					}
+				}
+			}
+		}
+		for(BasicBlock block : blocksToBeRemoved) {
+			this.blocks.remove(block);
+		}
+	}
+	
+	public boolean allInNeighborsHaveOnlyOneOutNeighbor(List<Tuple<BasicBlock, String>> inNeighbors) {
+		for(Tuple<BasicBlock, String> inNeighbor : inNeighbors) {
+			if(inNeighbor.x.getOutNeighbors().size() != 1) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public void blockMerge() {
@@ -85,11 +189,28 @@ public class BasicBlockManager {
 	}
 	
 	public void MergeBlock(BasicBlock basicBlock1, BasicBlock basicBlock2) {
-		basicBlock1.updateOutNeighbors(basicBlock2.getOutNeighbors());
-		basicBlock1.setAsTrimed(basicBlock1.hasBeenTrimed() && basicBlock2.hasBeenTrimed());
-		basicBlock1.getCodeChunk().append(basicBlock2.getCodeChunk());
+		AppendBlock(basicBlock1, basicBlock2);
 		blocks.remove(basicBlock2);
 	}
+	
+	public void AppendBlock(BasicBlock basicBlock1, BasicBlock basicBlock2) {		
+		basicBlock1.updateOutNeighbors(basicBlock2.getOutNeighbors());
+		for(Tuple<BasicBlock, String> outNeighbor : basicBlock1.getOutNeighbors()) {
+			List<Tuple<BasicBlock, String>> neighborsToAdd = new ArrayList<Tuple<BasicBlock, String>>();
+			for(Tuple<BasicBlock, String> innerNeighbor : outNeighbor.x.getInNeighbors()) {
+				if(innerNeighbor.x.getBlockIndex() == basicBlock2.getBlockIndex()) {
+					neighborsToAdd.add(new Tuple<BasicBlock, String>(basicBlock1, innerNeighbor.y));
+				}
+			}
+			for(Tuple<BasicBlock, String> neighborToAdd : neighborsToAdd) {
+				outNeighbor.x.getInNeighbors().add(neighborToAdd);
+			}
+		}
+		basicBlock1.setAsTrimed(basicBlock1.hasBeenTrimed() && basicBlock2.hasBeenTrimed());
+		basicBlock1.getCodeChunk().append(basicBlock2.getCodeChunk());
+	}
+	
+	
 	
 	public void unreachableCodeElimination() {
 		buildRelationTable();
