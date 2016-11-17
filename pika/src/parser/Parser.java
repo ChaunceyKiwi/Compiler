@@ -383,7 +383,7 @@ public class Parser {
 		}
 		
 		if(startsArrayIndexingExpression(nowReading)) {
-			return parseArrayIndexingExpression();
+			return parseOperatorExpression();
 		}else if (startsParenthesesExpression(nowReading)){
 			return parseParenthesesExpression();
 		}else{
@@ -844,10 +844,10 @@ public class Parser {
 		if(startsUnaryOperator(nowReading)) {
 			Token unaryToken = nowReading;
 			readToken();
-			ParseNode right = parseArrayIndexingExpression();
+			ParseNode right = parseOperatorExpression();
 			return UnaryOperatorNode.withChildren(unaryToken, right);
 		}else {
-			ParseNode right = parseArrayIndexingExpression();
+			ParseNode right = parseOperatorExpression();
 			return right;
 		}
 	}
@@ -861,24 +861,32 @@ public class Parser {
 	}
 	
 	///////////////////////////////////////////////////////////
-	// ArrayIndexingExpression
+	// OperatorExpression
 	
-	private ParseNode parseArrayIndexingExpression(){
+	private ParseNode parseOperatorExpression(){
 		if(!startsArrayIndexingExpression(nowReading)){
 			return syntaxErrorNode("arrayIndexingExpression");
 		}
 		
-		ParseNode expressionToBeIndexed = parseAtomicExpression();
+		ParseNode expressionToBeOperated = parseAtomicExpression();
 		Token nextToken = nowReading;
 		
 		while(nowReading.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
 			expect(Punctuator.OPEN_SQUARE_BRACKET);
 			ParseNode expressionToGetIndex = parseExpression();
 			expect(Punctuator.CLOSE_SQUARE_BRACKET);	
-			expressionToBeIndexed = ArrayIndexingNode.withChildren(nextToken, expressionToBeIndexed, expressionToGetIndex);
+			expressionToBeOperated = ArrayIndexingNode.withChildren(nextToken, expressionToBeOperated, expressionToGetIndex);
 		}
+		
+		while(nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
+			expect(Punctuator.OPEN_BRACKET);
+			ParseNode expressionToGetArgument = parseExpressionList();
+			expect(Punctuator.CLOSE_BRACKET);	
+			expressionToBeOperated = FunctionInvocationNode.withChildren(nextToken, expressionToBeOperated, expressionToGetArgument);
+		}
+		
 
-		return expressionToBeIndexed;
+		return expressionToBeOperated;
 	}
 	
 	private boolean startsArrayIndexingExpression(Token token){

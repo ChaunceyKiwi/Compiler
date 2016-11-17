@@ -101,7 +101,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 	public void visitLeave(FunctionInvocationNode node) {
 		assert node.nChildren() == 2;
 		ParseNode expressionNode = node.child(0);
-		assert (expressionNode instanceof IdentifierNode) || (expressionNode instanceof LambdaNode); 
+		if(!((expressionNode instanceof IdentifierNode) || (expressionNode instanceof LambdaNode))){
+			functionInvocationExpressionNotLambdaTypeError(node);
+		}
+		
 		ExpressionListNode expressionListNode = (ExpressionListNode)node.child(1);
 		FunctionSignatures functionSignatures;
 		List<Type> typeListFromExpNode = new ArrayList<Type>();
