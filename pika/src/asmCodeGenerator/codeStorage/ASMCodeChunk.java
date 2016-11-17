@@ -42,6 +42,10 @@ public class ASMCodeChunk {
 		instructions.add(instruction);
 	}
 	
+	public void remove(ASMInstruction instruction) {
+		instructions.remove(instruction);
+	}
+	
 	static private String terminator = System.getProperty("line.separator");
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();

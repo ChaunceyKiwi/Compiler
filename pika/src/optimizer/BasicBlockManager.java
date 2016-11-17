@@ -1,7 +1,6 @@
 package optimizer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,9 +51,54 @@ public class BasicBlockManager {
 		buildBlockStartEndSet();
 		buildBlockSet(fragment);
 		buildBlocks(fragment);
+		trimBlocks();
 		setNeighbourForBlocks();
+		unreachableCodeElimination();
+	}
+	
+	public void unreachableCodeElimination() {
 		buildRelationTable();
 		calculateBlockDistance();
+		int startIndex = startBlock.getBlockIndex() - 1;
+		List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
+
+		for(int i = 0; i < sizeInBlocks; i++) {
+			if(distanceTable[startIndex][i] == Integer.MAX_VALUE) {
+				for(BasicBlock basicBlock : blocks) {
+					if(basicBlock.getBlockIndex() - 1 == i) {
+						blocksToBeRemoved.add(basicBlock);
+					}
+				}
+			}
+		}
+		
+		for(BasicBlock block : blocksToBeRemoved) {
+			this.blocks.remove(block);
+		}
+	}
+	
+	public void trimBlocks() {
+		for(BasicBlock basicBlock : blocks) {
+			ASMCodeChunk trimmedCodeChunk = new ASMCodeChunk();
+			ASMCodeChunk asmCodeChunk = basicBlock.getCodeChunk();
+			boolean isStart = true;
+			
+			// Trim  jump and branch at the end
+			for(ASMInstruction instr : asmCodeChunk.instructions) {
+				// Skip first few labels
+				if(isStart && (instr.getOpcode() == ASMOpcode.Label)) {
+					continue;
+				}else {
+					isStart = false;
+				}
+				
+				if(instr.getOpcode() != ASMOpcode.Jump && (!isBranchInstruction(instr)) && (!isStart)) {
+					trimmedCodeChunk.add(instr);
+				}
+			}
+			basicBlock.updateCodeChunk(trimmedCodeChunk);
+			basicBlock.setAsTrimed();
+		}
 	}
 	
 	public void buildRelationTable() {
