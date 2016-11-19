@@ -1,8 +1,7 @@
-func fin<int a, int b> -> int {
-	return a+b.
+func fin<> -> void {
+  print "Hello".
 }
 
 exec {
-	var gg := fin().
-	print gg.
+  call fin().
 }

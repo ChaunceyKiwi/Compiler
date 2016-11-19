@@ -203,17 +203,18 @@ public class Parser {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  // statements -> blockStatement
-  // printStatement
-  // declaration
-  // assignmentStatement
-  // ifStatement
-  // whileStatement
-  // releaseStatement
-  // returnStatement
-  // callStatement
-  // breakStatement
-  // continueStatement
+  // Statements Related
+  /* statements -> blockStatement */
+  /* printStatement */
+  /* declaration */
+  /* assignmentStatement */
+  /* ifStatement */
+  /* whileStatement */
+  /* releaseStatement */
+  /* returnStatement */
+  /* callStatement */
+  /* breakStatement */
+  /* continueStatement */
 
   ///////////////////////////////////////////////////////////////////////////
   // statements
@@ -657,8 +658,7 @@ public class Parser {
   // comparisonExpression -> additiveExpression [compareOperator additiveExpression]? (left-assoc)
   // additiveExpression -> multiplicativeExpression [+|- multiplicativeExpression]* (left-assoc)
   // multiplicativeExpression -> unaryExpression [*|/|//|//|/// unaryExpression]* (left-assoc)
-  // unaryExpression -> !operatorExpression | length operatorExpression | copyExpression
-  /////////////////////////////////////////////////////////// (right-associative)
+  // unaryExpression -> !operatorExpression | length operatorExpression | copyExpression (right-associative)
   // operatorExpression -> atomicExpression[expression] | atomicExpression(expressionList)
   // atomicExpression -> literal
   // literal -> intNumber | identifier | booleanConstant

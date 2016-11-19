@@ -1,0 +1,66 @@
+/********************************************************************/
+/*********************** Function Related **************************/
+
+* parameterList
+  * Parameter scope no declaration already defined
+
+* functionInvocation
+  * The expression must have a lambda type
+  * Make sure function invocation's parameters meet function's parameters
+
+* returnStatement
+  * Have lambda node as its ancestor
+  * Make sure return type meet function's result type
+
+
+/********************************************************************/
+/*********************** Statement Related **************************/
+
+* declaration
+  * Identifier has not been defined in current scope yet
+
+* assignment
+  * target is targetale
+  * target is declared mutable
+  * the target and the initializer have the same type
+
+* ifStatement
+  * expression is boolean
+
+* whileStatement
+  * expression is boolean
+
+* releaseStatement
+  * expression must be reference type
+
+* breakStatement
+  * make sure can find loop statement in the ancestors
+
+* continueStatemnet
+  * make sure can find loop statement in the ancestors
+
+/********************************************************************/
+/*********************** Expression Related *************************/
+
+* binaryExpression
+  * if both sides is array type and is comparision, skip typechecking
+  * check if the operands of operation obey the rule in the signature
+
+* unaryExpression
+  * check if operands meet the signature of operator
+
+* castingExpression
+  * check if operands meet the signature of operator
+
+* emprtArrayCreationExpression
+  * check if operands meet the signature of operator
+
+* ExpressionList
+  * check if operands meet the signature of operator
+
+
+
+
+
+
+
