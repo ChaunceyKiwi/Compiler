@@ -49,7 +49,7 @@ public class ParseNode {
 	}
 	
 	public Type getType() {
-		if(type instanceof TypeVariable)
+		if (type instanceof TypeVariable)
 			type = ((TypeVariable)type).getSubtype();
 		return type;
 	}
@@ -80,7 +80,7 @@ public class ParseNode {
 	// From current node to root, find the nearest scope
 	public Scope getLocalScope() {
 		for(ParseNode current : pathToRoot()) {
-			if(current.hasScope()) {
+			if (current.hasScope()) {
 				return current.getScope();
 			}
 		}
@@ -97,7 +97,7 @@ public class ParseNode {
 	
 	// If ths symbol table for current parse node has such an identifier
 	public boolean containsBindingOf(String identifier) {
-		if(!hasScope()) {
+		if (!hasScope()) {
 			return false;
 		}
 		SymbolTable symbolTable = scope.getSymbolTable();
@@ -107,7 +107,7 @@ public class ParseNode {
 	// Get the identifier from the sybol table for current parse node
 	// Need to make sure such an identifier exists using containsBindingOf()
 	public Binding bindingOf(String identifier) {
-		if(!hasScope()) {
+		if (!hasScope()) {
 			return Binding.nullInstance();
 		}
 		SymbolTable symbolTable = scope.getSymbolTable();
@@ -149,7 +149,7 @@ public class ParseNode {
 	// (throws a ConcurrentModificationException.)
 	public void replaceChild(ParseNode oldChild, ParseNode newChild) {
 		for(int index = 0; index < nChildren(); index++) {
-			if(child(index) == oldChild) {
+			if (child(index) == oldChild) {
 				children.remove(index);
 				children.add(index, newChild);
 				newChild.setParent(this);

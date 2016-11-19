@@ -3,6 +3,6 @@ func fin<int a, int b> -> int {
 }
 
 exec {
-	var gg := fin(3, 4).
+	var gg := fin().
 	print gg.
 }

@@ -8,13 +8,7 @@ import java.util.Map;
 import asmCodeGenerator.codeStorage.ASMOpcode;
 import lexicalAnalyzer.Punctuator;
 import semanticAnalyzer.types.*;
-import parseTree.nodeTypes.ArrayIndexingNode;
-import parseTree.nodeTypes.AssignmentStatementNode;
-import parseTree.nodeTypes.BinaryOperatorNode;
-import parseTree.nodeTypes.CopyOperatorNode;
-import parseTree.nodeTypes.NewArrayTypeLengthNode;
-import parseTree.nodeTypes.TypeCastingNode;
-import parseTree.nodeTypes.UnaryOperatorNode;
+import parseTree.nodeTypes.*;
 import semanticAnalyzer.SemanticAnalysisVisitor;
 
 
@@ -280,8 +274,8 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 						false, new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable))
 		);
 		
-		new FunctionSignatures(CopyOperatorNode.ARRAY_CLONE,
-				new FunctionSignature(CopyOperatorNode.ARRAY_CLONE,
+		new FunctionSignatures(UnaryOperatorNode.ARRAY_CLONE,
+				new FunctionSignature(UnaryOperatorNode.ARRAY_CLONE,
 						false, new ArrayType(typeVariable), new ArrayType(typeVariable))
 		);
 		

@@ -1,0 +1,117 @@
+S -> globalDefinition exec blockStatement
+/********************************************************************/
+/*********************** Function Related **************************/
+
+globalDefinition -> functionDefinition*
+functionDefinition -> func identifier lambda
+lambda -> lambdaParamType blockStatement
+lambdaParamType -> <parameterList> -> type
+parameterList -> parameterSpecification ⋈ ,
+parameterSpecification -> type identifier
+
+/********************************************************************/
+/*********************** Statement Related **************************/
+
+blockStatement  ->  {statement*}
+statement       ->  blockStatement
+                    printStatement
+                    declaration
+                    assgienmentStatement
+                    ifStatement
+                    whileStatement  
+                    releaseStatement
+                    returnStatement
+                    callStatement
+                    breakStatement  
+                    continueStatement 
+
+declaration ->  const identifier := expression .
+                var identifier := expression .
+
+assignmentStatement -> target := expression .
+target -> expression
+
+printStatement -> print printExpressionList .
+printExpressionList -> printExpression ⋈ (, | ;)
+printExpression -> expression | _n_ | _t_ | ε
+
+ifStatement -> if (expression) blockStatement (else blockStatement)?
+
+whileStatement -> while (expression) blockStatement
+
+releaseStatement -> release expression .
+
+returnStatement -> return expression? .
+
+callStatement -> call functionInvocation .
+
+breakStatement -> break.
+
+continueStatement -> continue.
+
+/********************************************************************/
+/*********************** Expression Related *************************/
+
+expression -> expression operator expression
+        !expression
+        (expression)
+        [expression|type]
+        expression[expression]
+        length expression
+        arrayExpression
+        functionInvocation
+        lambda
+        literal
+
+arrayExpression ->  new arrayType (expression)
+        ->  [expressionList]
+        ->  clone expression
+
+functionInvocation -> expression ( expressionList )
+
+literal ->  integerConstant
+            floatingConstant
+            booleanConstant
+            characterConstant
+            stringConstant
+            identifier
+
+/********************************************************************/
+/*********************** Type Related *************************/
+
+type -> primitiveType | arrayType | void | lambdaType
+
+primitiveType -> bool | char | string | int | float | rat
+
+arrayType -> [type]
+
+lambdaType -> < typeList > -> type
+typeList -> type ⋈ ,
+
+
+/*********************** Precedence Related *************************/
+
+precedence8 (Highest precedence, can be treat as atomic) 
+  parentheses()
+  casting [|]
+  populated array creation []
+  empty array creation new[]()
+precedence7 (OperatorExpression)
+  array indexing[]
+precedence6(prefix unary operators are right-associative)
+  not!
+  copy, clone
+  length, length
+precedence5 
+  multiplicative operators * / // /// ////
+precedence4
+  additive operators + - 
+precedence3 
+  comparisons < > <= >= == !=
+precedence2
+  and &&
+precedence1 (Lowest precedence)
+  or ||
+
+/*********************** Additional Remarks *************************/
+

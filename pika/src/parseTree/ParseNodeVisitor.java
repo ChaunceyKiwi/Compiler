@@ -80,9 +80,6 @@ public interface ParseNodeVisitor {
 	void visitEnter(UnaryOperatorNode node);
 	void visitLeave(UnaryOperatorNode node);
 	
-	void visitEnter(CopyOperatorNode node);
-	void visitLeave(CopyOperatorNode node);
-	
 	void visitEnter(TypeCastingNode node);
 	void visitLeave(TypeCastingNode node);
 	
@@ -325,13 +322,6 @@ public interface ParseNodeVisitor {
 			defaultVisitEnter(node);
 		}
 		public void visitLeave(UnaryOperatorNode node) {
-			defaultVisitLeave(node);
-		}
-		
-		public void visitEnter(CopyOperatorNode node) {
-			defaultVisitEnter(node);
-		}
-		public void visitLeave(CopyOperatorNode node) {
 			defaultVisitLeave(node);
 		}
 		

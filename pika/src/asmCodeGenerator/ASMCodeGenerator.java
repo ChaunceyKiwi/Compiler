@@ -815,6 +815,12 @@ public class ASMCodeGenerator {
 				code.append(arg1);		
 				code.append(ArrayHelper.pushArrayLength(labeller.newLabel("push-array-length")));
 			}	
+			
+			if (operator == Keyword.COPY) {
+	            Labeller labeller = new Labeller("-copy-operator-");
+	            ArrayType arrayType = (ArrayType)node.getType();
+	            code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
+			}
 		}
 		
 		public void visitLeave(TypeCastingNode node){
@@ -898,14 +904,6 @@ public class ASMCodeGenerator {
 				code.append(ArrayHelper.arrayInitialization(arrayType, arrayElement, 
 						opcodeForStore(arrayType.getSubType()), labeller));
 			}
-		}
-
-		public void visitLeave(CopyOperatorNode node){
-			newValueCode(node);
-			Labeller labeller = new Labeller("-copy-operator-");
-			ArrayType arrayType = (ArrayType)node.getType();
-			ASMCodeFragment arg1 = removeValueCode(node.child(0));
-			code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
 		}
 		
 		///////////////////////////////////////////////////////////////////////////
