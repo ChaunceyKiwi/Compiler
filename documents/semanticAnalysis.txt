@@ -8,6 +8,9 @@
   * The expression must have a lambda type
   * Make sure function invocation's parameters meet function's parameters
 
+* lambda
+  * If result type is not void, then there should be a return statement in its blockStatement
+
 * returnStatement
   * Have lambda node as its ancestor
   * Make sure return type meet function's result type

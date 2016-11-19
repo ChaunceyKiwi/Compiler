@@ -138,12 +138,26 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   ///////////////////////////////////////////////////////////////////////////
   // Lambda
+  //TODO there might be some other case to enter lambdaNode
   public void visitEnter(LambdaNode node) {
-    enterScope(node);
+    ParseNode parent = node.getParent();
+    if (parent instanceof FunctionDefinitionNode ||
+        parent instanceof DeclarationNode || parent instanceof FunctionInvocationNode ) {
+      enterScope(node);
+    } else {
+      lambdaNodeWrongEneterMethodError(node);
+    }
   }
 
   public void visitLeave(LambdaNode node) {
     assert node.nChildren() == 2;
+    Type resultType = node.getLambdaType().getResultType();
+    
+    if(resultType != PrimitiveType.VOID && !node.hasReturnStatement()) {
+      lambdaNodeLackReturnStatementError(node);
+      return;
+    }
+ 
     leaveScope(node);
   }
 
@@ -154,8 +168,9 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
     ParseNode lambdaNode = node.findLambdaNode(node);
 
-    if (lambdaNode instanceof LambdaNode) {
+    if (lambdaNode != null && lambdaNode instanceof LambdaNode) {
       node.setLambdaNode((LambdaNode) lambdaNode);
+      ((LambdaNode) lambdaNode).setHasReturnStatement();
     } else {
       returnFindNoLambdaError(node);
       return;
@@ -427,22 +442,30 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  // ExpressionList
+  // ExpressionList  
   @Override
   public void visitLeave(ExpressionListNode node) {
     int numOfChildren = node.nChildren();
+    
+    // when acts as the parameters of a function
+    if (node.getParent() instanceof FunctionInvocationNode) {
+      
+    } 
+    // when acts as the elements of a array
+    else {
+      // TODO All expression should cast to the same type
+      if (numOfChildren == 0) {
+        expressionNoElementError(node);
+      } else {
+        Type[] types = new Type[numOfChildren];
 
-    // TODO All expression should cast to the same type
-    if (numOfChildren == 0) {
-      expressionNoElementError(node);
-    } else {
-      Type[] types = new Type[numOfChildren];
-
-      // need type check here
-      for (int i = 0; i < numOfChildren; i++) {
-        types[i] = node.child(i).getType();
+        // need type check here
+        for (int i = 0; i < numOfChildren; i++) {
+          types[i] = node.child(i).getType();
+        }
+        
+        node.setType(new ArrayType(types[0], node.nChildren()));
       }
-      node.setType(new ArrayType(types[0], node.nChildren()));
     }
   }
 
@@ -637,6 +660,14 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   private void assignmentToConstantError(ParseNode node) {
     logError(node.getToken().getLexeme() + " assignment to constant Error");
+  }
+  
+  private void lambdaNodeWrongEneterMethodError(ParseNode node) {
+    logError(node.getToken().getLexeme() + " lambdaNode wrong enter method Error");
+  }
+  
+  private void lambdaNodeLackReturnStatementError(ParseNode node) {
+    logError(node.getToken().getLexeme() + " lambdaNode lack return statement Error");
   }
 
   public static void logError(String message) {

@@ -28,14 +28,17 @@ public class LambdaType implements Type{
 	}
 	
 	public String infoString() {
-		String infoString = "";
+		String infoString = "<";
 		
-		infoString += "<";
-		for (Type type: typeList) {
-			infoString += type.infoString();
-			infoString += ", ";
+		if(typeList.size() > 0) {
+    		for (Type type: typeList) {
+    			infoString += type.infoString();
+    			infoString += ", ";
+    		}
+    		infoString = infoString.substring(0, infoString.length() - 2);
 		}
-		infoString = infoString.substring(0, infoString.length() - 2) + ">";
+		
+		infoString += ">";
 		infoString += " -> ";
 		infoString += resultType.infoString();
 		

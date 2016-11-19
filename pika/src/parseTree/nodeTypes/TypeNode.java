@@ -54,10 +54,10 @@ public class TypeNode extends ParseNode {
 			type = PrimitiveType.INTEGER;
 		}else if(this.getToken().isLextant(Keyword.FLOATING)) {
 			type = PrimitiveType.FLOATING;
+		}else if(this.getToken().isLextant(Keyword.VOID)) {
+		    type = PrimitiveType.VOID;
 		}
 		
-		// To-do
-		// Maybe float is need here
 	}
 	
 	public Type getType() {

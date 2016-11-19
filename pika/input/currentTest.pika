@@ -1,5 +1,5 @@
-func fin<> -> void {
-  print "Hello".
+func fin<> -> int {
+  return 2333.
 }
 
 exec {

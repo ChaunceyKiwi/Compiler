@@ -10,7 +10,8 @@ import parseTree.nodeTypes.LambdaParamTypeNode;
 
 public class LambdaNode extends ParseNode {	
 	private LambdaType lambdaType = null;
-
+	private boolean hasReturnStatement = false;
+	
 	public LambdaNode(Token token) {
 		super(token);
 	}
@@ -45,6 +46,14 @@ public class LambdaNode extends ParseNode {
 	
 	public LambdaType getLambdaType() {
 		return lambdaType;
+	}
+	
+	public void setHasReturnStatement() {
+	  hasReturnStatement = true;
+	}
+	
+	public boolean hasReturnStatement() {
+	  return hasReturnStatement;
 	}
 	
 	///////////////////////////////////////////////////////////

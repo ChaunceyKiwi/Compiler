@@ -545,33 +545,14 @@ public class Parser {
     }
 
     Token callStatementToken = nowReading;
-    readToken();
-    ParseNode functionInvocation = parseFunctionInvocation();
+    expect(Keyword.CALL);
+    ParseNode functionInvocation = parseExpression();
     expect(Punctuator.TERMINATOR);
     return CallStatementNode.withChildren(callStatementToken, functionInvocation);
   }
 
   private boolean startsCallStatement(Token token) {
     return token.isLextant(Keyword.CALL);
-  }
-
-  ///////////////////////////////////////////////////////////
-  // functionInvocation -> expression (expressionList)
-  private ParseNode parseFunctionInvocation() {
-    if (!startsFunctionInvocation(nowReading)) {
-      return syntaxErrorNode("function invocation");
-    }
-
-    Token functionInvocationToken = nowReading;
-    ParseNode expression = parseExpression();
-    expect(Punctuator.OPEN_BRACKET);
-    ParseNode expressionList = parseExpressionList();
-    expect(Punctuator.CLOSE_BRACKET);
-    return FunctionInvocationNode.withChildren(functionInvocationToken, expression, expressionList);
-  }
-
-  private boolean startsFunctionInvocation(Token token) {
-    return startsExpression(token);
   }
 
   ///////////////////////////////////////////////////////////
