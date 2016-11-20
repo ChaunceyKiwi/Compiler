@@ -3,5 +3,5 @@ func fin<> -> int {
 }
 
 exec {
-  call fin().
+  print fin().
 }

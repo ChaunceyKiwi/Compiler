@@ -1,5 +1,7 @@
 package optimizer;
 
+import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.GENERATES_VOID;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,461 +13,499 @@ import asmCodeGenerator.codeStorage.ASMInstruction;
 import asmCodeGenerator.codeStorage.ASMOpcode;
 
 public class BasicBlockManager {
-	private List<BasicBlock> blocks;
-	private BasicBlock startBlock;
-	private int sizeInBlocks = 0;
-	
-	private Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String,Integer>>();
-	private Set<Tuple<String, Integer>> jumpSet  = new HashSet<Tuple<String,Integer>>();
-	private Set<Triplet<String, String, Integer>> branchSet  = new HashSet<Triplet<String, String, Integer>>();
-	private Set<Integer> blockStartSet = new HashSet<Integer>();
-	private Set<Integer> blockEndSet = new HashSet<Integer>();
-	private Set<Triplet<Integer, Integer, Integer>> blockSet = new HashSet<Triplet<Integer,Integer,Integer>>();
-	private Set<Triplet<Integer, Integer, String>> linkSet  = new HashSet<Triplet<Integer, Integer, String>>();
-	private Set<Triplet<Integer, Integer, BasicBlock>> blockRange  = new HashSet<Triplet<Integer, Integer, BasicBlock>>();
-	private int distanceTable[][];
-	
-	public BasicBlockManager() {
-		this.blocks = new ArrayList<BasicBlock>();
-		this.startBlock = null;
-	}
-	
-	public void setStartBlock(BasicBlock block) {
-		this.startBlock = block;
-	}
-	
-	public BasicBlock getStartBlock(BasicBlock block) {
-		return startBlock;
-	}
-	
-	public void add(BasicBlock block) {
-		this.blocks.add(block);
-		this.sizeInBlocks++;
-	}
-	
-	// Builder function
-	public void generateBasicBlocks(ASMCodeFragment fragment) {
-		buildLabelSet(fragment);
-		buildJumpSet(fragment);
-		buildBranchSet(fragment);
-		buildBlockStartEndSet();
-		buildBlockSet(fragment);
-		buildBlocks(fragment);
-		trimBlocks();
-		setNeighbourForBlocks();
-		unreachableCodeElimination();
-		blockMerge();
-		cloningToSiplify();
-		branchElimination();
-		blockMerge();
-		updateInnerNeighbors();
-	}
-	
-	public void updateInnerNeighbors() {
-		for(BasicBlock basicBlock : blocks) {
-			List<Tuple<BasicBlock, String>> neighborsToRemove = new ArrayList<Tuple<BasicBlock, String>>();
-			for(Tuple<BasicBlock, String> inNeighbor : basicBlock.getInNeighbors()) {				
-				if(!blocks.contains(inNeighbor.x) || !inNeighbor.x.isOutNeighbor(basicBlock)) {
-					neighborsToRemove.add(inNeighbor);
-				}
-			}
-			for(Tuple<BasicBlock, String> neighborToRemove : neighborsToRemove) {
-				basicBlock.getInNeighbors().remove(neighborToRemove);
-			}
-		}
-	}
-	
-	public void branchElimination() {
-		for(BasicBlock basicBlock : blocks) {
-			if(basicBlock.hasBranchOutNeighbor()) {
-				List<Tuple<BasicBlock, String>> outNeighbors = basicBlock.getOutNeighbors();
-				List<Tuple<BasicBlock, String>> neighborsToRemove = new ArrayList<Tuple<BasicBlock, String>>();
-				for(Tuple<BasicBlock, String> outNeighbor : outNeighbors) {
-					ASMInstruction instr = basicBlock.getLastInstruction();
-					String branch = outNeighbor.y;
-					
-					if(instr.getOpcode() == ASMOpcode.PushI) {
-						if(Integer.parseInt(instr.getArgument().toString()) == 0) {
-							if(branch.equals("JumpFalse")) {
-								outNeighbors = new ArrayList<Tuple<BasicBlock, String>>();
-								outNeighbors.add(new Tuple<BasicBlock, String>(outNeighbor.x, "Jump"));
-								basicBlock.updateOutNeighbors(outNeighbors);
-								updateInnerNeighbors();
-								break;
-							}else if(branch.equals("JumpTrue")) {
-								neighborsToRemove.add(outNeighbor);
-								updateInnerNeighbors();
-							}
-						}else{
-							if(branch.equals("JumpFalse")) {
-								neighborsToRemove.add(outNeighbor);
-								updateInnerNeighbors();
-							}else if(branch.equals("JumpTrue")) {
-								outNeighbors = new ArrayList<Tuple<BasicBlock, String>>();
-								outNeighbors.add(new Tuple<BasicBlock, String>(outNeighbor.x, "Jump"));
-								basicBlock.updateOutNeighbors(outNeighbors);
-								updateInnerNeighbors();
-								break;
-							}
-						}
-					}
-				}
-				
-				for(Tuple<BasicBlock, String> neighborToRemove : neighborsToRemove) {
-					outNeighbors.remove(neighborToRemove);
-				}
-			}
-		}
-	}
-	
-	public void cloningToSiplify() {
-		List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
-		
-		for(BasicBlock basicBlock : blocks) {
-			// Find a empty block with a branch end
-			if(basicBlock.getCodeChunk().instructions.size() == 0 && basicBlock.hasBranchOutNeighbor()) {
-				List<Tuple<BasicBlock, String>> inNeighbors = basicBlock.getInNeighbors();
-				// Two or more innner neighbors, all of which have only one out-neighbor
-				if(inNeighbors.size() >= 2 && allInNeighborsHaveOnlyOneOutNeighbor(inNeighbors)){
-					blocksToBeRemoved.add(basicBlock);
-					for(Tuple<BasicBlock, String> inNeighbor : inNeighbors) {
-						BasicBlock basicBlockCopy = new BasicBlock(basicBlock);
-						AppendBlock(inNeighbor.x, basicBlockCopy);
-					}
+  private List<BasicBlock> blocks;
+  private BasicBlock startBlock;
+  private int sizeInBlocks = 0;
+  private String basicBlockPrefix = "basicBlock-";
 
-					for(Tuple<BasicBlock, String> outNeighbor :basicBlock.getOutNeighbors()) {
-						List<Tuple<BasicBlock, String>> neighborsToRemove = new ArrayList<Tuple<BasicBlock, String>>();
-						for(Tuple<BasicBlock, String> inNeighbor :outNeighbor.x.getInNeighbors()) {
-							if(inNeighbor.x.getBlockIndex() == basicBlock.getBlockIndex()) {
-								neighborsToRemove.add(inNeighbor);
-							}
-						}
-						for(Tuple<BasicBlock, String> inNeighbor : neighborsToRemove) {
-							outNeighbor.x.getInNeighbors().remove(inNeighbor);
-						}
-					}
-				}
-			}
-		}
-		for(BasicBlock block : blocksToBeRemoved) {
-			this.blocks.remove(block);
-		}
-	}
-	
-	public boolean allInNeighborsHaveOnlyOneOutNeighbor(List<Tuple<BasicBlock, String>> inNeighbors) {
-		for(Tuple<BasicBlock, String> inNeighbor : inNeighbors) {
-			if(inNeighbor.x.getOutNeighbors().size() != 1) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	public void blockMerge() {
-		boolean flag = true;
-		
-		while(flag) {
-			flag = false;
-			for(BasicBlock basicBlock : blocks) {
-				List<Tuple<BasicBlock, String>> inNeighbors = basicBlock.getInNeighbors();
-				List<Tuple<BasicBlock, String>> outNeighbors = basicBlock.getOutNeighbors();
-				if(inNeighbors.size() == 1) {
-					BasicBlock inNeighbor = inNeighbors.get(0).x;
-					if(inNeighbor.getOutNeighbors().size() == 1) {
-						MergeBlock(inNeighbor, basicBlock);
-						flag = true;
-						break;
-					}
-				}else if (outNeighbors.size() == 1){
-					BasicBlock outNeighbor = outNeighbors.get(0).x;
-					if(outNeighbor.getInNeighbors().size() == 1) {
-						MergeBlock(basicBlock, outNeighbor);
-						flag = true;
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	public void MergeBlock(BasicBlock basicBlock1, BasicBlock basicBlock2) {
-		AppendBlock(basicBlock1, basicBlock2);
-		blocks.remove(basicBlock2);
-	}
-	
-	public void AppendBlock(BasicBlock basicBlock1, BasicBlock basicBlock2) {		
-		basicBlock1.updateOutNeighbors(basicBlock2.getOutNeighbors());
-		for(Tuple<BasicBlock, String> outNeighbor : basicBlock1.getOutNeighbors()) {
-			List<Tuple<BasicBlock, String>> neighborsToAdd = new ArrayList<Tuple<BasicBlock, String>>();
-			for(Tuple<BasicBlock, String> innerNeighbor : outNeighbor.x.getInNeighbors()) {
-				if(innerNeighbor.x.getBlockIndex() == basicBlock2.getBlockIndex()) {
-					neighborsToAdd.add(new Tuple<BasicBlock, String>(basicBlock1, innerNeighbor.y));
-				}
-			}
-			for(Tuple<BasicBlock, String> neighborToAdd : neighborsToAdd) {
-				outNeighbor.x.getInNeighbors().add(neighborToAdd);
-			}
-		}
-		basicBlock1.setAsTrimed(basicBlock1.hasBeenTrimed() && basicBlock2.hasBeenTrimed());
-		basicBlock1.getCodeChunk().append(basicBlock2.getCodeChunk());
-	}
-	
-	
-	
-	public void unreachableCodeElimination() {
-		buildRelationTable();
-		calculateBlockDistance();
-		int startIndex = startBlock.getBlockIndex() - 1;
-		List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
+  private Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String, Integer>>();
+  private Set<Tuple<String, Integer>> jumpSet = new HashSet<Tuple<String, Integer>>();
+  private Set<Triplet<ASMOpcode, String, Integer>> branchSet =
+      new HashSet<Triplet<ASMOpcode, String, Integer>>();
+  private Set<Integer> blockStartSet = new HashSet<Integer>();
+  private Set<Integer> blockEndSet = new HashSet<Integer>();
+  private Set<Triplet<Integer, Integer, Integer>> blockSet =
+      new HashSet<Triplet<Integer, Integer, Integer>>();
+  private Set<Triplet<Integer, Integer, ASMOpcode>> linkSet =
+      new HashSet<Triplet<Integer, Integer, ASMOpcode>>();
+  private Set<Triplet<Integer, Integer, BasicBlock>> blockRange =
+      new HashSet<Triplet<Integer, Integer, BasicBlock>>();
+  private int distanceTable[][];
 
-		for(int i = 0; i < sizeInBlocks; i++) {
-			if(distanceTable[startIndex][i] == Integer.MAX_VALUE) {
-				for(BasicBlock basicBlock : blocks) {
-					if(basicBlock.getBlockIndex() - 1 == i) {
-						blocksToBeRemoved.add(basicBlock);
-					}
-				}
-			}
-		}
-		
-		for(BasicBlock block : blocksToBeRemoved) {
-			this.blocks.remove(block);
-		}
-	}
-	
-	public void trimBlocks() {
-		for(BasicBlock basicBlock : blocks) {
-			ASMCodeChunk trimmedCodeChunk = new ASMCodeChunk();
-			ASMCodeChunk asmCodeChunk = basicBlock.getCodeChunk();
-			boolean isStart = true;
-			
-			// Trim  jump and branch at the end
-			for(ASMInstruction instr : asmCodeChunk.instructions) {
-				// Skip first few labels
-				if(isStart && (instr.getOpcode() == ASMOpcode.Label)) {
-					continue;
-				}else {
-					isStart = false;
-				}
-				
-				if(instr.getOpcode() != ASMOpcode.Jump && (!isBranchInstruction(instr)) && (!isStart)) {
-					trimmedCodeChunk.add(instr);
-				}
-			}
-			basicBlock.updateCodeChunk(trimmedCodeChunk);
-			basicBlock.setAsTrimed(true);
-		}
-	}
-	
-	public void buildRelationTable() {
-		distanceTable = new int[sizeInBlocks][sizeInBlocks];
-		for(int i = 0; i < sizeInBlocks; i++) {
-			for(int j = 0; j < sizeInBlocks; j++) {
-				if(i == j) {
-					distanceTable[i][j] = 0;
-				}else {
-					distanceTable[i][j] = Integer.MAX_VALUE;
-				}
-			}
-		}
-		
-		for(BasicBlock basicBlock1 : blocks) {
-			for(Tuple<BasicBlock, String> tuple : basicBlock1.getInNeighbors()) {
-				distanceTable[tuple.x.getBlockIndex()-1][basicBlock1.getBlockIndex()-1] = 1;
-			}
-			for(Tuple<BasicBlock, String> tuple : basicBlock1.getOutNeighbors()) {
-				distanceTable[basicBlock1.getBlockIndex()-1][tuple.x.getBlockIndex()-1] = 1;
-			}
-		}
-	}
-	
-	private void buildBlocks(ASMCodeFragment fragment) {
-		for(Triplet<Integer,Integer, Integer> tuple : blockSet) {
-			BasicBlock block = new BasicBlock(getCodeInRange(fragment, tuple.x, tuple.y), tuple.z);
-			this.add(block);
-			blockRange.add(new Triplet<Integer, Integer, BasicBlock>(tuple.x, tuple.y, block));
-			if(tuple.x == 1) {
-				this.setStartBlock(block);
-			}
-		}
-	}
-	
-	private void setNeighbourForBlocks() {
-		for(Triplet<Integer, Integer, String> link : linkSet) {
-			BasicBlock fromBlock = getBasicBlockFromLineNumber(link.x);
-			BasicBlock toBlock = getBasicBlockFromLineNumber(link.y);
-			fromBlock.addOutNeighbors(toBlock, link.z);
-			toBlock.addInNeighbors(fromBlock, link.z);
-		}
-	}
-	
-	private BasicBlock getBasicBlockFromLineNumber(int lineNumber) {
-		for(Triplet<Integer, Integer, BasicBlock> range : blockRange) {
-			if(lineNumber >= range.x && lineNumber <= range.y) {
-				return range.z;
-			}
-		}
-		return null;
-	}
-	
-	private ASMCodeChunk getCodeInRange(ASMCodeFragment fragment, int start, int end) {
-		int lineNumCount = 1;
-		ASMCodeChunk codeInRange = new ASMCodeChunk();
+  public BasicBlockManager() {
+    this.blocks = new ArrayList<BasicBlock>();
+    this.startBlock = null;
+  }
 
-		for(int i = 0; i < fragment.chunks.size(); i++){
-			for(int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
-				ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
-				if(lineNumCount >= start && lineNumCount <= end) {
-					codeInRange.add(instruction);
-				}
-				lineNumCount++;
-			}
-		}
-		return codeInRange;
-	}
-	
-	private void buildLabelSet(ASMCodeFragment fragment) {
-		int lineNumCount = 1;
-		for(int i = 0; i < fragment.chunks.size(); i++){
-			for(int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
-				ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
-				if(instruction.getOpcode() == ASMOpcode.Label) {
-					labelSet.add(new Tuple<String,Integer>((String)instruction.getArgument(), lineNumCount));
-				}
-				lineNumCount++;
-			}
-		}
-	}
-	
-	private void buildJumpSet(ASMCodeFragment fragment) {
-		int lineNumCount = 1;
-		for(int i = 0; i < fragment.chunks.size(); i++){
-			for(int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
-				ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
-				if(instruction.getOpcode() == ASMOpcode.Jump || instruction.getOpcode() == ASMOpcode.Halt) {
-					jumpSet.add(new Tuple<String,Integer>((String)instruction.getArgument(), lineNumCount));
-					blockEndSet.add(lineNumCount);
-					blockStartSet.add(lineNumCount+1);
-				}
-				lineNumCount++;
-			}
-		}
-	}
-	
-	private void buildBranchSet(ASMCodeFragment fragment) {
-		int lineNumCount = 1;
-		boolean previousIsBranch = false;
-		for(int i = 0; i < fragment.chunks.size(); i++){
-			for(int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
-				ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
-				if(isBranchInstruction(instruction)) {
-					branchSet.add(new Triplet<String, String,Integer>
-					(instruction.getOpcode().toString(), (String)instruction.getArgument(), lineNumCount));
-					previousIsBranch = true;
-				}else {
-					if(previousIsBranch && instruction.getOpcode() != ASMOpcode.Jump) {
-						blockEndSet.add(lineNumCount-1);
-						blockStartSet.add(lineNumCount);
-					}
-					previousIsBranch = false;
-				}
-				lineNumCount++;
-			}
-		}
-	}
-	
-	private void buildBlockStartEndSet() {
-		// The first instruction is always a block start
-		blockStartSet.add(1);
-		
-		// Any jumpToInstruction is a block start
-		// And the instruction before that is a block end		
-		for(Triplet<String, String, Integer> branch : branchSet) {
-			String branchKey = branch.y;
-			for(Tuple<String, Integer> label : labelSet) {
-				String labelKey = label.x;
-				if(labelKey.equals(branchKey)) {
-					linkSet.add(new Triplet<Integer, Integer, String>(branch.z, label.y, branch.x));
-					blockStartSet.add(label.y);
-					blockEndSet.add(label.y - 1);
-				}
-			}
-		}
-		
-		for(Tuple<String, Integer> jump : jumpSet) {
-			String jumpKey = jump.x;
-			for(Tuple<String, Integer> label : labelSet) {
-				String labelKey = label.x;
-				if(labelKey.equals(jumpKey)) {
-					linkSet.add(new Triplet<Integer, Integer, String>(jump.y, label.y, "Jump"));
-					blockStartSet.add(label.y);
-					blockEndSet.add(label.y - 1);
-				}
-			}
-		}
-	}
-	
-	private void buildBlockSet(ASMCodeFragment fragment) {
-		int lineNumCount = 1;
-		int blockIndex = 1;
-		int begin = 0;
-		int end = 0;
-		boolean previousIsJump = false;
-		for(int i = 0; i < fragment.chunks.size(); i++){
-			for(int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
-				if(blockStartSet.contains(lineNumCount)) {
-					if(!previousIsJump && lineNumCount > 1) {
-						linkSet.add(new Triplet<Integer, Integer, String>(lineNumCount - 1, lineNumCount, "Direct"));
-					}
-					begin = lineNumCount;
-				}
-				if(blockEndSet.contains(lineNumCount)) {
-					end = lineNumCount;
-					if(blockStartSet.contains(begin)) {
-						blockSet.add(new Triplet<Integer, Integer, Integer>(begin, end, blockIndex));
-						blockIndex++;
-						begin++;
-						end++;
-					}
-				}
-				previousIsJump = isInJumpSet(lineNumCount);
-				lineNumCount++;
-			}
-		}
-	}
-	
-	private boolean isInJumpSet(int lineNumber) {
-		for(Tuple<String, Integer> jump : jumpSet) {
-			if(jump.y == lineNumber)
-				return true;
-		}		
-		return false;
-	}
-	
-	private boolean isBranchInstruction(ASMInstruction instruction) {
-		return  instruction.getOpcode() == ASMOpcode.JumpFalse ||
-				instruction.getOpcode() == ASMOpcode.JumpTrue ||
-				instruction.getOpcode() == ASMOpcode.JumpNeg ||
-				instruction.getOpcode() == ASMOpcode.JumpPos ||
-				instruction.getOpcode() == ASMOpcode.JumpFNeg ||
-				instruction.getOpcode() == ASMOpcode.JumpFPos ||
-				instruction.getOpcode() == ASMOpcode.JumpFZero;
-	}
-	
-	private void calculateBlockDistance() {		
-		for(int k = 0; k < sizeInBlocks; k++) {
-			for(int i = 0; i < sizeInBlocks; i++) {
-				for(int j = 0; j < sizeInBlocks; j++) {
-					int distanceIJ = distanceTable[i][j];
-					int distanceIK = distanceTable[i][k];
-					int distanceKJ = distanceTable[k][j];
-					if(distanceIJ > distanceIK && distanceIJ > distanceKJ) {
-						if(distanceIJ > distanceIK + distanceKJ) {
-							distanceTable[i][j] = distanceIK + distanceKJ;
-						}
-					}
-				}
-			}
-		}
-	}
+  public void setStartBlock(BasicBlock block) {
+    this.startBlock = block;
+  }
+
+  public BasicBlock getStartBlock(BasicBlock block) {
+    return startBlock;
+  }
+
+  public void add(BasicBlock block) {
+    this.blocks.add(block);
+    this.sizeInBlocks++;
+  }
+
+  // Builder function
+  public void generateBasicBlocks(ASMCodeFragment fragment) {
+    buildLabelSet(fragment);
+    buildJumpSet(fragment);
+    buildBranchSet(fragment);
+    buildBlockStartEndSet();
+    buildBlockSet(fragment);
+    buildBlocks(fragment);
+    trimBlocks();
+    setNeighbourForBlocks();
+    unreachableCodeElimination();
+    blockMerge();
+    cloningToSiplify();
+    branchElimination();
+    blockMerge();
+    updateInnerNeighbors();
+  }
+
+  public ASMCodeFragment printAllChunksInBasicBlocks() {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+    assignIndicesToBlocks();
+
+    int blockIndex = 1;
+    for (BasicBlock basicBlock : blocks) {
+      code.add(ASMOpcode.Label, basicBlockPrefix + blockIndex++);
+      code.chunks.add(basicBlock.getCodeChunk());
+      for (Tuple<BasicBlock, ASMOpcode> outNeighbor : basicBlock.getOutNeighbors()) {
+        int index = outNeighbor.x.getBlockIndex();
+        ASMOpcode opcode = outNeighbor.y;
+        code.add(opcode, basicBlockPrefix + index);
+      }
+    }
+
+    return code;
+  }
+
+  public void assignIndicesToBlocks() {
+    int blockIndex = 1;
+    for (BasicBlock basicBlock : blocks) {
+      basicBlock.setBlockIndex(blockIndex++);
+    }
+  }
+
+  public void updateInnerNeighbors() {
+    for (BasicBlock basicBlock : blocks) {
+      List<Tuple<BasicBlock, ASMOpcode>> neighborsToRemove =
+          new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
+      for (Tuple<BasicBlock, ASMOpcode> inNeighbor : basicBlock.getInNeighbors()) {
+        if (!blocks.contains(inNeighbor.x) || !inNeighbor.x.isOutNeighbor(basicBlock)) {
+          neighborsToRemove.add(inNeighbor);
+        }
+      }
+      for (Tuple<BasicBlock, ASMOpcode> neighborToRemove : neighborsToRemove) {
+        basicBlock.getInNeighbors().remove(neighborToRemove);
+      }
+    }
+  }
+
+  public void branchElimination() {
+    for (BasicBlock basicBlock : blocks) {
+      if (basicBlock.hasBranchOutNeighbor()) {
+        List<Tuple<BasicBlock, ASMOpcode>> outNeighbors = basicBlock.getOutNeighbors();
+        List<Tuple<BasicBlock, ASMOpcode>> neighborsToRemove =
+            new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
+        for (Tuple<BasicBlock, ASMOpcode> outNeighbor : outNeighbors) {
+          ASMInstruction instr = basicBlock.getLastInstruction();
+          ASMOpcode branch = outNeighbor.y;
+
+          if (instr.getOpcode() == ASMOpcode.PushI) {
+            if (Integer.parseInt(instr.getArgument().toString()) == 0) {
+              if (branch == ASMOpcode.JumpFalse) {
+                outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
+                outNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(outNeighbor.x, ASMOpcode.Jump));
+                basicBlock.updateOutNeighbors(outNeighbors);
+                updateInnerNeighbors();
+                break;
+              } else if (branch == ASMOpcode.JumpTrue) {
+                neighborsToRemove.add(outNeighbor);
+                updateInnerNeighbors();
+              }
+            } else {
+              if (branch == ASMOpcode.JumpFalse) {
+                neighborsToRemove.add(outNeighbor);
+                updateInnerNeighbors();
+              } else if (branch == ASMOpcode.JumpTrue) {
+                outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
+                outNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(outNeighbor.x, ASMOpcode.Jump));
+                basicBlock.updateOutNeighbors(outNeighbors);
+                updateInnerNeighbors();
+                break;
+              }
+            }
+          }
+        }
+
+        for (Tuple<BasicBlock, ASMOpcode> neighborToRemove : neighborsToRemove) {
+          outNeighbors.remove(neighborToRemove);
+        }
+      }
+    }
+  }
+
+  public void cloningToSiplify() {
+    List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
+
+    for (BasicBlock basicBlock : blocks) {
+      // Find a empty block with a branch end
+      if (basicBlock.getCodeChunk().instructions.size() == 0 && basicBlock.hasBranchOutNeighbor()) {
+        List<Tuple<BasicBlock, ASMOpcode>> inNeighbors = basicBlock.getInNeighbors();
+        // Two or more innner neighbors, all of which have only one out-neighbor
+        if (inNeighbors.size() >= 2 && allInNeighborsHaveOnlyOneOutNeighbor(inNeighbors)) {
+          blocksToBeRemoved.add(basicBlock);
+          for (Tuple<BasicBlock, ASMOpcode> inNeighbor : inNeighbors) {
+            BasicBlock basicBlockCopy = new BasicBlock(basicBlock);
+            AppendBlock(inNeighbor.x, basicBlockCopy);
+          }
+
+          for (Tuple<BasicBlock, ASMOpcode> outNeighbor : basicBlock.getOutNeighbors()) {
+            List<Tuple<BasicBlock, ASMOpcode>> neighborsToRemove =
+                new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
+            for (Tuple<BasicBlock, ASMOpcode> inNeighbor : outNeighbor.x.getInNeighbors()) {
+              if (inNeighbor.x.getBlockIndex() == basicBlock.getBlockIndex()) {
+                neighborsToRemove.add(inNeighbor);
+              }
+            }
+            for (Tuple<BasicBlock, ASMOpcode> inNeighbor : neighborsToRemove) {
+              outNeighbor.x.getInNeighbors().remove(inNeighbor);
+            }
+          }
+        }
+      }
+    }
+    for (BasicBlock block : blocksToBeRemoved) {
+      this.blocks.remove(block);
+    }
+  }
+
+  public boolean allInNeighborsHaveOnlyOneOutNeighbor(
+      List<Tuple<BasicBlock, ASMOpcode>> inNeighbors) {
+    for (Tuple<BasicBlock, ASMOpcode> inNeighbor : inNeighbors) {
+      if (inNeighbor.x.getOutNeighbors().size() != 1) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public void blockMerge() {
+    boolean flag = true;
+
+    while (flag) {
+      flag = false;
+      for (BasicBlock basicBlock : blocks) {
+        List<Tuple<BasicBlock, ASMOpcode>> inNeighbors = basicBlock.getInNeighbors();
+        List<Tuple<BasicBlock, ASMOpcode>> outNeighbors = basicBlock.getOutNeighbors();
+        if (inNeighbors.size() == 1) {
+          BasicBlock inNeighbor = inNeighbors.get(0).x;
+          if (inNeighbor.getOutNeighbors().size() == 1) {
+            MergeBlock(inNeighbor, basicBlock);
+            flag = true;
+            break;
+          }
+        } else if (outNeighbors.size() == 1) {
+          BasicBlock outNeighbor = outNeighbors.get(0).x;
+          if (outNeighbor.getInNeighbors().size() == 1) {
+            MergeBlock(basicBlock, outNeighbor);
+            flag = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  public void MergeBlock(BasicBlock basicBlock1, BasicBlock basicBlock2) {
+    AppendBlock(basicBlock1, basicBlock2);
+    blocks.remove(basicBlock2);
+  }
+
+  public void AppendBlock(BasicBlock basicBlock1, BasicBlock basicBlock2) {
+    basicBlock1.updateOutNeighbors(basicBlock2.getOutNeighbors());
+    for (Tuple<BasicBlock, ASMOpcode> outNeighbor : basicBlock1.getOutNeighbors()) {
+      List<Tuple<BasicBlock, ASMOpcode>> neighborsToAdd =
+          new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
+      for (Tuple<BasicBlock, ASMOpcode> innerNeighbor : outNeighbor.x.getInNeighbors()) {
+        if (innerNeighbor.x.getBlockIndex() == basicBlock2.getBlockIndex()) {
+          neighborsToAdd.add(new Tuple<BasicBlock, ASMOpcode>(basicBlock1, innerNeighbor.y));
+        }
+      }
+      for (Tuple<BasicBlock, ASMOpcode> neighborToAdd : neighborsToAdd) {
+        outNeighbor.x.getInNeighbors().add(neighborToAdd);
+      }
+    }
+    basicBlock1.setAsTrimed(basicBlock1.hasBeenTrimed() && basicBlock2.hasBeenTrimed());
+    basicBlock1.getCodeChunk().append(basicBlock2.getCodeChunk());
+  }
+
+
+
+  public void unreachableCodeElimination() {
+    buildRelationTable();
+    calculateBlockDistance();
+    int startIndex = startBlock.getBlockIndex() - 1;
+    List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
+
+    for (int i = 0; i < sizeInBlocks; i++) {
+      if (distanceTable[startIndex][i] == Integer.MAX_VALUE) {
+        for (BasicBlock basicBlock : blocks) {
+          if (basicBlock.getBlockIndex() - 1 == i) {
+            blocksToBeRemoved.add(basicBlock);
+          }
+        }
+      }
+    }
+
+    for (BasicBlock block : blocksToBeRemoved) {
+      this.blocks.remove(block);
+    }
+  }
+
+  public void trimBlocks() {
+    for (BasicBlock basicBlock : blocks) {
+      ASMCodeChunk trimmedCodeChunk = new ASMCodeChunk();
+      ASMCodeChunk asmCodeChunk = basicBlock.getCodeChunk();
+      boolean isStart = true;
+
+      // Trim jump and branch at the end
+      for (ASMInstruction instr : asmCodeChunk.instructions) {
+        // Skip first few labels
+        if (isStart && (instr.getOpcode() == ASMOpcode.Label)) {
+          continue;
+        } else {
+          isStart = false;
+        }
+
+        if (instr.getOpcode() != ASMOpcode.Jump && (!isBranchInstruction(instr)) && (!isStart)) {
+          trimmedCodeChunk.add(instr);
+        }
+      }
+      basicBlock.updateCodeChunk(trimmedCodeChunk);
+      basicBlock.setAsTrimed(true);
+    }
+  }
+
+  public void buildRelationTable() {
+    distanceTable = new int[sizeInBlocks][sizeInBlocks];
+    for (int i = 0; i < sizeInBlocks; i++) {
+      for (int j = 0; j < sizeInBlocks; j++) {
+        if (i == j) {
+          distanceTable[i][j] = 0;
+        } else {
+          distanceTable[i][j] = Integer.MAX_VALUE;
+        }
+      }
+    }
+
+    for (BasicBlock basicBlock1 : blocks) {
+      for (Tuple<BasicBlock, ASMOpcode> tuple : basicBlock1.getInNeighbors()) {
+        distanceTable[tuple.x.getBlockIndex() - 1][basicBlock1.getBlockIndex() - 1] = 1;
+      }
+      for (Tuple<BasicBlock, ASMOpcode> tuple : basicBlock1.getOutNeighbors()) {
+        distanceTable[basicBlock1.getBlockIndex() - 1][tuple.x.getBlockIndex() - 1] = 1;
+      }
+    }
+  }
+
+  private void buildBlocks(ASMCodeFragment fragment) {
+    for (Triplet<Integer, Integer, Integer> tuple : blockSet) {
+      BasicBlock block = new BasicBlock(getCodeInRange(fragment, tuple.x, tuple.y), tuple.z);
+      this.add(block);
+      blockRange.add(new Triplet<Integer, Integer, BasicBlock>(tuple.x, tuple.y, block));
+      if (tuple.x == 1) {
+        this.setStartBlock(block);
+      }
+    }
+  }
+
+  private void setNeighbourForBlocks() {
+    for (Triplet<Integer, Integer, ASMOpcode> link : linkSet) {
+      BasicBlock fromBlock = getBasicBlockFromLineNumber(link.x);
+      BasicBlock toBlock = getBasicBlockFromLineNumber(link.y);
+      fromBlock.addOutNeighbors(toBlock, link.z);
+      toBlock.addInNeighbors(fromBlock, link.z);
+    }
+  }
+
+  private BasicBlock getBasicBlockFromLineNumber(int lineNumber) {
+    for (Triplet<Integer, Integer, BasicBlock> range : blockRange) {
+      if (lineNumber >= range.x && lineNumber <= range.y) {
+        return range.z;
+      }
+    }
+    return null;
+  }
+
+  private ASMCodeChunk getCodeInRange(ASMCodeFragment fragment, int start, int end) {
+    int lineNumCount = 1;
+    ASMCodeChunk codeInRange = new ASMCodeChunk();
+
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        if (lineNumCount >= start && lineNumCount <= end) {
+          codeInRange.add(instruction);
+        }
+        lineNumCount++;
+      }
+    }
+    return codeInRange;
+  }
+
+  private void buildLabelSet(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        if (instruction.getOpcode() == ASMOpcode.Label) {
+          labelSet
+              .add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+        }
+        lineNumCount++;
+      }
+    }
+  }
+
+  private void buildJumpSet(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        if (instruction.getOpcode() == ASMOpcode.Jump
+            || instruction.getOpcode() == ASMOpcode.Halt) {
+          jumpSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+          blockEndSet.add(lineNumCount);
+          blockStartSet.add(lineNumCount + 1);
+        }
+        lineNumCount++;
+      }
+    }
+  }
+
+  private void buildBranchSet(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    boolean previousIsBranch = false;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        if (isBranchInstruction(instruction)) {
+          branchSet.add(new Triplet<ASMOpcode, String, Integer>(instruction.getOpcode(),
+              (String) instruction.getArgument(), lineNumCount));
+          previousIsBranch = true;
+        } else {
+          if (previousIsBranch && instruction.getOpcode() != ASMOpcode.Jump) {
+            blockEndSet.add(lineNumCount - 1);
+            blockStartSet.add(lineNumCount);
+          }
+          previousIsBranch = false;
+        }
+        lineNumCount++;
+      }
+    }
+  }
+
+  private void buildBlockStartEndSet() {
+    // The first instruction is always a block start
+    blockStartSet.add(1);
+
+    // Any jumpToInstruction is a block start
+    // And the instruction before that is a block end
+    for (Triplet<ASMOpcode, String, Integer> branch : branchSet) {
+      String branchKey = branch.y;
+      for (Tuple<String, Integer> label : labelSet) {
+        String labelKey = label.x;
+        if (labelKey.equals(branchKey)) {
+          linkSet.add(new Triplet<Integer, Integer, ASMOpcode>(branch.z, label.y, branch.x));
+          blockStartSet.add(label.y);
+          blockEndSet.add(label.y - 1);
+        }
+      }
+    }
+
+    for (Tuple<String, Integer> jump : jumpSet) {
+      String jumpKey = jump.x;
+      for (Tuple<String, Integer> label : labelSet) {
+        String labelKey = label.x;
+        if (labelKey.equals(jumpKey)) {
+          linkSet.add(new Triplet<Integer, Integer, ASMOpcode>(jump.y, label.y, ASMOpcode.Jump));
+          blockStartSet.add(label.y);
+          blockEndSet.add(label.y - 1);
+        }
+      }
+    }
+  }
+
+  private void buildBlockSet(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    int blockIndex = 1;
+    int begin = 0;
+    int end = 0;
+    boolean previousIsJump = false;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        if (blockStartSet.contains(lineNumCount)) {
+          if (!previousIsJump && lineNumCount > 1) {
+            linkSet.add(
+                new Triplet<Integer, Integer, ASMOpcode>(lineNumCount - 1, lineNumCount, ASMOpcode.Jump));
+          }
+          begin = lineNumCount;
+        }
+        if (blockEndSet.contains(lineNumCount)) {
+          end = lineNumCount;
+          if (blockStartSet.contains(begin)) {
+            blockSet.add(new Triplet<Integer, Integer, Integer>(begin, end, blockIndex));
+            blockIndex++;
+            begin++;
+            end++;
+          }
+        }
+        previousIsJump = isInJumpSet(lineNumCount);
+        lineNumCount++;
+      }
+    }
+  }
+
+  private boolean isInJumpSet(int lineNumber) {
+    for (Tuple<String, Integer> jump : jumpSet) {
+      if (jump.y == lineNumber)
+        return true;
+    }
+    return false;
+  }
+
+  private boolean isBranchInstruction(ASMInstruction instruction) {
+    return instruction.getOpcode() == ASMOpcode.JumpFalse
+        || instruction.getOpcode() == ASMOpcode.JumpTrue
+        || instruction.getOpcode() == ASMOpcode.JumpNeg
+        || instruction.getOpcode() == ASMOpcode.JumpPos
+        || instruction.getOpcode() == ASMOpcode.JumpFNeg
+        || instruction.getOpcode() == ASMOpcode.JumpFPos
+        || instruction.getOpcode() == ASMOpcode.JumpFZero;
+  }
+
+  private void calculateBlockDistance() {
+    for (int k = 0; k < sizeInBlocks; k++) {
+      for (int i = 0; i < sizeInBlocks; i++) {
+        for (int j = 0; j < sizeInBlocks; j++) {
+          int distanceIJ = distanceTable[i][j];
+          int distanceIK = distanceTable[i][k];
+          int distanceKJ = distanceTable[k][j];
+          if (distanceIJ > distanceIK && distanceIJ > distanceKJ) {
+            if (distanceIJ > distanceIK + distanceKJ) {
+              distanceTable[i][j] = distanceIK + distanceKJ;
+            }
+          }
+        }
+      }
+    }
+  }
 }

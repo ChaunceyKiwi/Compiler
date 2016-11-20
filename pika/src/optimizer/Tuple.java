@@ -30,8 +30,19 @@ public class Tuple<X, Y> {
     @Override 
     public int hashCode() {
         int hash = 23;
-        hash = hash * 31 + x.hashCode();
-        hash = hash * 31 + y.hashCode();
+        
+        if(x != null) {
+          hash = hash * 31 + x.hashCode();
+        }else {
+          hash = hash * 31;
+        }
+        
+        if(y != null) {
+          hash = hash * 31 + y.hashCode();
+        }else {
+          hash = hash * 31;
+        }
+        
         return hash;
     }
 }
