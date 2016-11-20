@@ -64,7 +64,7 @@ public class BasicBlock {
   public void addInNeighbors(BasicBlock block, ASMOpcode condition) {
     inNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(block, condition));
   }
-
+  
   public void updateInNeighbors(List<Tuple<BasicBlock, ASMOpcode>> newInNeighbors) {
     inNeighbors = newInNeighbors;
   }
@@ -75,10 +75,25 @@ public class BasicBlock {
 
   public void addOutNeighbors(BasicBlock block, ASMOpcode condition) {
     outNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(block, condition));
+    sortOutNeighbors();
   }
 
   public void updateOutNeighbors(List<Tuple<BasicBlock, ASMOpcode>> newOutNeighbors) {
     outNeighbors = newOutNeighbors;
+    sortOutNeighbors();
+  }
+  
+  public void sortOutNeighbors() {
+    for (int i = outNeighbors.size() - 1; i > 0; i--){
+      for (int j = 0; j < i; j++) {
+        ASMOpcode opcode =  outNeighbors.get(j).y;
+        if(opcode == ASMOpcode.Jump) {
+          Tuple<BasicBlock, ASMOpcode> temp = outNeighbors.get(j);
+          outNeighbors.set(j, outNeighbors.get(j + 1));
+          outNeighbors.set(j + 1, temp);
+        }
+      }
+    }
   }
 
   public List<Tuple<BasicBlock, ASMOpcode>> getOutNeighbors() {

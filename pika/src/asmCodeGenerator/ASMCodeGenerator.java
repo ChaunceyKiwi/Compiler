@@ -89,7 +89,6 @@ public class ASMCodeGenerator {
   public static void createRegister(ASMCodeFragment code, String label) {
     code.add(DLabel, label);
     code.add(DataI, 0);
-    Macros.storeITo(code, label);
   }
 
   private ASMCodeFragment programASM() {

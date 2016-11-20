@@ -14,14 +14,16 @@ import asmCodeGenerator.codeStorage.ASMOpcode;
 
 public class BasicBlockManager {
   private List<BasicBlock> blocks;
-  private BasicBlock startBlock;
+  private List<BasicBlock> startBlocks;
   private int sizeInBlocks = 0;
   private String basicBlockPrefix = "basicBlock-";
 
   private Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String, Integer>>();
   private Set<Tuple<String, Integer>> jumpSet = new HashSet<Tuple<String, Integer>>();
+  private Set<Tuple<String, Integer>> callSet = new HashSet<Tuple<String, Integer>>();
   private Set<Triplet<ASMOpcode, String, Integer>> branchSet =
       new HashSet<Triplet<ASMOpcode, String, Integer>>();
+  private Set<Integer> programStartSet = new HashSet<Integer>();
   private Set<Integer> blockStartSet = new HashSet<Integer>();
   private Set<Integer> blockEndSet = new HashSet<Integer>();
   private Set<Triplet<Integer, Integer, Integer>> blockSet =
@@ -34,15 +36,15 @@ public class BasicBlockManager {
 
   public BasicBlockManager() {
     this.blocks = new ArrayList<BasicBlock>();
-    this.startBlock = null;
+    this.startBlocks = new ArrayList<BasicBlock>();
   }
 
-  public void setStartBlock(BasicBlock block) {
-    this.startBlock = block;
+  public void addStartBlock(BasicBlock block) {
+    this.startBlocks.add(block);
   }
 
-  public BasicBlock getStartBlock(BasicBlock block) {
-    return startBlock;
+  public List<BasicBlock> getStartBlock(BasicBlock block) {
+    return startBlocks;
   }
 
   public void add(BasicBlock block) {
@@ -55,16 +57,29 @@ public class BasicBlockManager {
     buildLabelSet(fragment);
     buildJumpSet(fragment);
     buildBranchSet(fragment);
+    buildCallSet(fragment);
     buildBlockStartEndSet();
     buildBlockSet(fragment);
     buildBlocks(fragment);
+    sortBlocks();
     trimBlocks();
-    setNeighbourForBlocks();
+    setNeighborForBlocks();
+    optimizeUntilConverge();
+  }
+  
+  public void optimizeUntilConverge() {
+    int size;
+    do {
+      size = blocks.size();
+      performOptimizationUnit();
+    } while(blocks.size() != size);
+  }
+  
+  public void performOptimizationUnit() {
     unreachableCodeElimination();
     blockMerge();
-    cloningToSiplify();
+    cloningToSimplify();
     branchElimination();
-    blockMerge();
     updateInnerNeighbors();
   }
 
@@ -72,9 +87,8 @@ public class BasicBlockManager {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
     assignIndicesToBlocks();
 
-    int blockIndex = 1;
     for (BasicBlock basicBlock : blocks) {
-      code.add(ASMOpcode.Label, basicBlockPrefix + blockIndex++);
+      code.add(ASMOpcode.Label, basicBlockPrefix + basicBlock.getBlockIndex());
       code.chunks.add(basicBlock.getCodeChunk());
       for (Tuple<BasicBlock, ASMOpcode> outNeighbor : basicBlock.getOutNeighbors()) {
         int index = outNeighbor.x.getBlockIndex();
@@ -88,6 +102,7 @@ public class BasicBlockManager {
 
   public void assignIndicesToBlocks() {
     int blockIndex = 1;
+    sortBlocks();
     for (BasicBlock basicBlock : blocks) {
       basicBlock.setBlockIndex(blockIndex++);
     }
@@ -152,7 +167,7 @@ public class BasicBlockManager {
     }
   }
 
-  public void cloningToSiplify() {
+  public void cloningToSimplify() {
     List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
 
     for (BasicBlock basicBlock : blocks) {
@@ -252,17 +267,28 @@ public class BasicBlockManager {
   public void unreachableCodeElimination() {
     buildRelationTable();
     calculateBlockDistance();
-    int startIndex = startBlock.getBlockIndex() - 1;
-    List<BasicBlock> blocksToBeRemoved = new ArrayList<BasicBlock>();
+    Set<BasicBlock> blocksToBeRemoved = new HashSet<BasicBlock>();
+    Set<BasicBlock> blocksToBeRemovedInLastLoop = null;
 
-    for (int i = 0; i < sizeInBlocks; i++) {
-      if (distanceTable[startIndex][i] == Integer.MAX_VALUE) {
-        for (BasicBlock basicBlock : blocks) {
-          if (basicBlock.getBlockIndex() - 1 == i) {
-            blocksToBeRemoved.add(basicBlock);
+    for (BasicBlock startBlock : startBlocks) {
+      int startIndex = startBlock.getBlockIndex() - 1;
+      blocksToBeRemoved.clear();
+
+      for (int i = 0; i < sizeInBlocks; i++) {
+        if (distanceTable[startIndex][i] == Integer.MAX_VALUE) {
+          for (BasicBlock basicBlock : blocks) {
+            if (basicBlock.getBlockIndex() - 1 == i) {
+              blocksToBeRemoved.add(basicBlock);
+            }
           }
         }
       }
+
+      if (blocksToBeRemovedInLastLoop != null) {
+        blocksToBeRemoved.retainAll(blocksToBeRemovedInLastLoop);
+      }
+
+      blocksToBeRemovedInLastLoop = new HashSet<BasicBlock>(blocksToBeRemoved);
     }
 
     for (BasicBlock block : blocksToBeRemoved) {
@@ -279,7 +305,8 @@ public class BasicBlockManager {
       // Trim jump and branch at the end
       for (ASMInstruction instr : asmCodeChunk.instructions) {
         // Skip first few labels
-        if (isStart && (instr.getOpcode() == ASMOpcode.Label)) {
+        if (isStart && (instr.getOpcode() == ASMOpcode.Label)
+            && (!isCalledToLabel(instr.getArgument().toString()))) {
           continue;
         } else {
           isStart = false;
@@ -292,6 +319,15 @@ public class BasicBlockManager {
       basicBlock.updateCodeChunk(trimmedCodeChunk);
       basicBlock.setAsTrimed(true);
     }
+  }
+
+  public boolean isCalledToLabel(String label) {
+    for (Tuple<String, Integer> call : callSet) {
+      if (label.equals(call.x)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void buildRelationTable() {
@@ -321,13 +357,24 @@ public class BasicBlockManager {
       BasicBlock block = new BasicBlock(getCodeInRange(fragment, tuple.x, tuple.y), tuple.z);
       this.add(block);
       blockRange.add(new Triplet<Integer, Integer, BasicBlock>(tuple.x, tuple.y, block));
-      if (tuple.x == 1) {
-        this.setStartBlock(block);
+      if (programStartSet.contains(tuple.x)) {
+        this.addStartBlock(block);
       }
     }
   }
 
-  private void setNeighbourForBlocks() {
+  private void sortBlocks() {
+    for (int i = blocks.size() - 1; i > 0; i--)
+      for (int j = 0; j < i; j++) {
+        if (blocks.get(j).getBlockIndex() > blocks.get(j + 1).getBlockIndex()) {
+          BasicBlock temp = blocks.get(j);
+          blocks.set(j, blocks.get(j + 1));
+          blocks.set(j + 1, temp);
+        }
+      }
+  }
+
+  private void setNeighborForBlocks() {
     for (Triplet<Integer, Integer, ASMOpcode> link : linkSet) {
       BasicBlock fromBlock = getBasicBlockFromLineNumber(link.x);
       BasicBlock toBlock = getBasicBlockFromLineNumber(link.y);
@@ -380,8 +427,8 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
-        if (instruction.getOpcode() == ASMOpcode.Jump
-            || instruction.getOpcode() == ASMOpcode.Halt) {
+        if (instruction.getOpcode() == ASMOpcode.Jump || instruction.getOpcode() == ASMOpcode.Halt
+            || instruction.getOpcode() == ASMOpcode.Return) {
           jumpSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
           blockEndSet.add(lineNumCount);
           blockStartSet.add(lineNumCount + 1);
@@ -407,6 +454,21 @@ public class BasicBlockManager {
             blockStartSet.add(lineNumCount);
           }
           previousIsBranch = false;
+        }
+        lineNumCount++;
+      }
+    }
+  }
+
+  private void buildCallSet(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        if (instruction.getOpcode() == ASMOpcode.Call) {
+          callSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+          blockEndSet.add(lineNumCount);
+          blockStartSet.add(lineNumCount + 1);
         }
         lineNumCount++;
       }
@@ -442,6 +504,22 @@ public class BasicBlockManager {
         }
       }
     }
+
+    for (Tuple<String, Integer> call : callSet) {
+      String callKey = call.x;
+      blockStartSet.add(call.y + 1);
+      blockEndSet.add(call.y);
+
+      // First line is the program start
+      programStartSet.add(1);
+      for (Tuple<String, Integer> label : labelSet) {
+        String labelKey = label.x;
+        if (labelKey.equals(callKey)) {
+          programStartSet.add(label.y);
+          blockStartSet.add(label.y);
+        }
+      }
+    }
   }
 
   private void buildBlockSet(ASMCodeFragment fragment) {
@@ -454,8 +532,8 @@ public class BasicBlockManager {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         if (blockStartSet.contains(lineNumCount)) {
           if (!previousIsJump && lineNumCount > 1) {
-            linkSet.add(
-                new Triplet<Integer, Integer, ASMOpcode>(lineNumCount - 1, lineNumCount, ASMOpcode.Jump));
+            linkSet.add(new Triplet<Integer, Integer, ASMOpcode>(lineNumCount - 1, lineNumCount,
+                ASMOpcode.Jump));
           }
           begin = lineNumCount;
         }

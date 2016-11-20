@@ -266,7 +266,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     setTypeAndCheckSignature(node, AssignmentStatementNode.VALUE_ASSIGNMENT, childTypes);
   }
 
-  // Only following three cases can be tagetable:
+  // Only following three cases can be targetable:
   // 1). an array indexing expression
   // 2). a parenthesized expression
   // 3). an identifier

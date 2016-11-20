@@ -318,133 +318,176 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        0                         
+        DataZ        36                        
         DLabel       reg1-func                 
         DataI        0                         
-        PushD        reg1-func                 
-        Exchange                               
-        StoreI                                 
         DLabel       reg2-func                 
         DataI        0                         
-        PushD        reg2-func                 
-        Exchange                               
-        StoreI                                 
         DLabel       reg1-system               
         DataI        0                         
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
         DLabel       reg2-system               
         DataI        0                         
-        PushD        reg2-system               
-        Exchange                               
-        StoreI                                 
         DLabel       reg3-system               
         DataI        0                         
-        PushD        reg3-system               
-        Exchange                               
-        StoreI                                 
         DLabel       reg4-system               
         DataI        0                         
-        PushD        reg4-system               
-        Exchange                               
-        StoreI                                 
         DLabel       reg-counter               
         DataI        0                         
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        Jump         -function-definition-2-end 
-        Label        $function-fin             
-        Label        -function-definition-2-dynamic-link 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        -4                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        -function-definition-2-return-address 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        -8                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        -function-definition-2-move-fp-to-sp 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushD        $frame-pointer            
-        Exchange                               
-        StoreI                                 
-        Label        -function-definition-2-subtract-frame-size 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        8                         
-        Subtract                               
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        Label        -function-definition-2-function-body-process 
-        PushI        2333                      
-        Jump         --block-statement--1-end-of-block-statement 
-        Label        --block-statement--1-end-of-block-statement 
-        Label        -function-definition-2-push-return-address 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        -8                        
-        Add                                    
-        LoadI                                  
-        Label        -function-definition-2-replace-frame-pointer 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        -4                        
-        Add                                    
-        LoadI                                  
-        PushD        $frame-pointer            
-        Exchange                               
-        StoreI                                 
-        Label        -function-definition-2-increment-stack-pointer 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        8                         
-        Add                                    
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        Label        -function-definition-2-decrement-stack-pointer 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        4                         
-        Subtract                               
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Return                                 
-        Label        -function-definition-2-end 
         Label        $$main                    
-        Label        -function-invocation-3-begin 
-        Call         $function-fin             
-        PushD        $stack-pointer            
-        LoadI                                  
-        LoadI                                  
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        PushD        $stack-pointer            
-        Exchange                               
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        PushF        3.20000                   
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% d
+        PushI        8                         
+        PushI        5                         
+        Multiply                               
         StoreI                                 
-        Label        -function-invocation-3-end 
-        Pop                                    
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% d
+        LoadI                                  
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        12                        
+        Add                                    %% e
+        PushF        1.33300                   
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        PushF        4.90000                   
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% d
+        LoadI                                  
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        12                        
+        Add                                    %% e
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        20                        
+        Add                                    %% f
+        PushF        2.81800                   
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        PushF        0.00000                   
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% d
+        LoadI                                  
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        12                        
+        Add                                    %% e
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        20                        
+        Add                                    %% f
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        28                        
+        Add                                    %% g
+        PushF        3200.00                   
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        PushF        77.7700                   
+        StoreF                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% c
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% d
+        LoadI                                  
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        12                        
+        Add                                    %% e
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        20                        
+        Add                                    %% f
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        28                        
+        Add                                    %% g
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
         Halt                                   
         Label        -mem-manager-make-tags    
         DLabel       $mmgr-tags-size           
@@ -860,28 +903,28 @@
         Return                                 
         DLabel       $heap-memory              
         Label        GCDCalculation            
-        Label        --GCD-Calculation--4--function-begin- 
+        Label        --GCD-Calculation--1--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--4--check-initial-zero 
+        JumpTrue     --GCD-Calculation--1--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--4--function-end- 
-        Label        --GCD-Calculation--4--check-initial-zero 
-        Label        --GCD-Calculation--4--loop-begin- 
+        Jump         --GCD-Calculation--1--function-end- 
+        Label        --GCD-Calculation--1--check-initial-zero 
+        Label        --GCD-Calculation--1--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--4--loop-end- 
+        JumpFalse    --GCD-Calculation--1--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--4--loop-end- 
+        JumpFalse    --GCD-Calculation--1--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--4--positive-case- 
-        Label        --GCD-Calculation--4--not-positive-case- 
+        JumpPos      --GCD-Calculation--1--positive-case- 
+        Label        --GCD-Calculation--1--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -890,8 +933,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--4--join- 
-        Label        --GCD-Calculation--4--positive-case- 
+        Jump         --GCD-Calculation--1--join- 
+        Label        --GCD-Calculation--1--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -900,11 +943,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--4--join- 
-        Label        --GCD-Calculation--4--join- 
-        Jump         --GCD-Calculation--4--loop-begin- 
-        Label        --GCD-Calculation--4--loop-end- 
+        Jump         --GCD-Calculation--1--join- 
+        Label        --GCD-Calculation--1--join- 
+        Jump         --GCD-Calculation--1--loop-begin- 
+        Label        --GCD-Calculation--1--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--4--function-end- 
+        Label        --GCD-Calculation--1--function-end- 
         Exchange                               
         Return                                 
