@@ -1,14 +1,24 @@
 exec {
-	var c := 3.2.
-	const d := 8 * 5.
-	print c; d, _n_.
-	var e := 1.333.
-	c := 4.9.
-	print c; d; e, _n_.
-	var f := 2.818.
-	c := 0.0.
-	print c; d; e; f, _n_.
-	var g := 3.2E3.
-	c := 77.77.
-	print c; d; e; f; g, _n_.
+	const quarters :=  5.
+	const dimes    :=  3.
+	const nickels  :=  7.
+	const pennies  := 17.
+    
+	const value := quarters * 25 +
+    			 dimes    * 10 +
+    			 nickels  *  5 +
+    			 pennies.
+	print value, _n_.
+    
+	const ncoins := quarters + dimes + nickels + pennies.
+	print ncoins, _n_.
+    
+	const moredimes := dimes > nickels.
+	print moredimes;.
+
+	const boot := _true_.
+	const boof := _false_.
+    
+	print boot; boof, _n_.
+	print boot, boof, _n_.
 }

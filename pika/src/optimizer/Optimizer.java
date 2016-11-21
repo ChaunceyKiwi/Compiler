@@ -7,13 +7,14 @@ import asmCodeGenerator.codeStorage.ASMCodeFragment;
 
 public class Optimizer {
   private ASMCodeFragment fragment;
-  private static BasicBlockManager basicBlockManager = new BasicBlockManager();
-  private static CodeModifier codeModifier = new CodeModifier();
-
   
   public static ASMCodeFragment optimize(ASMCodeFragment fragment) {
+    CodeModifier codeModifier = new CodeModifier();
+    BasicBlockManager basicBlockManager = new BasicBlockManager(); 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-    ASMCodeChunk header = codeModifier.separateOutDataDirectives(fragment);
+    ASMCodeChunk header;
+    
+    header = codeModifier.separateOutDataDirectives(fragment);
     basicBlockManager.generateBasicBlocks(fragment);
     code.chunks.add(header);
     code.append(basicBlockManager.printAllChunksInBasicBlocks());

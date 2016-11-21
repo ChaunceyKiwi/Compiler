@@ -23,8 +23,22 @@ public class Tuple<X, Y> {
         }
         
         Tuple rawOther = (Tuple) other;
-        return x.equals(rawOther.x) &&
-            y.equals(rawOther.y);
+        boolean xEquals;
+        boolean yEquals;
+
+        if(x == null) {
+          xEquals = (rawOther.x == null);
+        } else {
+          xEquals = x.equals(rawOther.x);
+        }
+        
+        if(y == null) {
+          yEquals = (rawOther.y == null);
+        } else {
+          yEquals = y.equals(rawOther.y);
+        }
+         
+        return xEquals && yEquals;
     }
 
     @Override 
