@@ -65,6 +65,7 @@ public class BasicBlockManager {
     trimBlocks();
     setNeighborForBlocks();
     optimizeUntilConverge();
+    calculateDominators();
   }
   
   public void optimizeUntilConverge() {
@@ -81,6 +82,37 @@ public class BasicBlockManager {
     cloningToSimplify();
     branchElimination();
     updateInnerNeighbors();
+  }
+  
+  public void calculateDominators() {
+    for(BasicBlock basicBlock : startBlocks) {
+      basicBlock.addDominitors(basicBlock);
+    }
+    
+    boolean hasChanged = true;
+    while(hasChanged) {
+      hasChanged = false;
+      for(BasicBlock basicBlock : blocks) {
+        Set<BasicBlock> intersectionSet = new HashSet<BasicBlock>();
+
+        for (Tuple<BasicBlock, ASMOpcode> inNeighbor : basicBlock.getInNeighbors()) {
+          Set<BasicBlock> dominitors = inNeighbor.x.getDominitors();
+          intersectionSet = blocksIntersction(intersectionSet, dominitors);
+        }
+        intersectionSet.add(basicBlock);
+        if(!intersectionSet.equals(basicBlock.getDominitors())) {
+          basicBlock.updateDominitors(intersectionSet);
+          hasChanged = true;
+        }
+      } 
+    }
+  }
+  
+  public Set<BasicBlock> blocksIntersction(Set<BasicBlock> set1, Set<BasicBlock> set2) {
+    Set<BasicBlock> intersectionSet = new HashSet<BasicBlock>();
+    intersectionSet.addAll(set1);
+    intersectionSet.retainAll(set2);
+    return intersectionSet;
   }
 
   public ASMCodeFragment printAllChunksInBasicBlocks() {
@@ -132,24 +164,31 @@ public class BasicBlockManager {
         for (Tuple<BasicBlock, ASMOpcode> outNeighbor : outNeighbors) {
           ASMInstruction instr = basicBlock.getLastInstruction();
           ASMOpcode branch = outNeighbor.y;
+          
+          if(instr == null)
+            break;
 
           if (instr.getOpcode() == ASMOpcode.PushI) {
             if (Integer.parseInt(instr.getArgument().toString()) == 0) {
               if (branch == ASMOpcode.JumpFalse) {
+                basicBlock.getCodeChunk().remove(instr);
                 outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
                 outNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(outNeighbor.x, ASMOpcode.Jump));
                 basicBlock.updateOutNeighbors(outNeighbors);
                 updateInnerNeighbors();
                 break;
               } else if (branch == ASMOpcode.JumpTrue) {
+                basicBlock.getCodeChunk().remove(instr);
                 neighborsToRemove.add(outNeighbor);
                 updateInnerNeighbors();
               }
             } else {
               if (branch == ASMOpcode.JumpFalse) {
+                basicBlock.getCodeChunk().remove(instr);
                 neighborsToRemove.add(outNeighbor);
                 updateInnerNeighbors();
               } else if (branch == ASMOpcode.JumpTrue) {
+                basicBlock.getCodeChunk().remove(instr);
                 outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
                 outNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(outNeighbor.x, ASMOpcode.Jump));
                 basicBlock.updateOutNeighbors(outNeighbors);

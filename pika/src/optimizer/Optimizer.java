@@ -16,6 +16,8 @@ public class Optimizer {
     
     header = codeModifier.separateOutDataDirectives(fragment);
     basicBlockManager.generateBasicBlocks(fragment);
+    
+    
     code.chunks.add(header);
     code.append(basicBlockManager.printAllChunksInBasicBlocks());
     return code;

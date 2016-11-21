@@ -1,7 +1,9 @@
 package optimizer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import asmCodeGenerator.codeStorage.ASMCodeChunk;
 import asmCodeGenerator.codeStorage.ASMOpcode;
@@ -13,12 +15,15 @@ public class BasicBlock {
   private int blockIndex;
   private List<Tuple<BasicBlock, ASMOpcode>> inNeighbors;
   private List<Tuple<BasicBlock, ASMOpcode>> outNeighbors;
+  private Set<BasicBlock> dominitors;
+
 
   public BasicBlock(ASMCodeChunk code, int blockIndex) {
     this.codeChunk = code;
     this.isTrimmed = false;
     this.inNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
     this.outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
+    this.dominitors = new HashSet<BasicBlock>();
     this.blockIndex = blockIndex;
   }
 
@@ -28,11 +33,27 @@ public class BasicBlock {
     this.isTrimmed = basicBlock.hasBeenTrimed();
     this.inNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>(basicBlock.getInNeighbors());
     this.outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>(basicBlock.getOutNeighbors());
+    this.dominitors = new HashSet<BasicBlock>();
     this.blockIndex = basicBlock.getBlockIndex();
   }
 
+  public void addDominitors(BasicBlock basicBlock) {
+    this.dominitors.add(basicBlock);
+  }
+
+  public Set<BasicBlock> getDominitors() {
+    return this.dominitors;
+  }
+
+  public void updateDominitors(Set<BasicBlock> dominitors) {
+    this.dominitors = dominitors;
+  }
+
   public ASMInstruction getLastInstruction() {
-    return codeChunk.instructions.get(codeChunk.instructions.size() - 1);
+    if(codeChunk.instructions.size() > 0)
+      return codeChunk.instructions.get(codeChunk.instructions.size() - 1);
+    else 
+      return null;
   }
 
   public int getBlockIndex() {
@@ -64,7 +85,7 @@ public class BasicBlock {
   public void addInNeighbors(BasicBlock block, ASMOpcode condition) {
     inNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(block, condition));
   }
-  
+
   public void updateInNeighbors(List<Tuple<BasicBlock, ASMOpcode>> newInNeighbors) {
     inNeighbors = newInNeighbors;
   }
@@ -82,12 +103,12 @@ public class BasicBlock {
     outNeighbors = newOutNeighbors;
     sortOutNeighbors();
   }
-  
+
   public void sortOutNeighbors() {
-    for (int i = outNeighbors.size() - 1; i > 0; i--){
+    for (int i = outNeighbors.size() - 1; i > 0; i--) {
       for (int j = 0; j < i; j++) {
-        ASMOpcode opcode =  outNeighbors.get(j).y;
-        if(opcode == ASMOpcode.Jump) {
+        ASMOpcode opcode = outNeighbors.get(j).y;
+        if (opcode == ASMOpcode.Jump) {
           Tuple<BasicBlock, ASMOpcode> temp = outNeighbors.get(j);
           outNeighbors.set(j, outNeighbors.get(j + 1));
           outNeighbors.set(j + 1, temp);

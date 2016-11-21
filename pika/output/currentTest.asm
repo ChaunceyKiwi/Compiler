@@ -274,7 +274,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        27                        
+        DataZ        4                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -357,212 +357,45 @@
         StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% quarters
-        PushI        5                         
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% dimes
-        PushI        3                         
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% nickels
-        PushI        7                         
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        12                        
-        Add                                    %% pennies
-        PushI        17                        
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        16                        
-        Add                                    %% value
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% quarters
-        LoadI                                  
-        PushI        25                        
-        Multiply                               
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% dimes
-        LoadI                                  
-        PushI        10                        
-        Multiply                               
-        Add                                    
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% nickels
-        LoadI                                  
-        PushI        5                         
-        Multiply                               
-        Add                                    
-        PushD        $global-memory-block      
-        PushI        12                        
-        Add                                    %% pennies
-        LoadI                                  
-        Add                                    
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        16                        
-        Add                                    %% value
-        LoadI                                  
-        PushD        $print-format-integer     
-        Printf                                 
-        PushD        $print-format-newline     
-        Printf                                 
-        PushD        $global-memory-block      
-        PushI        20                        
-        Add                                    %% ncoins
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% quarters
-        LoadI                                  
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% dimes
-        LoadI                                  
-        Add                                    
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% nickels
-        LoadI                                  
-        Add                                    
-        PushD        $global-memory-block      
-        PushI        12                        
-        Add                                    %% pennies
-        LoadI                                  
-        Add                                    
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        20                        
-        Add                                    %% ncoins
-        LoadI                                  
-        PushD        $print-format-integer     
-        Printf                                 
-        PushD        $print-format-newline     
-        Printf                                 
-        PushD        $global-memory-block      
-        PushI        24                        
-        Add                                    %% moredimes
-        Label        -compare-1-arg1           
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% dimes
-        LoadI                                  
-        Label        -compare-1-arg2           
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% nickels
-        LoadI                                  
-        Label        -compare-1-sub            
-        Subtract                               
-        JumpPos      basicBlock-2              
-        Jump         basicBlock-3              
-        Label        basicBlock-2              
+        Add                                    %% a
         PushI        1                         
+        StoreI                                 
+        Jump         basicBlock-2              
+        Label        basicBlock-2              
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Label        -compare-2-arg2           
+        PushI        10                        
+        Label        -compare-2-sub            
+        Subtract                               
+        JumpNeg      basicBlock-3              
         Jump         basicBlock-4              
         Label        basicBlock-3              
-        PushI        0                         
-        Jump         basicBlock-4              
-        Label        basicBlock-4              
-        StoreC                                 
         PushD        $global-memory-block      
-        PushI        24                        
-        Add                                    %% moredimes
-        LoadC                                  
-        JumpTrue     basicBlock-6              
-        Jump         basicBlock-5              
-        Label        basicBlock-5              
-        PushD        $boolean-false-string     
-        Jump         basicBlock-7              
-        Label        basicBlock-6              
-        PushD        $boolean-true-string      
-        Jump         basicBlock-7              
-        Label        basicBlock-7              
-        PushD        $print-format-boolean     
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $print-format-integer     
         Printf                                 
         PushD        $print-format-space       
         Printf                                 
         PushD        $global-memory-block      
-        PushI        25                        
-        Add                                    %% boot
+        PushI        0                         
+        Add                                    %% a
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
         PushI        1                         
-        StoreC                                 
-        PushD        $global-memory-block      
-        PushI        26                        
-        Add                                    %% boof
-        PushI        0                         
-        StoreC                                 
-        PushD        $global-memory-block      
-        PushI        25                        
-        Add                                    %% boot
-        LoadC                                  
-        JumpTrue     basicBlock-9              
-        Jump         basicBlock-8              
-        Label        basicBlock-8              
-        PushD        $boolean-false-string     
-        Jump         basicBlock-10             
-        Label        basicBlock-9              
-        PushD        $boolean-true-string      
-        Jump         basicBlock-10             
-        Label        basicBlock-10             
-        PushD        $print-format-boolean     
-        Printf                                 
-        PushD        $print-format-space       
-        Printf                                 
-        PushD        $global-memory-block      
-        PushI        26                        
-        Add                                    %% boof
-        LoadC                                  
-        JumpTrue     basicBlock-12             
-        Jump         basicBlock-11             
-        Label        basicBlock-11             
-        PushD        $boolean-false-string     
-        Jump         basicBlock-13             
-        Label        basicBlock-12             
-        PushD        $boolean-true-string      
-        Jump         basicBlock-13             
-        Label        basicBlock-13             
-        PushD        $print-format-boolean     
-        Printf                                 
-        PushD        $print-format-newline     
-        Printf                                 
-        PushD        $global-memory-block      
-        PushI        25                        
-        Add                                    %% boot
-        LoadC                                  
-        JumpTrue     basicBlock-15             
-        Jump         basicBlock-14             
-        Label        basicBlock-14             
-        PushD        $boolean-false-string     
-        Jump         basicBlock-16             
-        Label        basicBlock-15             
-        PushD        $boolean-true-string      
-        Jump         basicBlock-16             
-        Label        basicBlock-16             
-        PushD        $print-format-boolean     
-        Printf                                 
-        PushD        $global-memory-block      
-        PushI        26                        
-        Add                                    %% boof
-        LoadC                                  
-        JumpTrue     basicBlock-18             
-        Jump         basicBlock-17             
-        Label        basicBlock-17             
-        PushD        $boolean-false-string     
-        Jump         basicBlock-19             
-        Label        basicBlock-18             
-        PushD        $boolean-true-string      
-        Jump         basicBlock-19             
-        Label        basicBlock-19             
-        PushD        $print-format-boolean     
-        Printf                                 
-        PushD        $print-format-newline     
-        Printf                                 
+        Add                                    
+        StoreI                                 
+        Jump         basicBlock-2              
+        Label        basicBlock-4  
+        PStack            
         Halt                                   
-        Label        basicBlock-20             
+        Label        basicBlock-5              
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
         Exchange                               
@@ -610,7 +443,7 @@
         PushD        $mmgr-tags-return         
         LoadI                                  
         Return                                 
-        Label        basicBlock-21             
+        Label        basicBlock-6              
         Label        -mem-manager-one-tag      
         PushD        $mmgr-onetag-return       
         Exchange                               
@@ -649,7 +482,7 @@
         PushD        $mmgr-onetag-return       
         LoadI                                  
         Return                                 
-        Label        basicBlock-22             
+        Label        basicBlock-7              
         Label        -mem-manager-deallocate   
         PushD        $mmgr-dealloc-return      
         Exchange                               
@@ -718,7 +551,7 @@
         PushD        $mmgr-dealloc-return      
         LoadI                                  
         Return                                 
-        Label        basicBlock-23             
+        Label        basicBlock-8              
         Label        -mem-manager-remove-block 
         PushD        $mmgr-remove-return       
         Exchange                               
@@ -752,9 +585,9 @@
         Label        -mmgr-remove-process-prev 
         PushD        $mmgr-remove-prev         
         LoadI                                  
-        JumpFalse    basicBlock-25             
-        Jump         basicBlock-24             
-        Label        basicBlock-24             
+        JumpFalse    basicBlock-10             
+        Jump         basicBlock-9              
+        Label        basicBlock-9              
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $mmgr-remove-prev         
@@ -770,20 +603,20 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-26             
-        Label        basicBlock-25             
+        Jump         basicBlock-11             
+        Label        basicBlock-10             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $heap-first-free          
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-26             
-        Label        basicBlock-26             
+        Jump         basicBlock-11             
+        Label        basicBlock-11             
         PushD        $mmgr-remove-next         
         LoadI                                  
-        JumpFalse    basicBlock-28             
-        Jump         basicBlock-27             
-        Label        basicBlock-27             
+        JumpFalse    basicBlock-13             
+        Jump         basicBlock-12             
+        Label        basicBlock-12             
         PushD        $mmgr-remove-prev         
         LoadI                                  
         PushD        $mmgr-remove-next         
@@ -792,8 +625,8 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-28             
-        Label        basicBlock-28             
+        Jump         basicBlock-13             
+        Label        basicBlock-13             
         PushD        $mmgr-remove-return       
         LoadI                                  
         Return                                 
