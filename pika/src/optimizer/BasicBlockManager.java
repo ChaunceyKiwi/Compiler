@@ -16,7 +16,6 @@ public class BasicBlockManager {
   private List<BasicBlock> blocks;
   private List<BasicBlock> startBlocks;
   private int sizeInBlocks = 0;
-  private String basicBlockPrefix = "basicBlock-";
 
   private Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String, Integer>>();
   private Set<Tuple<String, Integer>> jumpSet = new HashSet<Tuple<String, Integer>>();
@@ -41,6 +40,7 @@ public class BasicBlockManager {
 
   public void addStartBlock(BasicBlock block) {
     this.startBlocks.add(block);
+    block.setEntryBlock(block);
   }
 
   public List<BasicBlock> getStartBlock(BasicBlock block) {
@@ -66,6 +66,8 @@ public class BasicBlockManager {
     setNeighborForBlocks();
     optimizeUntilConverge();
     calculateDominators();
+    assignIndicesToBlocks();
+    setLoopHeader();
   }
   
   public void optimizeUntilConverge() {
@@ -84,9 +86,23 @@ public class BasicBlockManager {
     updateInnerNeighbors();
   }
   
+  public void setLoopHeader() {
+    for (BasicBlock basicBlock : blocks) {
+      for (Tuple<BasicBlock, ASMOpcode> outNeighbor : basicBlock.getOutNeighbors()) {
+        if(basicBlock.isDominatedBy(outNeighbor.x)) {
+          outNeighbor.x.setAsLoopHeader();
+        }
+      }
+    }
+  }
+  
   public void calculateDominators() {
     for(BasicBlock basicBlock : startBlocks) {
       basicBlock.addDominitors(basicBlock);
+    }
+    
+    for(BasicBlock basicBlock : blocks) {
+      basicBlock.addDominitors(basicBlock.getEntryBlock());
     }
     
     boolean hasChanged = true;
@@ -97,7 +113,11 @@ public class BasicBlockManager {
 
         for (Tuple<BasicBlock, ASMOpcode> inNeighbor : basicBlock.getInNeighbors()) {
           Set<BasicBlock> dominitors = inNeighbor.x.getDominitors();
-          intersectionSet = blocksIntersction(intersectionSet, dominitors);
+          if(intersectionSet.isEmpty()) {
+            intersectionSet = new HashSet<BasicBlock>(dominitors);
+          }else {
+            intersectionSet = blocksIntersction(intersectionSet, dominitors);
+          }
         }
         intersectionSet.add(basicBlock);
         if(!intersectionSet.equals(basicBlock.getDominitors())) {
@@ -120,12 +140,11 @@ public class BasicBlockManager {
     assignIndicesToBlocks();
 
     for (BasicBlock basicBlock : blocks) {
-      code.add(ASMOpcode.Label, basicBlockPrefix + basicBlock.getBlockIndex());
+      code.add(ASMOpcode.Label, basicBlock.getPrefix() + basicBlock.getBlockIndex());
       code.chunks.add(basicBlock.getCodeChunk());
       for (Tuple<BasicBlock, ASMOpcode> outNeighbor : basicBlock.getOutNeighbors()) {
         int index = outNeighbor.x.getBlockIndex();
-        ASMOpcode opcode = outNeighbor.y;
-        code.add(opcode, basicBlockPrefix + index);
+        code.add(outNeighbor.y, outNeighbor.x.getPrefix() + index);
       }
     }
 
@@ -318,6 +337,12 @@ public class BasicBlockManager {
           for (BasicBlock basicBlock : blocks) {
             if (basicBlock.getBlockIndex() - 1 == i) {
               blocksToBeRemoved.add(basicBlock);
+            }
+          }
+        } else {
+          for (BasicBlock basicBlock : blocks) {
+            if (basicBlock.getBlockIndex() - 1 == i) {
+              basicBlock.setEntryBlock(startBlock);
             }
           }
         }

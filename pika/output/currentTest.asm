@@ -289,6 +289,25 @@
         DataI        0                         
         DLabel       reg-counter               
         DataI        0                         
+        DLabel       -stringConstant-3-then    
+        DataI        6                         
+        DataI        9                         
+        DataI        4                         
+        DataC        116                       %% "then"
+        DataC        104                       
+        DataC        101                       
+        DataC        110                       
+        DataC        0                         
+        DLabel       -stringConstant-4-after   
+        DataI        6                         
+        DataI        9                         
+        DataI        5                         
+        DataC        97                        %% "after"
+        DataC        102                       
+        DataC        116                       
+        DataC        101                       
+        DataC        114                       
+        DataC        0                         
         DLabel       $mmgr-tags-size           
         DataZ        4                         
         DLabel       $mmgr-tags-start          
@@ -357,43 +376,48 @@
         StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% a
-        PushI        1                         
+        Add                                    %% counter
+        PushI        0                         
         StoreI                                 
-        Jump         basicBlock-2              
-        Label        basicBlock-2              
+        Jump         basicBlockHeader-2        
+        Label        basicBlockHeader-2        
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% a
+        Add                                    %% counter
         LoadI                                  
         Label        -compare-2-arg2           
-        PushI        10                        
+        PushI        5                         
         Label        -compare-2-sub            
         Subtract                               
         JumpNeg      basicBlock-3              
         Jump         basicBlock-4              
         Label        basicBlock-3              
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% a
-        LoadI                                  
-        PushD        $print-format-integer     
+        PushD        -stringConstant-3-then    
+        PushI        12                        
+        Add                                    
+        PushD        $print-format-string      
         Printf                                 
-        PushD        $print-format-space       
+        PushD        $print-format-newline     
         Printf                                 
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% a
+        Add                                    %% counter
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% a
+        Add                                    %% counter
         LoadI                                  
         PushI        1                         
         Add                                    
         StoreI                                 
-        Jump         basicBlock-2              
-        Label        basicBlock-4  
-        PStack            
+        Jump         basicBlockHeader-2        
+        Label        basicBlock-4              
+        PushD        -stringConstant-4-after   
+        PushI        12                        
+        Add                                    
+        PushD        $print-format-string      
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
         Halt                                   
         Label        basicBlock-5              
         Label        -mem-manager-make-tags    

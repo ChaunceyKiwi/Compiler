@@ -11,16 +11,20 @@ import asmCodeGenerator.codeStorage.ASMInstruction;
 
 public class BasicBlock {
   private ASMCodeChunk codeChunk;
+  private BasicBlock entryBlock;
   private boolean isTrimmed;
   private int blockIndex;
   private List<Tuple<BasicBlock, ASMOpcode>> inNeighbors;
   private List<Tuple<BasicBlock, ASMOpcode>> outNeighbors;
   private Set<BasicBlock> dominitors;
+  private boolean isLoopHeader;
 
 
   public BasicBlock(ASMCodeChunk code, int blockIndex) {
     this.codeChunk = code;
     this.isTrimmed = false;
+    this.entryBlock = null;
+    this.isLoopHeader = false;
     this.inNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
     this.outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>();
     this.dominitors = new HashSet<BasicBlock>();
@@ -31,12 +35,47 @@ public class BasicBlock {
     this.codeChunk = new ASMCodeChunk();
     this.codeChunk.append(basicBlock.getCodeChunk());
     this.isTrimmed = basicBlock.hasBeenTrimed();
+    this.entryBlock = null;
+    this.isLoopHeader = false;
     this.inNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>(basicBlock.getInNeighbors());
     this.outNeighbors = new ArrayList<Tuple<BasicBlock, ASMOpcode>>(basicBlock.getOutNeighbors());
     this.dominitors = new HashSet<BasicBlock>();
     this.blockIndex = basicBlock.getBlockIndex();
   }
-
+  
+  public void setAsLoopHeader() {
+    this.isLoopHeader = true;
+  }
+  
+  public String getPrefix() {
+    if (this.isLoopHeader) {
+      return "basicBlockHeader-";
+    } else {
+      return "basicBlock-";
+    }
+  }
+  
+  public boolean isLoopHeader() {
+    return this.isLoopHeader;
+  }
+  
+  public BasicBlock getEntryBlock() {
+    return this.entryBlock;
+  }
+  
+  public void setEntryBlock(BasicBlock basicBlock) {
+    this.entryBlock = basicBlock;
+  }
+  
+  public boolean isDominatedBy(BasicBlock basicBlock) {
+    for(BasicBlock dominitor : this.dominitors) {
+      if(dominitor == basicBlock) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   public void addDominitors(BasicBlock basicBlock) {
     this.dominitors.add(basicBlock);
   }
