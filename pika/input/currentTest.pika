@@ -1,3 +1,5 @@
 exec {
-  print [3|rat].
+  print 1//4 <= 4//16; _true_, _n_.
+  print 7//32 <= 4//16; _true_, _n_.
 }
+
