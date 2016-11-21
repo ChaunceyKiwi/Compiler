@@ -785,16 +785,16 @@ public class ASMCodeGenerator {
         code.add(opcode);
       } else if (operation instanceof String) {
         if (operation == BinaryOperatorNode.RATIONAL_ADD) {
-          code.append(RationalHelper.rationAdd(arg1, arg2, GCDCalculation, reg1, reg2,
+          code.append(RationalHelper.rationalAdd(arg1, arg2, GCDCalculation, reg1, reg2,
               reg1ForFunction, reg2ForFunction));
         } else if (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT) {
-          code.append(RationalHelper.rationSubtract(arg1, arg2, GCDCalculation, reg1, reg2,
+          code.append(RationalHelper.rationalSubtract(arg1, arg2, GCDCalculation, reg1, reg2,
               reg1ForFunction, reg2ForFunction));
         } else if (operation == BinaryOperatorNode.RATIONAL_MULTIPLY) {
-          code.append(RationalHelper.rationMultiply(arg1, arg2, GCDCalculation, reg1, reg2,
+          code.append(RationalHelper.rationalMultiply(arg1, arg2, GCDCalculation, reg1, reg2,
               reg1ForFunction, reg2ForFunction));
         } else if (operation == BinaryOperatorNode.RATIONAL_DIVIDE) {
-          code.append(RationalHelper.rationDivide(arg1, arg2, GCDCalculation, reg1, reg2,
+          code.append(RationalHelper.rationalDivide(arg1, arg2, GCDCalculation, reg1, reg2,
               reg1ForFunction, reg2ForFunction));
         }
       }

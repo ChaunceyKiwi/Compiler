@@ -142,7 +142,9 @@ public class RationalHelper {
 			code.append(arg1);
 			code.append(arg2);
 			code.add(Duplicate);
-			Macros.storeITo(code, reg4);
+            code.add(Duplicate);
+            code.add(JumpFalse, RunTime.RATIONAL_DENOMINATOR_ZERO_ERROR);
+            Macros.storeITo(code, reg4);
 			code.add(ConvertF);
 			code.add(FMultiply);
 			code.add(ConvertI);
@@ -356,7 +358,7 @@ public class RationalHelper {
 	}
 	
 	// Due to 
-	public static ASMCodeFragment rationAdd(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+	public static ASMCodeFragment rationalAdd(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
 			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 		Labeller labeller = new Labeller("-rational-add-");
@@ -465,7 +467,7 @@ public class RationalHelper {
 		return code;
 	}
 	
-	public static ASMCodeFragment rationSubtract(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+	public static ASMCodeFragment rationalSubtract(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
 			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
 		
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
@@ -575,7 +577,7 @@ public class RationalHelper {
 		return code;
 	}
 	
-	public static ASMCodeFragment rationMultiply(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+	public static ASMCodeFragment rationalMultiply(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
 			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
 		
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
@@ -677,7 +679,7 @@ public class RationalHelper {
 		return code;
 	}
 	
-	public static ASMCodeFragment rationDivide(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
+	public static ASMCodeFragment rationalDivide(ASMCodeFragment arg1, ASMCodeFragment arg2, String GCDCalculation,
 			String reg1, String reg2,  String reg1ForFunction, String reg2ForFunction) {
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 		Labeller labeller = new Labeller("-rational-divide-");
@@ -703,7 +705,7 @@ public class RationalHelper {
 		code.append(pushDenominator());
 		code.add(Multiply);
 		
-		// push no
+		// push no (cannot be zero)
 		code.add(PushD, reg1);
 		code.add(LoadI);
 		code.append(pushDenominator());
@@ -711,6 +713,8 @@ public class RationalHelper {
 		code.add(LoadI);
 		code.append(pushNumerator());
 		code.add(Multiply);
+		code.add(Duplicate);
+	    code.add(JumpFalse, RunTime.RATIONAL_DENOMINATOR_ZERO_ERROR);
 		
 		// Store n*p in reg2 denominator
 		// Store mp+no in reg1 as numerator
