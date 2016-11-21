@@ -452,6 +452,9 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
         Type type = promoteToTheSameType(types);
         if(type != PrimitiveType.NO_TYPE) {
           node.setType(new ArrayType(type, node.nChildren()));
+          for (int i = 0; i < numOfChildren; i++) {
+            node.child(i).setType(type);
+          }
         } else {
           expressionElementTypeError(node);
         }

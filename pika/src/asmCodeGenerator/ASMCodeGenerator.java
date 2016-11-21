@@ -394,7 +394,7 @@ public class ASMCodeGenerator {
       } else if (expressionNode instanceof LambdaNode) {
         code.append(removeVoidCode(expressionNode));
         code.add(Call, functionPrefix + node.getCallLabel());
-      }else {
+      } else {
         code.append(removeValueCode(expressionNode));
         code.add(CallV);
       }
@@ -823,40 +823,22 @@ public class ASMCodeGenerator {
       }
     }
 
+    // Following castings are allowed
+    // Char -> Int , Int -> Char
+    // Int -> Float , Float -> Int
+    // Int -> Bool, Char -> Bool
+    // selfType -> selfType
     public void visitLeave(TypeCastingNode node) {
       newValueCode(node);
       Type originalType = node.child(0).getType();
       Type targetType = node.child(1).getType();
-
-      Labeller labeller = new Labeller("-casting-");
-      String trueLabel = labeller.newLabel("true");
-      String joinLabel = labeller.newLabel("join");
       ASMCodeFragment value = removeValueCode(node.child(0));
       code.append(value);
-
-      if (originalType == targetType)
+      
+      if (originalType == targetType) {
         return;
-      else if (originalType == PrimitiveType.FLOATING && targetType == PrimitiveType.INTEGER)
-        code.add(ConvertI);
-      else if (originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.FLOATING)
-        code.add(ConvertF);
-      else if (originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.BOOLEAN) {
-        code.add(JumpTrue, trueLabel);
-        code.add(PushI, 0);
-        code.add(Jump, joinLabel);
-        code.add(Label, trueLabel);
-        code.add(PushI, 1);
-        code.add(Label, joinLabel);
-      } else if (originalType == PrimitiveType.CHARACTER && targetType == PrimitiveType.BOOLEAN) {
-        code.add(JumpTrue, trueLabel);
-        code.add(PushI, 0);
-        code.add(Jump, joinLabel);
-        code.add(Label, trueLabel);
-        code.add(PushI, 1);
-        code.add(Label, joinLabel);
-      } else if (originalType == PrimitiveType.INTEGER && targetType == PrimitiveType.CHARACTER) {
-        code.add(PushI, 127);
-        code.add(BTAnd);
+      } else {
+        code.append(PromotionHelper.codeCastTypeAToTypeB(originalType, targetType));
       }
     }
 
@@ -874,7 +856,7 @@ public class ASMCodeGenerator {
     /* ArrayExpressions -> NewArrayTypeLengthExpression */
     /* -> ExpressionList */
     /* -> CloneExpression */
-    
+
     public void visitLeave(NewArrayTypeLengthNode node) {
       newValueCode(node);
       Labeller labeller = new Labeller("empty-array-creation");
@@ -971,17 +953,32 @@ public class ASMCodeGenerator {
 
     public void visit(IntegerConstantNode node) {
       newValueCode(node);
-      code.add(PushI, node.getValue());
+      if (node.getType() == PrimitiveType.INTEGER) {
+        code.add(PushI, node.getValue());
+      } else {
+        code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.INTEGER, node.getType(),
+            node.getValue()));
+      } 
     }
 
     public void visit(FloatingConstantNode node) {
       newValueCode(node);
-      code.add(PushF, node.getValue());
+      if (node.getType() == PrimitiveType.FLOATING) {
+        code.add(PushF, node.getValue());
+      } else {
+        code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.FLOATING, node.getType(),
+            node.getValue()));
+      }    
     }
 
     public void visit(CharConstantNode node) {
       newValueCode(node);
-      code.add(PushI, node.getValue());
+      if (node.getType() == PrimitiveType.CHARACTER) {
+        code.add(PushI, node.getValue());
+      } else {
+        code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.CHARACTER, node.getType(),
+            node.getValue()));
+      }
     }
 
     public void visit(StringConstantNode node) {
