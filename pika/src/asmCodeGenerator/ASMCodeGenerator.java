@@ -833,12 +833,11 @@ public class ASMCodeGenerator {
       Type originalType = node.child(0).getType();
       Type targetType = node.child(1).getType();
       ASMCodeFragment value = removeValueCode(node.child(0));
-      code.append(value);
       
       if (originalType == targetType) {
         return;
       } else {
-        code.append(PromotionHelper.codeCastTypeAToTypeB(originalType, targetType));
+        code.append(PromotionHelper.codeCastTypeAToTypeB(originalType, targetType, value));
       }
     }
 
