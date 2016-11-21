@@ -101,34 +101,20 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     ParseNode expressionNode = node.child(0);
 
     // the expression must have a lambda type
-    if (!((expressionNode instanceof IdentifierNode) || (expressionNode instanceof LambdaNode))) {
+    if (!(expressionNode.getType() instanceof LambdaType)) {
       functionInvocationExpressionNotLambdaTypeError(node);
       return;
     }
-
+    
+    LambdaType lambdaType = (LambdaType)expressionNode.getType();
     ExpressionListNode expressionListNode = (ExpressionListNode) node.child(1);
     FunctionSignatures functionSignatures;
     List<Type> typeListFromExpNode = new ArrayList<Type>();
-    LambdaType lambdaType;
 
     for (int i = 0; i < expressionListNode.nChildren(); i++) {
       typeListFromExpNode.add(expressionListNode.child(i).getType());
     }
-
-    // Either IdentifierNode or LambdaNode
-    if (expressionNode instanceof IdentifierNode) {
-      IdentifierNode identifierNode = (IdentifierNode) expressionNode;
-      Type type = identifierNode.getType();
-      if (type instanceof LambdaType) {
-        lambdaType = (LambdaType) type;
-      } else {
-        functionInvocationExpressionNotLambdaTypeError(node);
-        return;
-      }
-    } else {
-      LambdaNode lambdaNode = (LambdaNode) expressionNode;
-      lambdaType = (LambdaType) lambdaNode.getType();
-    }
+    
 
     // Make sure function invocation's parameters meet function's parameters
     functionSignatures = new FunctionSignatures(expressionNode.getToken().getLexeme(),
@@ -463,7 +449,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
         for (int i = 0; i < numOfChildren; i++) {
           types[i] = node.child(i).getType();
         }
-        
         node.setType(new ArrayType(types[0], node.nChildren()));
       }
     }

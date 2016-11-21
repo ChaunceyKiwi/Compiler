@@ -20,6 +20,7 @@ public class BasicBlockManager {
   private Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String, Integer>>();
   private Set<Tuple<String, Integer>> jumpSet = new HashSet<Tuple<String, Integer>>();
   private Set<Tuple<String, Integer>> callSet = new HashSet<Tuple<String, Integer>>();
+  private Set<Tuple<String, Integer>> pushDSet = new HashSet<Tuple<String, Integer>>();
   private Set<Triplet<ASMOpcode, String, Integer>> branchSet =
       new HashSet<Triplet<ASMOpcode, String, Integer>>();
   private Set<Integer> programStartSet = new HashSet<Integer>();
@@ -58,6 +59,7 @@ public class BasicBlockManager {
     buildJumpSet(fragment);
     buildBranchSet(fragment);
     buildCallSet(fragment);
+    buildPushDSet(fragment);
     buildBlockStartEndSet();
     buildBlockSet(fragment);
     buildBlocks(fragment);
@@ -69,15 +71,15 @@ public class BasicBlockManager {
     assignIndicesToBlocks();
     setLoopHeader();
   }
-  
+
   public void optimizeUntilConverge() {
     int size;
     do {
       size = blocks.size();
       performOptimizationUnit();
-    } while(blocks.size() != size);
+    } while (blocks.size() != size);
   }
-  
+
   public void performOptimizationUnit() {
     unreachableCodeElimination();
     blockMerge();
@@ -85,49 +87,49 @@ public class BasicBlockManager {
     branchElimination();
     updateInnerNeighbors();
   }
-  
+
   public void setLoopHeader() {
     for (BasicBlock basicBlock : blocks) {
       for (Tuple<BasicBlock, ASMOpcode> outNeighbor : basicBlock.getOutNeighbors()) {
-        if(basicBlock.isDominatedBy(outNeighbor.x)) {
+        if (basicBlock.isDominatedBy(outNeighbor.x)) {
           outNeighbor.x.setAsLoopHeader();
         }
       }
     }
   }
-  
+
   public void calculateDominators() {
-    for(BasicBlock basicBlock : startBlocks) {
+    for (BasicBlock basicBlock : startBlocks) {
       basicBlock.addDominitors(basicBlock);
     }
-    
-    for(BasicBlock basicBlock : blocks) {
+
+    for (BasicBlock basicBlock : blocks) {
       basicBlock.addDominitors(basicBlock.getEntryBlock());
     }
-    
+
     boolean hasChanged = true;
-    while(hasChanged) {
+    while (hasChanged) {
       hasChanged = false;
-      for(BasicBlock basicBlock : blocks) {
+      for (BasicBlock basicBlock : blocks) {
         Set<BasicBlock> intersectionSet = new HashSet<BasicBlock>();
 
         for (Tuple<BasicBlock, ASMOpcode> inNeighbor : basicBlock.getInNeighbors()) {
           Set<BasicBlock> dominitors = inNeighbor.x.getDominitors();
-          if(intersectionSet.isEmpty()) {
+          if (intersectionSet.isEmpty()) {
             intersectionSet = new HashSet<BasicBlock>(dominitors);
-          }else {
+          } else {
             intersectionSet = blocksIntersction(intersectionSet, dominitors);
           }
         }
         intersectionSet.add(basicBlock);
-        if(!intersectionSet.equals(basicBlock.getDominitors())) {
+        if (!intersectionSet.equals(basicBlock.getDominitors())) {
           basicBlock.updateDominitors(intersectionSet);
           hasChanged = true;
         }
-      } 
+      }
     }
   }
-  
+
   public Set<BasicBlock> blocksIntersction(Set<BasicBlock> set1, Set<BasicBlock> set2) {
     Set<BasicBlock> intersectionSet = new HashSet<BasicBlock>();
     intersectionSet.addAll(set1);
@@ -147,7 +149,6 @@ public class BasicBlockManager {
         code.add(outNeighbor.y, outNeighbor.x.getPrefix() + index);
       }
     }
-
     return code;
   }
 
@@ -183,8 +184,8 @@ public class BasicBlockManager {
         for (Tuple<BasicBlock, ASMOpcode> outNeighbor : outNeighbors) {
           ASMInstruction instr = basicBlock.getLastInstruction();
           ASMOpcode branch = outNeighbor.y;
-          
-          if(instr == null)
+
+          if (instr == null)
             break;
 
           if (instr.getOpcode() == ASMOpcode.PushI) {
@@ -370,7 +371,8 @@ public class BasicBlockManager {
       for (ASMInstruction instr : asmCodeChunk.instructions) {
         // Skip first few labels
         if (isStart && (instr.getOpcode() == ASMOpcode.Label)
-            && (!isCalledToLabel(instr.getArgument().toString()))) {
+            && (!isCalledToLabel(instr.getArgument().toString()))
+            && (!isPushDLabel(instr.getArgument().toString()))) {
           continue;
         } else {
           isStart = false;
@@ -387,6 +389,15 @@ public class BasicBlockManager {
 
   public boolean isCalledToLabel(String label) {
     for (Tuple<String, Integer> call : callSet) {
+      if (label.equals(call.x)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isPushDLabel(String label) {
+    for (Tuple<String, Integer> call : pushDSet) {
       if (label.equals(call.x)) {
         return true;
       }
@@ -492,7 +503,8 @@ public class BasicBlockManager {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.Jump || instruction.getOpcode() == ASMOpcode.Halt
-            || instruction.getOpcode() == ASMOpcode.Return) {
+            || instruction.getOpcode() == ASMOpcode.Return
+            || instruction.getOpcode() == ASMOpcode.PopPC) {
           jumpSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
           blockEndSet.add(lineNumCount);
           blockStartSet.add(lineNumCount + 1);
@@ -518,6 +530,19 @@ public class BasicBlockManager {
             blockStartSet.add(lineNumCount);
           }
           previousIsBranch = false;
+        }
+        lineNumCount++;
+      }
+    }
+  }
+
+  private void buildPushDSet(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        if (instruction.getOpcode() == ASMOpcode.PushD) {
+          callSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
         }
         lineNumCount++;
       }

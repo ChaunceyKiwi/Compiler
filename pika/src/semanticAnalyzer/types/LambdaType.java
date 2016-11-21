@@ -57,7 +57,7 @@ public class LambdaType implements Type{
 
 	@Override
 	public boolean isReferenceType() {
-		return false;
+		return true;
 	}
 
 	@Override

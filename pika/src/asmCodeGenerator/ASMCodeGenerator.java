@@ -18,6 +18,7 @@ import parseTree.*;
 import parseTree.nodeTypes.*;
 import semanticAnalyzer.types.*;
 import symbolTable.Binding;
+import symbolTable.Binding.BindingType;
 import symbolTable.Scope;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
@@ -386,15 +387,16 @@ public class ASMCodeGenerator {
         pushElementToFrameStack(type);
       }
 
-      // Either IdentifierNode or LambdaNode
+      // Either IdentifierNode or LambdaNode or Array
       if (expressionNode instanceof IdentifierNode) {
         String functionName = ((IdentifierNode) expressionNode).getBinding().getLambdaName();
         code.add(Call, functionPrefix + functionName);
-      } else {
-        LambdaNode lambdaNode = (LambdaNode) expressionNode;
-        ASMCodeFragment childCode = removeVoidCode(lambdaNode);
-        code.append(childCode);
+      } else if (expressionNode instanceof LambdaNode) {
+        code.append(removeVoidCode(expressionNode));
         code.add(Call, functionPrefix + node.getCallLabel());
+      }else {
+        code.append(removeValueCode(expressionNode));
+        code.add(CallV);
       }
 
       // take the return value from the location pointed at
@@ -559,7 +561,7 @@ public class ASMCodeGenerator {
       ArrayType arrayType = (ArrayType) node.child(0).getType();
       code.append(ArrayHelper.arrayRelease(arrayType));
     }
-    
+
     public void visitLeave(ReturnStatementNode node) {
       // might not be void here
       newVoidCode(node);
@@ -568,13 +570,13 @@ public class ASMCodeGenerator {
       }
       code.add(Jump, node.getTargetLabelForReturn());
     }
-    
+
     public void visitLeave(CallStatementNode node) {
       newVoidCode(node);
-      
+
       ParseNode functionInvocation = node.child(0);
       Type resultTypeOfInvocation = functionInvocation.getType();
-      
+
       if (resultTypeOfInvocation == PrimitiveType.VOID) {
         code.append(removeVoidCode(functionInvocation));
       } else {
@@ -869,11 +871,10 @@ public class ASMCodeGenerator {
 
     ///////////////////////////////////////////////////////////////////////////
     // ArrayExpressions
-
-    /*
-     * ArrayExpressions -> NewArrayTypeLengthExpression -> ExpressionList -> CloneExpression
-     */
-
+    /* ArrayExpressions -> NewArrayTypeLengthExpression */
+    /* -> ExpressionList */
+    /* -> CloneExpression */
+    
     public void visitLeave(NewArrayTypeLengthNode node) {
       newValueCode(node);
       Labeller labeller = new Labeller("empty-array-creation");
@@ -956,10 +957,15 @@ public class ASMCodeGenerator {
     }
 
     public void visit(IdentifierNode node) {
-      if (node.getBinding().getBindingType() == Binding.BindingType.VARIABLE) {
+      BindingType bindingType = node.getBinding().getBindingType();
+
+      if (bindingType == Binding.BindingType.VARIABLE) {
         newAddressCode(node);
         Binding binding = node.getBinding();
         binding.generateAddress(code);
+      } else if (bindingType == Binding.BindingType.FUNCTION) {
+        newValueCode(node);
+        code.add(PushD, functionPrefix + node.getBinding().getLambdaName());
       }
     }
 
