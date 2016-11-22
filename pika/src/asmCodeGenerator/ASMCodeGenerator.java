@@ -834,7 +834,8 @@ public class ASMCodeGenerator {
       Type targetType = node.child(1).getType();
       ASMCodeFragment value = removeValueCode(node.child(0));
       
-      if (originalType == targetType) {
+      if (originalType.match(targetType)) {
+        code.append(value);
         return;
       } else {
         code.append(PromotionHelper.codeCastTypeAToTypeB(originalType, targetType, value));
