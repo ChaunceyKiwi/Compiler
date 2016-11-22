@@ -1,0 +1,3 @@
+exec {
+	print 107 == ^k^; _true_, _n_ .
+}

@@ -1,0 +1,3 @@
+exec {
+	print 4 > ^l^; _false_ , _n_ .
+}
