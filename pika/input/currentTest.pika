@@ -1,4 +1,5 @@
 exec {
-  const farm := [18, 71, 52, 42].
-  print farm[^a^], _n_.
+  const llama := [1, 2, 3, 4, 5, 6].
+  var goat := length clone clone clone clone clone llama.
+  print goat,  _n_.
 }

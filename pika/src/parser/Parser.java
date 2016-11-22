@@ -787,7 +787,7 @@ public class Parser {
     if (startsUnaryOperator(nowReading)) {
       Token unaryToken = nowReading;
       readToken();
-      ParseNode right = parseOperatorExpression();
+      ParseNode right = parseUnaryExpression();
       return UnaryOperatorNode.withChildren(unaryToken, right);
     } else {
       ParseNode right = parseOperatorExpression();
