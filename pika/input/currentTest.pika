@@ -1,4 +1,4 @@
 exec {
-    const result := ^ ^ + ^]^.
-    print result, _n_.
+  var barb := new int(1).
+  print barb, _n_.
 }

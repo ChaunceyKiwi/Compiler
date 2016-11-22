@@ -59,6 +59,10 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     }
 
     for (int i = skip; i < types.size(); i++) {
+      if(!(types.get(i) instanceof PrimitiveType)) {
+        continue;
+      }
+      
       List<List<Type>> unaryPromotionLists = PromotionHelper.getUnaryPromotionLists(types, i);
       List<List<Type>> matchingSet = new ArrayList<List<Type>>();
       for (List<Type> item : unaryPromotionLists) {
@@ -89,6 +93,11 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 
     for (int i = skip; i < types.size(); i++) {
       for (int j = i + 1; j < types.size(); j++) {
+        
+        if(!(types.get(i) instanceof PrimitiveType) || !(types.get(j) instanceof PrimitiveType)) {
+          continue;
+        }
+        
         List<List<Type>> binaryPromotionLists =
             PromotionHelper.getBinaryPromotionLists(types, i, j);
         List<List<Type>> matchingSet = new ArrayList<List<Type>>();

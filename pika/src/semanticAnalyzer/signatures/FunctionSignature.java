@@ -6,7 +6,7 @@ import semanticAnalyzer.types.*;
 
 // immutable
 public class FunctionSignature {
-  private static final boolean ALL_TYPES_ACCEPT_ERROR_TYPES = true;
+  private static final boolean ALL_TYPES_ACCEPT_ERROR_TYPES = false;
   private Type resultType;
   private Type[] paramTypes;
   private boolean promotable;
