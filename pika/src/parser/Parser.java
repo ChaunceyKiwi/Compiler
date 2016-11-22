@@ -945,7 +945,9 @@ public class Parser {
     Token newToken = nowReading;
     readToken();
     ParseNode arrayType = parseArrayType();
+    expect(Punctuator.OPEN_BRACKET);
     ParseNode arrayLength = parseExpression();
+    expect(Punctuator.CLOSE_BRACKET);
     return NewArrayTypeLengthNode.withChildren(newToken, arrayType, arrayLength);
   }
 

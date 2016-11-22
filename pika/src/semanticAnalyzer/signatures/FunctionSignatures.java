@@ -316,17 +316,14 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
         new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, typeVariable, typeVariable,
             typeVariable));
 
-    new FunctionSignatures(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION,
-        new FunctionSignature(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, false,
-            new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable)));
+    new FunctionSignatures(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, new FunctionSignature(1,
+        true, new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable)));
 
     new FunctionSignatures(UnaryOperatorNode.ARRAY_CLONE,
-        new FunctionSignature(UnaryOperatorNode.ARRAY_CLONE, false, new ArrayType(typeVariable),
-            new ArrayType(typeVariable)));
+        new FunctionSignature(1, true, new ArrayType(typeVariable), new ArrayType(typeVariable)));
 
-    new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING,
-        new FunctionSignature(ArrayIndexingNode.ARRAY_INDEXING, false, new ArrayType(typeVariable),
-            PrimitiveType.INTEGER, typeVariable));
+    new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING, new FunctionSignature(1, true,
+        new ArrayType(typeVariable), PrimitiveType.INTEGER, typeVariable));
 
     new FunctionSignatures(AssignmentStatementNode.VALUE_ASSIGNMENT,
         new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN,
@@ -341,10 +338,10 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
             PrimitiveType.FLOATING),
         new FunctionSignature(1, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL),
-        new FunctionSignature(1, true, new ArrayType(typeVariable), new ArrayType(typeVariable),
+        new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable),
             new ArrayType(typeVariable)));
 
     new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH, new FunctionSignature(
-        UnaryOperatorNode.ARRAY_LENGTH, false, typeVariable, PrimitiveType.INTEGER));
+        UnaryOperatorNode.ARRAY_LENGTH, false, new ArrayType(typeVariable), PrimitiveType.INTEGER));
   }
 }

@@ -347,6 +347,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     Lextant operator = operatorFor(node);
 
     // if both sides is array type and is comparision, skip typechecking
+    //TODO Move to signatures
     if ((left.getType() instanceof ArrayType && right.getType() instanceof ArrayType
         && (operator == Punctuator.EQUAL || operator == Punctuator.NOTEQUAL))) {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_COMPARISON, childTypes);
@@ -472,9 +473,17 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       return PrimitiveType.FLOATING;
     } else if (promotableToType(typeList, PrimitiveType.RATIONAL)) {
       return PrimitiveType.RATIONAL;
-    }    
+    }
     
-    return PrimitiveType.NO_TYPE;
+    // If cannot be promote, at least they should be the same type
+    // Otherwise we return NO_TYPE
+    for (int i = 1; i < typeList.length; i++) {
+      if(!typeList[i].match(typeList[i-1])) {
+        return PrimitiveType.NO_TYPE;
+      }
+    }
+    
+    return typeList[0];
   }
   
   public boolean promotableToType(Type[] typeList, PrimitiveType primitiveType) {

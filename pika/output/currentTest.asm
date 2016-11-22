@@ -274,7 +274,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        0                         
+        DataZ        4                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -355,342 +355,143 @@
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
-        PushD        reg1-func                 
-        PushI        -1                        
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% farm
+        Label        --expr-list--1-array-creation-begin 
+        Label        --expr-list--1-array-creation-get-length 
+        PushI        4                         
+        Duplicate                              
         Duplicate                              
         PushD        reg1-system               
         Exchange                               
         StoreI                                 
-        Duplicate                              
-        JumpPos      basicBlock-4              
-        Jump         basicBlock-3              
+        JumpNeg      basicBlock-3              
+        Jump         basicBlock-6              
         Label        basicBlock-2              
-        PushD        $errors-rational-denominator-zero 
         PushD        $errors-general-message   
         Printf                                 
         Halt                                   
         Label        basicBlock-3              
-        Negate                                 
-        Jump         basicBlock-4              
+        PushD        $$errors-array-size-negative 
+        Jump         basicBlock-2              
         Label        basicBlock-4              
-        StoreI                                 
-        PushD        reg2-func                 
-        PushI        3                         
-        Duplicate                              
-        JumpFalse    basicBlock-2              
-        Jump         basicBlock-5              
+        PushD        $$errors-array-index-negative 
+        Jump         basicBlock-2              
         Label        basicBlock-5              
+        PushD        $$errors-index-exceed-bound 
+        Jump         basicBlock-2              
+        Label        basicBlock-6              
+        PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
         Duplicate                              
-        PushD        reg2-system               
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--1-array-creation-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--1-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--1-array-creation-length 
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--1-array-creation-end 
+        Label        --expr-list--1-array-initialization-begin 
+        Duplicate                              
+        PushI        18                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
         Exchange                               
         StoreI                                 
         Duplicate                              
-        JumpPos      basicBlock-7              
-        Jump         basicBlock-6              
-        Label        basicBlock-6              
-        Negate                                 
+        PushI        71                        
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        52                        
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        42                        
+        Exchange                               
+        PushI        28                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--1-array-initialization-end 
+        StoreI                                 
+        Label        --array-indexing--2-array-index-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% farm
+        LoadI                                  
+        Duplicate                              
+        PushI        97                        
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-4              
         Jump         basicBlock-7              
         Label        basicBlock-7              
-        StoreI                                 
-        Call         GCDCalculation            
-        PushD        reg1-func                 
         Exchange                               
-        StoreI                                 
-        PushI        8                         
-        Call         -mem-manager-allocate     
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        PushD        reg1-func                 
-        LoadI                                  
-        Divide                                 
-        Exchange                               
-        PushI        0                         
+        Label        --array-indexing--2-array-length 
+        PushI        12                        
         Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushD        reg2-system               
-        LoadI                                  
-        PushD        reg1-func                 
-        LoadI                                  
-        Divide                                 
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        -rational-number-1-rational-creation-end 
-        Label        -rational-number-2-rational-creation-begin 
-        PushD        reg1-func                 
-        PushI        0                         
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpPos      basicBlock-9              
-        Jump         basicBlock-8              
-        Label        basicBlock-8              
-        Negate                                 
-        Jump         basicBlock-9              
-        Label        basicBlock-9              
-        StoreI                                 
-        PushD        reg2-func                 
-        PushI        24                        
-        Duplicate                              
-        JumpFalse    basicBlock-2              
-        Jump         basicBlock-10             
-        Label        basicBlock-10             
-        Duplicate                              
-        PushD        reg2-system               
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpPos      basicBlock-12             
-        Jump         basicBlock-11             
-        Label        basicBlock-11             
-        Negate                                 
-        Jump         basicBlock-12             
-        Label        basicBlock-12             
-        StoreI                                 
-        Call         GCDCalculation            
-        PushD        reg1-func                 
-        Exchange                               
-        StoreI                                 
-        PushI        8                         
-        Call         -mem-manager-allocate     
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        PushD        reg1-func                 
-        LoadI                                  
-        Divide                                 
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushD        reg2-system               
-        LoadI                                  
-        PushD        reg1-func                 
-        LoadI                                  
-        Divide                                 
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        -rational-number-2-rational-creation-end 
-        PushD        reg2-system               
-        Exchange                               
-        StoreI                                 
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        PushD        reg1-system               
-        LoadI                                  
-        PushI        0                         
-        Add                                    
-        LoadI                                  
-        PushD        reg2-system               
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Multiply                               
-        PushD        reg1-system               
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        PushD        reg2-system               
-        LoadI                                  
-        PushI        0                         
-        Add                                    
-        LoadI                                  
-        Multiply                               
-        Duplicate                              
-        JumpFalse    basicBlock-2              
-        Jump         basicBlock-13             
-        Label        basicBlock-13             
-        PushD        reg2-system               
-        Exchange                               
-        StoreI                                 
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        PushD        reg1-func                 
-        PushD        reg1-system               
-        LoadI                                  
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpPos      basicBlock-15             
-        Jump         basicBlock-14             
-        Label        basicBlock-14             
-        Negate                                 
-        Jump         basicBlock-15             
-        Label        basicBlock-15             
-        StoreI                                 
-        PushD        reg2-func                 
-        PushD        reg2-system               
-        LoadI                                  
-        Duplicate                              
-        PushD        reg2-system               
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpPos      basicBlock-17             
-        Jump         basicBlock-16             
-        Label        basicBlock-16             
-        Negate                                 
-        Jump         basicBlock-17             
-        Label        basicBlock-17             
-        StoreI                                 
-        Call         GCDCalculation            
-        PushD        reg1-func                 
-        Exchange                               
-        StoreI                                 
-        PushI        8                         
-        Call         -mem-manager-allocate     
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        PushD        reg1-func                 
-        LoadI                                  
-        Divide                                 
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushD        reg2-system               
-        LoadI                                  
-        PushD        reg1-func                 
-        LoadI                                  
-        Divide                                 
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --rational-divide--3--end- 
-        Label        --print-rational--4--begin- 
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        PushD        reg1-system               
-        LoadI                                  
-        LoadI                                  
-        PushD        reg1-system               
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Divide                                 
-        Duplicate                              
-        Duplicate                              
-        JumpFalse    basicBlock-19             
-        Jump         basicBlock-18             
-        Label        basicBlock-18             
-        PushD        $print-format-integer     
-        Printf                                 
-        Jump         basicBlock-23             
-        Label        basicBlock-19             
-        Pop                                    
-        PushD        reg1-system               
-        LoadI                                  
-        LoadI                                  
-        PushD        reg1-system               
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Multiply                               
-        Duplicate                              
-        JumpTrue     basicBlock-21             
-        Jump         basicBlock-20             
-        Label        basicBlock-20             
-        Pop                                    
-        Pop                                    
-        PushI        0                         
-        PushD        $print-format-integer     
-        Printf                                 
-        Jump         basicBlock-31             
-        Label        basicBlock-21             
-        JumpPos      basicBlock-23             
-        Jump         basicBlock-22             
-        Label        basicBlock-22             
-        PushD        $print-format-minus-sign  
-        Printf                                 
-        Jump         basicBlock-23             
-        Label        basicBlock-23             
-        PushD        reg1-system               
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Multiply                               
-        PushD        reg1-system               
-        LoadI                                  
         LoadI                                  
         Exchange                               
         Subtract                               
-        Duplicate                              
-        JumpFalse    basicBlock-25             
-        Jump         basicBlock-24             
-        Label        basicBlock-24             
-        Duplicate                              
-        Jump         basicBlock-25             
-        Label        basicBlock-25             
-        JumpFalse    basicBlock-31             
-        Jump         basicBlock-26             
-        Label        basicBlock-26             
-        PushD        reg1-system               
-        LoadI                                  
-        LoadI                                  
-        JumpPos      basicBlock-28             
-        Jump         basicBlock-27             
-        Label        basicBlock-27             
-        Negate                                 
-        Jump         basicBlock-28             
-        Label        basicBlock-28             
-        PushD        $print-format-and         
-        Printf                                 
-        PushD        $print-format-integer     
-        Printf                                 
-        PushD        $print-format-over        
-        Printf                                 
+        JumpPos      basicBlock-8              
+        Jump         basicBlock-5              
+        Label        basicBlock-8              
+        PushI        16                        
+        Add                                    
         PushD        reg1-system               
         LoadI                                  
         PushI        4                         
+        Multiply                               
         Add                                    
+        Label        --array-indexing--2-array-index-fetching-end 
+        Label        --array-indexing--2-array-index-end 
         LoadI                                  
-        Duplicate                              
-        JumpPos      basicBlock-30             
-        Jump         basicBlock-29             
-        Label        basicBlock-29             
-        Negate                                 
-        Jump         basicBlock-30             
-        Label        basicBlock-30             
-        PushD        $print-format-integer     
-        Printf                                 
-        Jump         basicBlock-31             
-        Label        basicBlock-31             
-        PushD        $print-format-space       
-        Printf                                 
-        PushI        0                         
         PushD        $print-format-integer     
         Printf                                 
         PushD        $print-format-newline     
         Printf                                 
         Halt                                   
-        Label        basicBlock-32             
+        Label        basicBlock-9              
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
         Exchange                               
@@ -738,7 +539,7 @@
         PushD        $mmgr-tags-return         
         LoadI                                  
         Return                                 
-        Label        basicBlock-33             
+        Label        basicBlock-10             
         Label        -mem-manager-one-tag      
         PushD        $mmgr-onetag-return       
         Exchange                               
@@ -777,7 +578,7 @@
         PushD        $mmgr-onetag-return       
         LoadI                                  
         Return                                 
-        Label        basicBlock-34             
+        Label        basicBlock-11             
         Label        -mem-manager-allocate     
         PushD        $mmgr-alloc-return        
         Exchange                               
@@ -792,13 +593,13 @@
         PushD        $mmgr-alloc-current-block 
         Exchange                               
         StoreI                                 
-        Jump         basicBlockHeader-35       
-        Label        basicBlockHeader-35       
+        Jump         basicBlockHeader-12       
+        Label        basicBlockHeader-12       
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
-        JumpFalse    basicBlock-40             
-        Jump         basicBlock-36             
-        Label        basicBlock-36             
+        JumpFalse    basicBlock-17             
+        Jump         basicBlock-13             
+        Label        basicBlock-13             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         PushI        4                         
@@ -809,9 +610,9 @@
         Subtract                               
         PushI        1                         
         Add                                    
-        JumpPos      basicBlock-38             
-        Jump         basicBlock-37             
-        Label        basicBlock-37             
+        JumpPos      basicBlock-15             
+        Jump         basicBlock-14             
+        Label        basicBlock-14             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         Duplicate                              
@@ -827,8 +628,8 @@
         PushD        $mmgr-alloc-current-block 
         Exchange                               
         StoreI                                 
-        Jump         basicBlockHeader-35       
-        Label        basicBlock-38             
+        Jump         basicBlockHeader-12       
+        Label        basicBlock-15             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         Call         -mem-manager-remove-block 
@@ -842,9 +643,9 @@
         Subtract                               
         PushI        26                        
         Subtract                               
-        JumpNeg      basicBlock-41             
-        Jump         basicBlock-39             
-        Label        basicBlock-39             
+        JumpNeg      basicBlock-18             
+        Jump         basicBlock-16             
+        Label        basicBlock-16             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         PushD        $mmgr-alloc-size          
@@ -886,8 +687,8 @@
         PushI        9                         
         Add                                    
         Call         -mem-manager-deallocate   
-        Jump         basicBlock-41             
-        Label        basicBlock-40             
+        Jump         basicBlock-18             
+        Label        basicBlock-17             
         PushD        $mmgr-alloc-size          
         LoadI                                  
         PushD        $mmgr-newblock-size       
@@ -919,8 +720,8 @@
         PushD        $mmgr-alloc-current-block 
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-41             
-        Label        basicBlock-41             
+        Jump         basicBlock-18             
+        Label        basicBlock-18             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         PushI        9                         
@@ -928,7 +729,7 @@
         PushD        $mmgr-alloc-return        
         LoadI                                  
         Return                                 
-        Label        basicBlock-42             
+        Label        basicBlock-19             
         Label        -mem-manager-deallocate   
         PushD        $mmgr-dealloc-return      
         Exchange                               
@@ -997,7 +798,7 @@
         PushD        $mmgr-dealloc-return      
         LoadI                                  
         Return                                 
-        Label        basicBlock-43             
+        Label        basicBlock-20             
         Label        -mem-manager-remove-block 
         PushD        $mmgr-remove-return       
         Exchange                               
@@ -1031,9 +832,9 @@
         Label        -mmgr-remove-process-prev 
         PushD        $mmgr-remove-prev         
         LoadI                                  
-        JumpFalse    basicBlock-45             
-        Jump         basicBlock-44             
-        Label        basicBlock-44             
+        JumpFalse    basicBlock-22             
+        Jump         basicBlock-21             
+        Label        basicBlock-21             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $mmgr-remove-prev         
@@ -1049,20 +850,20 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-46             
-        Label        basicBlock-45             
+        Jump         basicBlock-23             
+        Label        basicBlock-22             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $heap-first-free          
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-46             
-        Label        basicBlock-46             
+        Jump         basicBlock-23             
+        Label        basicBlock-23             
         PushD        $mmgr-remove-next         
         LoadI                                  
-        JumpFalse    basicBlock-48             
-        Jump         basicBlock-47             
-        Label        basicBlock-47             
+        JumpFalse    basicBlock-25             
+        Jump         basicBlock-24             
+        Label        basicBlock-24             
         PushD        $mmgr-remove-prev         
         LoadI                                  
         PushD        $mmgr-remove-next         
@@ -1071,67 +872,8 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-48             
-        Label        basicBlock-48             
+        Jump         basicBlock-25             
+        Label        basicBlock-25             
         PushD        $mmgr-remove-return       
         LoadI                                  
-        Return                                 
-        Label        basicBlock-49             
-        Label        GCDCalculation            
-        Label        --GCD-Calculation--5--function-begin- 
-        PushD        reg1-func                 
-        LoadI                                  
-        PushD        reg2-func                 
-        LoadI                                  
-        Multiply                               
-        JumpTrue     basicBlock-51             
-        Jump         basicBlock-50             
-        Label        basicBlock-50             
-        PushI        1                         
-        Jump         basicBlock-59             
-        Label        basicBlock-51             
-        Jump         basicBlockHeader-52       
-        Label        basicBlockHeader-52       
-        PushD        reg1-func                 
-        LoadI                                  
-        Duplicate                              
-        JumpFalse    basicBlock-58             
-        Jump         basicBlock-53             
-        Label        basicBlock-53             
-        PushD        reg2-func                 
-        LoadI                                  
-        Duplicate                              
-        JumpFalse    basicBlock-58             
-        Jump         basicBlock-54             
-        Label        basicBlock-54             
-        Subtract                               
-        JumpPos      basicBlock-56             
-        Jump         basicBlock-55             
-        Label        basicBlock-55             
-        PushD        reg2-func                 
-        LoadI                                  
-        PushD        reg1-func                 
-        LoadI                                  
-        Subtract                               
-        PushD        reg2-func                 
-        Exchange                               
-        StoreI                                 
-        Jump         basicBlock-57             
-        Label        basicBlock-56             
-        PushD        reg1-func                 
-        LoadI                                  
-        PushD        reg2-func                 
-        LoadI                                  
-        Subtract                               
-        PushD        reg1-func                 
-        Exchange                               
-        StoreI                                 
-        Jump         basicBlock-57             
-        Label        basicBlock-57             
-        Jump         basicBlockHeader-52       
-        Label        basicBlock-58             
-        Add                                    
-        Jump         basicBlock-59             
-        Label        basicBlock-59             
-        Exchange                               
         Return                                 
