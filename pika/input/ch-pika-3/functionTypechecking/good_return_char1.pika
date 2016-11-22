@@ -1,0 +1,9 @@
+func simple <int x> -> char {
+  print x; _n_.
+  return ^b^.
+}
+
+exec {
+  const turf := simple(1).
+  print turf.
+}

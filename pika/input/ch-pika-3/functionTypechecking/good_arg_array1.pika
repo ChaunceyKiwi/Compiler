@@ -1,0 +1,9 @@
+func sample <[int] x> -> bool {
+  print x; _n_.
+  return _true_.
+}
+
+
+exec {
+  var turf := sample([1, 3, 5]).
+}

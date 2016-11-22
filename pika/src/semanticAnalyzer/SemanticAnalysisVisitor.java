@@ -115,7 +115,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       typeListFromExpNode.add(expressionListNode.child(i).getType());
     }
 
-
     // Make sure function invocation's parameters meet function's parameters
     functionSignatures = new FunctionSignatures(expressionNode.getToken().getLexeme(),
         new FunctionSignature(lambdaType));
@@ -620,12 +619,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     if (signatures.accepts(childTypes)) {
       FunctionSignature signature = FunctionSignatures.signature(signatures.getKey(), childTypes);
       Type resultType = signature.resultType().getTypeWithoutVariable();
-      Type[] parameterType = signature.getParameterType();
-      for(int i = 0; i < parameterType.length; i++) {
-        if(parameterType[i] instanceof PrimitiveType && childTypes.get(i) instanceof PrimitiveType) {
-          node.child(i).setType(parameterType[i]);
-        }
-      }
+      assignParameterTypeFromSignature(node, signature, childTypes);
       node.setSignature(signature);
       node.setType(resultType);
     } else {
@@ -634,17 +628,28 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     }
   }
 
+  // Should be only used by functionInvocation type checking
   private void setTypeAndCheckSignature(ParseNode node, FunctionSignatures signatures,
       List<Type> childTypes) {
     // the operands of operation should obey the rule in the signature
     if (signatures.accepts(childTypes)) {
       FunctionSignature signature = FunctionSignatures.signature(signatures.getKey(), childTypes);
       Type resultType = signature.resultType().getTypeWithoutVariable();
+      assignParameterTypeFromSignature(node.child(1), signature, childTypes);
       node.setSignature(signature);
       node.setType(resultType);
     } else {
       typeCheckError(node, childTypes);
       node.setType(PrimitiveType.ERROR);
+    }
+  }
+  
+  private void assignParameterTypeFromSignature(ParseNode node, FunctionSignature signature, List<Type> childTypes) {
+    Type[] parameterType = signature.getParameterType();
+    for(int i = 0; i < parameterType.length; i++) {
+      if(parameterType[i] instanceof PrimitiveType && childTypes.get(i) instanceof PrimitiveType) {
+        node.child(i).setType(parameterType[i]);
+      }
     }
   }
 

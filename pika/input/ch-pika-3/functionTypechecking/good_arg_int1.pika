@@ -1,0 +1,8 @@
+func simple <int x> -> bool {
+  print x; _n_.
+  return _true_.
+}
+
+exec {
+	var turf := simple(10).
+}

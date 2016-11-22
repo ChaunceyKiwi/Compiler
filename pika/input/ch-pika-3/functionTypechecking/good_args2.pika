@@ -1,0 +1,8 @@
+func simple <int x, float y> -> bool {
+  print x; y; _n_.
+  return _true_.
+}
+
+exec {
+  const turf := simple(1, 3.3).
+}

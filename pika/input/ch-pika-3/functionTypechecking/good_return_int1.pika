@@ -1,0 +1,9 @@
+func simple <int x> -> int {
+  print x; _n_.
+  return 77.
+}
+
+exec {
+  const turf := simple(1).
+  print turf;_n_.
+}

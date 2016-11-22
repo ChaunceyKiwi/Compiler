@@ -1,0 +1,8 @@
+func simple <bool x> -> bool {
+  print x;^a^;_n_.
+  return _true_.
+}
+
+exec {
+	const turf := simple(_true_).
+}

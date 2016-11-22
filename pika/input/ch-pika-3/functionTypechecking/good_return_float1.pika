@@ -1,0 +1,9 @@
+func simple <int x> -> float {
+  print x; _n_.
+  return 3.3.
+}
+
+exec {
+  const turf := simple(1).
+  print turf;_n_.
+}

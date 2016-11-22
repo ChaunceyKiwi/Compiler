@@ -6,7 +6,6 @@ import semanticAnalyzer.types.*;
 
 // immutable
 public class FunctionSignature {
-  private static final boolean ALL_TYPES_ACCEPT_ERROR_TYPES = false;
   private Type resultType;
   private Type[] paramTypes;
   private boolean promotable;
@@ -26,7 +25,8 @@ public class FunctionSignature {
     resultType = types[types.length - 1];
     this.whichVariant = whichVariant;
   }
-
+  
+  // Should be only used to generated signature used for funciton invocation
   public FunctionSignature(LambdaType lambdaType) {
     Type[] types =
         (lambdaType.getTypeList()).toArray(new Type[(lambdaType.getTypeList()).size() + 1]);
@@ -35,7 +35,7 @@ public class FunctionSignature {
     storeParamTypes(types);
     this.promotable = true;
     resultType = types[types.length - 1];
-    this.whichVariant = 1;
+    this.whichVariant = false;
   }
 
   private void storeParamTypes(Type[] types) {
@@ -87,8 +87,8 @@ public class FunctionSignature {
   }
 
   private boolean assignableTo(Type variableType, Type valueType) {
-    if (valueType == PrimitiveType.ERROR && ALL_TYPES_ACCEPT_ERROR_TYPES) {
-      return true;
+    if (valueType == PrimitiveType.ERROR) {
+      return false;
     } else if (variableType instanceof ArrayType && valueType instanceof ArrayType) {
       return ((ArrayType) variableType).match((ArrayType) valueType);
     } else {

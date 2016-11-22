@@ -82,6 +82,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
         }
       } else if (matching == null && matchingSet.size() > 0) {
         SemanticAnalysisVisitor.logError("Promotion failure due to multiple matchings");
+        return FunctionSignature.nullInstance();
       }
     }
 
@@ -89,6 +90,8 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     // will allow a signature to match
     if (this.get(0).getVariant() instanceof Integer) {
       skip = (Integer) this.get(0).getVariant();
+    } else if (this.get(0).getVariant() instanceof Boolean) {
+      return FunctionSignature.nullInstance();
     }
 
     for (int i = skip; i < types.size(); i++) {
