@@ -1,2 +1,0 @@
-[Tom,  , likes,  , cola]
-[Tom,  , likes,  , coffee]
