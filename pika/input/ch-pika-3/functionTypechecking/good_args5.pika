@@ -4,5 +4,5 @@ func simple <bool x, bool y> -> bool {
 }
 
 exec {
-  const turf := simple(_true_, _true_).
+  const turf := simple(_true_, _false_).
 }

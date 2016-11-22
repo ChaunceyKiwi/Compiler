@@ -352,7 +352,9 @@ public class ASMCodeGenerator {
         code.add(Label, decrementSP);
         decrementStackPointer(4);
         Macros.loadIFrom(code, RunTime.STACK_POINTER);
-        Macros.writeIOffset(code, 0);
+                
+        code.add(Exchange);         
+        code.add(opcodeForStore(resultType));           
       }
 
       code.add(Return);
