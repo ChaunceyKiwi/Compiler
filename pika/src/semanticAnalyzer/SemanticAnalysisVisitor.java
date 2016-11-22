@@ -620,6 +620,12 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     if (signatures.accepts(childTypes)) {
       FunctionSignature signature = FunctionSignatures.signature(signatures.getKey(), childTypes);
       Type resultType = signature.resultType().getTypeWithoutVariable();
+      Type[] parameterType = signature.getParameterType();
+      for(int i = 0; i < parameterType.length; i++) {
+        if(parameterType[i] instanceof PrimitiveType && childTypes.get(i) instanceof PrimitiveType) {
+          node.child(i).setType(parameterType[i]);
+        }
+      }
       node.setSignature(signature);
       node.setType(resultType);
     } else {

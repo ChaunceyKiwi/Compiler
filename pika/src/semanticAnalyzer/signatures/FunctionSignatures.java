@@ -201,33 +201,33 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     // Comparison Operator (promotable)
 
     new FunctionSignatures(Punctuator.LESSER,
-        new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
+        new FunctionSignature(0, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
+        new FunctionSignature(0, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
+        new FunctionSignature(0, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
             PrimitiveType.BOOLEAN),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_LESSER, true, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN));
 
     new FunctionSignatures(Punctuator.LESSEROREQUAL,
-        new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
+        new FunctionSignature(0, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
+        new FunctionSignature(0, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
+        new FunctionSignature(0, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
             PrimitiveType.BOOLEAN),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_LESSEROREQUAL, true,
             PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN));
 
     new FunctionSignatures(Punctuator.EQUAL,
-        new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
+        new FunctionSignature(0, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
+        new FunctionSignature(0, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
+        new FunctionSignature(0, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN,
+        new FunctionSignature(0, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN,
             PrimitiveType.BOOLEAN),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_EQUAL, true, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN));
@@ -236,33 +236,33 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
         new ArrayType(typeVariable), new ArrayType(typeVariable), PrimitiveType.BOOLEAN));
 
     new FunctionSignatures(Punctuator.NOTEQUAL,
-        new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
+        new FunctionSignature(0, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
+        new FunctionSignature(0, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
+        new FunctionSignature(0, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN,
+        new FunctionSignature(0, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN,
             PrimitiveType.BOOLEAN),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_NOTEQUAL, true, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN));
 
     new FunctionSignatures(Punctuator.GREATER,
-        new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
+        new FunctionSignature(0, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
+        new FunctionSignature(0, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
+        new FunctionSignature(0, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
             PrimitiveType.BOOLEAN),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_GREATER, true, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN));
 
     new FunctionSignatures(Punctuator.GREATEROREQUAL,
-        new FunctionSignature(1, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
+        new FunctionSignature(0, true, PrimitiveType.INTEGER, PrimitiveType.INTEGER,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
+        new FunctionSignature(0, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.BOOLEAN),
-        new FunctionSignature(1, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
+        new FunctionSignature(0, true, PrimitiveType.CHARACTER, PrimitiveType.CHARACTER,
             PrimitiveType.BOOLEAN),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_GREATEROREQUAL, true,
             PrimitiveType.RATIONAL, PrimitiveType.RATIONAL, PrimitiveType.BOOLEAN));
@@ -270,14 +270,14 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     /////////////////////////////////////////////////////////////////////////////////
     // Boolean Operator (all promotable)
 
-    new FunctionSignatures(Punctuator.AND, new FunctionSignature(1, true, PrimitiveType.BOOLEAN,
+    new FunctionSignatures(Punctuator.AND, new FunctionSignature(0, true, PrimitiveType.BOOLEAN,
         PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN));
 
-    new FunctionSignatures(Punctuator.OR, new FunctionSignature(1, true, PrimitiveType.BOOLEAN,
+    new FunctionSignatures(Punctuator.OR, new FunctionSignature(0, true, PrimitiveType.BOOLEAN,
         PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN));
 
-    new FunctionSignatures(UnaryOperatorNode.BOOLEAN_NOT, new FunctionSignature(
-        UnaryOperatorNode.BOOLEAN_NOT, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN));
+    new FunctionSignatures(UnaryOperatorNode.BOOLEAN_NOT,
+        new FunctionSignature(0, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN));
 
     /////////////////////////////////////////////////////////////////////////////////
     // Other Operator
@@ -291,36 +291,35 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 
 
     new FunctionSignatures(TypeCastingNode.TYPE_CASTING,
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.CHARACTER,
-            PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.INTEGER,
-            PrimitiveType.CHARACTER, PrimitiveType.CHARACTER),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.INTEGER,
-            PrimitiveType.FLOATING, PrimitiveType.FLOATING),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.FLOATING,
-            PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.INTEGER,
-            PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.CHARACTER,
-            PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.RATIONAL,
-            PrimitiveType.INTEGER, PrimitiveType.INTEGER),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.RATIONAL,
-            PrimitiveType.FLOATING, PrimitiveType.FLOATING),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.CHARACTER,
-            PrimitiveType.RATIONAL, PrimitiveType.RATIONAL),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.INTEGER,
-            PrimitiveType.RATIONAL, PrimitiveType.RATIONAL),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, PrimitiveType.FLOATING,
-            PrimitiveType.RATIONAL, PrimitiveType.RATIONAL),
-        new FunctionSignature(TypeCastingNode.TYPE_CASTING, false, typeVariable, typeVariable,
-            typeVariable));
+        new FunctionSignature(0, false, PrimitiveType.CHARACTER, PrimitiveType.INTEGER,
+            PrimitiveType.INTEGER),
+        new FunctionSignature(0, false, PrimitiveType.INTEGER, PrimitiveType.CHARACTER,
+            PrimitiveType.CHARACTER),
+        new FunctionSignature(0, false, PrimitiveType.INTEGER, PrimitiveType.FLOATING,
+            PrimitiveType.FLOATING),
+        new FunctionSignature(0, false, PrimitiveType.FLOATING, PrimitiveType.INTEGER,
+            PrimitiveType.INTEGER),
+        new FunctionSignature(0, false, PrimitiveType.INTEGER, PrimitiveType.BOOLEAN,
+            PrimitiveType.BOOLEAN),
+        new FunctionSignature(0, false, PrimitiveType.CHARACTER, PrimitiveType.BOOLEAN,
+            PrimitiveType.BOOLEAN),
+        new FunctionSignature(0, false, PrimitiveType.RATIONAL, PrimitiveType.INTEGER,
+            PrimitiveType.INTEGER),
+        new FunctionSignature(0, false, PrimitiveType.RATIONAL, PrimitiveType.FLOATING,
+            PrimitiveType.FLOATING),
+        new FunctionSignature(0, false, PrimitiveType.CHARACTER, PrimitiveType.RATIONAL,
+            PrimitiveType.RATIONAL),
+        new FunctionSignature(0, false, PrimitiveType.INTEGER, PrimitiveType.RATIONAL,
+            PrimitiveType.RATIONAL),
+        new FunctionSignature(0, false, PrimitiveType.FLOATING, PrimitiveType.RATIONAL,
+            PrimitiveType.RATIONAL),
+        new FunctionSignature(0, false, typeVariable, typeVariable, typeVariable));
 
     new FunctionSignatures(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, new FunctionSignature(1,
         true, new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable)));
 
     new FunctionSignatures(UnaryOperatorNode.ARRAY_CLONE,
-        new FunctionSignature(1, true, new ArrayType(typeVariable), new ArrayType(typeVariable)));
+        new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable)));
 
     new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING, new FunctionSignature(1, true,
         new ArrayType(typeVariable), PrimitiveType.INTEGER, typeVariable));
@@ -341,7 +340,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
         new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable),
             new ArrayType(typeVariable)));
 
-    new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH, new FunctionSignature(
-        UnaryOperatorNode.ARRAY_LENGTH, false, new ArrayType(typeVariable), PrimitiveType.INTEGER));
+    new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,
+        new FunctionSignature(0, false, new ArrayType(typeVariable), PrimitiveType.INTEGER));
   }
 }
