@@ -777,8 +777,9 @@ public class Parser {
   }
 
   ///////////////////////////////////////////////////////////
-  // unaryExpression -> !operatorExpression | length operatorExpression | copyExpression
-  /////////////////////////////////////////////////////////// (right-associative)
+  // unaryExpression -> unaryOperator* operatorExpression (right-associative)
+  // unaryOperator -> not | length | copy
+  
   private ParseNode parseUnaryExpression() {
     if (!startsUnaryExpression(nowReading)) {
       return syntaxErrorNode("unaryExpression");
@@ -796,7 +797,7 @@ public class Parser {
   }
 
   private boolean startsUnaryExpression(Token token) {
-    return startsUnaryOperator(token) || startsAtomicExpression(token);
+    return startsUnaryOperator(token) || startsOperatorExpression(token);
   }
 
   private boolean startsUnaryOperator(Token token) {

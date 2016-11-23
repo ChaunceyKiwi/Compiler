@@ -10,72 +10,75 @@ import tokens.Token;
 import semanticAnalyzer.types.*;
 
 public class TypeNode extends ParseNode {
-	
-	public TypeNode(Token token) {
-		super(token);
-		assert(token instanceof LextantToken);
-	}
 
-	public TypeNode(ParseNode node) {
-		super(node);
-	}
-	
-	
-	////////////////////////////////////////////////////////////
-	// attributes
-	
-	public Lextant getOperator() {
-		return lextantToken().getLextant();
-	}
-	public LextantToken lextantToken() {
-		return (LextantToken)token;
-	}	
-	
-	////////////////////////////////////////////////////////////
-	// convenience factory
-	
-	public static TypeNode withChildren(Token token, ParseNode right) {
-		TypeNode node = new TypeNode(token);
-		node.appendChild(right);
-		return node;
-	}
-	
-	public void setType() {
-	    assert this.nChildren() <= 1;
-	    if(this.nChildren() == 1 && this.child(0) instanceof LambdaTypeNode) {
-	      ((LambdaTypeNode)this.child(0)).setType();
-	      type = ((LambdaTypeNode)this.child(0)).getType();
-	      return;
-	    }
-	    
-	    if(this.getToken().isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
-			((TypeNode)this.child(0)).setType();
-			type = new ArrayType(this.child(0).getType());
-		}else if(this.getToken().isLextant(Keyword.BOOLEAN)) {
-			type = PrimitiveType.BOOLEAN;
-		}else if(this.getToken().isLextant(Keyword.CHARACTER)) {
-			type = PrimitiveType.CHARACTER;
-		}else if(this.getToken().isLextant(Keyword.STRING)) {
-			type = PrimitiveType.STRING;
-		}else if(this.getToken().isLextant(Keyword.INTEGER)) {
-			type = PrimitiveType.INTEGER;
-		}else if(this.getToken().isLextant(Keyword.FLOATING)) {
-			type = PrimitiveType.FLOATING;
-		}else if(this.getToken().isLextant(Keyword.VOID)) {
-		    type = PrimitiveType.VOID;
-		}
-	}
-	
-	public Type getType() {
-		return type;
-	}
-	
-	///////////////////////////////////////////////////////////
-	// boilerplate for visitors
-			
-	public void accept(ParseNodeVisitor visitor) {
-		visitor.visitEnter(this);
-		visitChildren(visitor);
-		visitor.visitLeave(this);
-	}
+  public TypeNode(Token token) {
+    super(token);
+    assert (token instanceof LextantToken);
+  }
+
+  public TypeNode(ParseNode node) {
+    super(node);
+  }
+
+
+  ////////////////////////////////////////////////////////////
+  // attributes
+
+  public Lextant getOperator() {
+    return lextantToken().getLextant();
+  }
+
+  public LextantToken lextantToken() {
+    return (LextantToken) token;
+  }
+
+  ////////////////////////////////////////////////////////////
+  // convenience factory
+
+  public static TypeNode withChildren(Token token, ParseNode right) {
+    TypeNode node = new TypeNode(token);
+    node.appendChild(right);
+    return node;
+  }
+
+  public void setType() {
+    assert this.nChildren() <= 1;
+    if (this.nChildren() == 1 && this.child(0) instanceof LambdaTypeNode) {
+      ((LambdaTypeNode) this.child(0)).setType();
+      type = ((LambdaTypeNode) this.child(0)).getType();
+      return;
+    }
+
+    if (this.getToken().isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
+      ((TypeNode) this.child(0)).setType();
+      type = new ArrayType(this.child(0).getType());
+    } else if (this.getToken().isLextant(Keyword.BOOLEAN)) {
+      type = PrimitiveType.BOOLEAN;
+    } else if (this.getToken().isLextant(Keyword.CHARACTER)) {
+      type = PrimitiveType.CHARACTER;
+    } else if (this.getToken().isLextant(Keyword.STRING)) {
+      type = PrimitiveType.STRING;
+    } else if (this.getToken().isLextant(Keyword.INTEGER)) {
+      type = PrimitiveType.INTEGER;
+    } else if (this.getToken().isLextant(Keyword.FLOATING)) {
+      type = PrimitiveType.FLOATING;
+    } else if (this.getToken().isLextant(Keyword.VOID)) {
+      type = PrimitiveType.VOID;
+    } else if (this.getToken().isLextant(Keyword.RATIONAL)) {
+      type = PrimitiveType.RATIONAL;
+    }
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  ///////////////////////////////////////////////////////////
+  // boilerplate for visitors
+
+  public void accept(ParseNodeVisitor visitor) {
+    visitor.visitEnter(this);
+    visitChildren(visitor);
+    visitor.visitLeave(this);
+  }
 }

@@ -274,7 +274,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        24                        
+        DataZ        28                        
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -377,27 +377,184 @@
         StoreI                                 
         PushD        $global-memory-block      
         PushI        16                        
-        Add                                    %% plusVarCopy
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% plus
-        LoadI                                  
+        Add                                    %% lambdaArray
+        Label        --expr-list--26-array-creation-begin 
+        Label        --expr-list--26-array-creation-get-length 
+        PushI        4                         
+        Duplicate                              
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
         StoreI                                 
-        PushD        $global-memory-block      
-        PushI        20                        
-        Add                                    %% plusConstCopy
-        PushD        $global-memory-block      
-        PushI        0                         
-        Add                                    %% plus
-        LoadI                                  
-        StoreI                                 
-        Halt                                   
+        JumpNeg      basicBlock-4              
+        Jump         basicBlock-22             
         Label        basicBlock-2              
-        PushD        $errors-int-divide-by-zero 
         PushD        $errors-general-message   
         Printf                                 
         Halt                                   
         Label        basicBlock-3              
+        PushD        $errors-int-divide-by-zero 
+        Jump         basicBlock-2              
+        Label        basicBlock-4              
+        PushD        $$errors-array-size-negative 
+        Jump         basicBlock-2              
+        Label        basicBlock-5              
+        PushD        $$errors-array-index-negative 
+        Jump         basicBlock-2              
+        Label        basicBlock-6              
+        PushD        $$errors-index-exceed-bound 
+        Jump         basicBlock-2              
+        Label        basicBlock-7              
+        Label        $function-nice            
+        Label        -lambda-definition-2-dynamic-link 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-2-return-address 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-2-move-fp-to-sp 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-2-subtract-frame-size 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        8                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-2-function-body-process 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        0                         
+        Add                                    %% b
+        LoadI                                  
+        Add                                    
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        LoadI                                  
+        Label        -lambda-definition-2-replace-frame-pointer 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-2-increment-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        16                        
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Exchange                               
+        Label        -lambda-definition-2-decrement-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Return                                 
+        Label        basicBlock-8              
+        Label        $function-giveNice        
+        Label        -lambda-definition-6-dynamic-link 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-6-return-address 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-6-move-fp-to-sp 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-6-subtract-frame-size 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        8                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-6-function-body-process 
+        PushD        $function--lambda-definition-5-Lambda 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        LoadI                                  
+        Label        -lambda-definition-6-replace-frame-pointer 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-6-increment-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        8                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Exchange                               
+        Label        -lambda-definition-6-decrement-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Return                                 
+        Label        basicBlock-9              
         Label        $function--lambda-definition-5-Lambda 
         Label        -lambda-definition-5-dynamic-link 
         PushD        $frame-pointer            
@@ -477,7 +634,78 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-4              
+        Label        basicBlock-10             
+        Label        $function-giveNiceArray   
+        Label        -lambda-definition-17-dynamic-link 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-17-return-address 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-17-move-fp-to-sp 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-17-subtract-frame-size 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        28                        
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-17-function-body-process 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -12                       
+        Add                                    %% plus
+        PushD        $function--lambda-definition-9-Lambda 
+        StoreI                                 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -16                       
+        Add                                    %% minus
+        PushD        $function--lambda-definition-11-Lambda 
+        StoreI                                 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -20                       
+        Add                                    %% multiply
+        PushD        $function--lambda-definition-13-Lambda 
+        StoreI                                 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -24                       
+        Add                                    %% divide
+        PushD        $function--lambda-definition-15-Lambda 
+        StoreI                                 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -28                       
+        Add                                    %% lambdaArray
+        Label        --expr-list--16-array-creation-begin 
+        Label        --expr-list--16-array-creation-get-length 
+        PushI        4                         
+        Duplicate                              
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        JumpNeg      basicBlock-4              
+        Jump         basicBlock-16             
+        Label        basicBlock-11             
         Label        $function--lambda-definition-9-Lambda 
         Label        -lambda-definition-9-dynamic-link 
         PushD        $frame-pointer            
@@ -557,7 +785,7 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-5              
+        Label        basicBlock-12             
         Label        $function--lambda-definition-11-Lambda 
         Label        -lambda-definition-11-dynamic-link 
         PushD        $frame-pointer            
@@ -637,7 +865,7 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-6              
+        Label        basicBlock-13             
         Label        $function--lambda-definition-13-Lambda 
         Label        -lambda-definition-13-dynamic-link 
         PushD        $frame-pointer            
@@ -717,7 +945,7 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-7              
+        Label        basicBlock-14             
         Label        $function--lambda-definition-15-Lambda 
         Label        -lambda-definition-15-dynamic-link 
         PushD        $frame-pointer            
@@ -761,9 +989,9 @@
         Add                                    %% b
         LoadI                                  
         Duplicate                              
-        JumpFalse    basicBlock-2              
-        Jump         basicBlock-8              
-        Label        basicBlock-8              
+        JumpFalse    basicBlock-3              
+        Jump         basicBlock-15             
+        Label        basicBlock-15             
         Divide                                 
         PushD        $frame-pointer            
         LoadI                                  
@@ -801,7 +1029,134 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-9              
+        Label        basicBlock-16             
+        PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--16-array-creation-status 
+        Duplicate                              
+        PushI        2                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--16-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--16-array-creation-length 
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--16-array-creation-end 
+        Label        --expr-list--16-array-initialization-begin 
+        Duplicate                              
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -12                       
+        Add                                    %% plus
+        LoadI                                  
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -16                       
+        Add                                    %% minus
+        LoadI                                  
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -20                       
+        Add                                    %% multiply
+        LoadI                                  
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -24                       
+        Add                                    %% divide
+        LoadI                                  
+        Exchange                               
+        PushI        28                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--16-array-initialization-end 
+        StoreI                                 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -28                       
+        Add                                    %% lambdaArray
+        LoadI                                  
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        LoadI                                  
+        Label        -lambda-definition-17-replace-frame-pointer 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-17-increment-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        28                        
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Exchange                               
+        Label        -lambda-definition-17-decrement-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Return                                 
+        Label        basicBlock-17             
         Label        $function--lambda-definition-19-Lambda 
         Label        -lambda-definition-19-dynamic-link 
         PushD        $frame-pointer            
@@ -834,8 +1189,17 @@
         Exchange                               
         StoreI                                 
         Label        -lambda-definition-19-function-body-process 
-        Label        --block-statement--18-end-of-block-statement 
-        Label        -lambda-definition-19-push-return-address 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        0                         
+        Add                                    %% b
+        LoadI                                  
+        Add                                    
         PushD        $frame-pointer            
         LoadI                                  
         PushI        -8                        
@@ -858,8 +1222,21 @@
         PushD        $stack-pointer            
         Exchange                               
         StoreI                                 
+        Exchange                               
+        Label        -lambda-definition-19-decrement-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
         Return                                 
-        Label        basicBlock-10             
+        Label        basicBlock-18             
         Label        $function--lambda-definition-21-Lambda 
         Label        -lambda-definition-21-dynamic-link 
         PushD        $frame-pointer            
@@ -939,7 +1316,7 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-11             
+        Label        basicBlock-19             
         Label        $function--lambda-definition-23-Lambda 
         Label        -lambda-definition-23-dynamic-link 
         PushD        $frame-pointer            
@@ -1019,7 +1396,7 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-12             
+        Label        basicBlock-20             
         Label        $function--lambda-definition-25-Lambda 
         Label        -lambda-definition-25-dynamic-link 
         PushD        $frame-pointer            
@@ -1063,9 +1440,9 @@
         Add                                    %% b
         LoadI                                  
         Duplicate                              
-        JumpFalse    basicBlock-2              
-        Jump         basicBlock-13             
-        Label        basicBlock-13             
+        JumpFalse    basicBlock-3              
+        Jump         basicBlock-21             
+        Label        basicBlock-21             
         Divide                                 
         PushD        $frame-pointer            
         LoadI                                  
@@ -1103,7 +1480,587 @@
         Exchange                               
         StoreI                                 
         Return                                 
-        Label        basicBlock-14             
+        Label        basicBlock-22             
+        PushI        4                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--26-array-creation-status 
+        Duplicate                              
+        PushI        2                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--26-array-creation-subtype-size 
+        Duplicate                              
+        PushI        4                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--26-array-creation-length 
+        Duplicate                              
+        PushD        reg1-system               
+        LoadI                                  
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--26-array-creation-end 
+        Label        --expr-list--26-array-initialization-begin 
+        Duplicate                              
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% plus
+        LoadI                                  
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% minus
+        LoadI                                  
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        $global-memory-block      
+        PushI        8                         
+        Add                                    %% multiply
+        LoadI                                  
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        $global-memory-block      
+        PushI        12                        
+        Add                                    %% divide
+        LoadI                                  
+        Exchange                               
+        PushI        28                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --expr-list--26-array-initialization-end 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        20                        
+        Add                                    %% plusVarCopy
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% plus
+        LoadI                                  
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        24                        
+        Add                                    %% plusConstCopy
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% plus
+        LoadI                                  
+        StoreI                                 
+        Label        -function-invocation-27-begin 
+        PushI        3                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushI        4                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Call         $function-nice            
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-27-end 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        Label        -function-invocation-28-begin 
+        PushI        3                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushI        4                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        20                        
+        Add                                    %% plusVarCopy
+        LoadI                                  
+        CallV                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-28-end 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        Label        -function-invocation-29-begin 
+        PushI        3                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushI        4                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        24                        
+        Add                                    %% plusConstCopy
+        LoadI                                  
+        CallV                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-29-end 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        Label        -function-invocation-30-begin 
+        PushI        3                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushI        4                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Call         $function--lambda-definition-32-Lambda 
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-30-end 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        Label        -function-invocation-33-begin 
+        PushI        3                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushI        4                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Label        --array-indexing--34-array-index-begin 
+        PushD        $global-memory-block      
+        PushI        16                        
+        Add                                    %% lambdaArray
+        LoadI                                  
+        Duplicate                              
+        PushI        0                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-5              
+        Jump         basicBlock-24             
+        Label        basicBlock-23             
+        Label        $function--lambda-definition-32-Lambda 
+        Label        -lambda-definition-32-dynamic-link 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-32-return-address 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-32-move-fp-to-sp 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-32-subtract-frame-size 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        8                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-32-function-body-process 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        0                         
+        Add                                    %% b
+        LoadI                                  
+        Add                                    
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -8                        
+        Add                                    
+        LoadI                                  
+        Label        -lambda-definition-32-replace-frame-pointer 
+        PushD        $frame-pointer            
+        LoadI                                  
+        PushI        -4                        
+        Add                                    
+        LoadI                                  
+        PushD        $frame-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -lambda-definition-32-increment-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        16                        
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Exchange                               
+        Label        -lambda-definition-32-decrement-stack-pointer 
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Return                                 
+        Label        basicBlock-24             
+        Exchange                               
+        Label        --array-indexing--34-array-length 
+        PushI        12                        
+        Add                                    
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-25             
+        Jump         basicBlock-6              
+        Label        basicBlock-25             
+        PushI        16                        
+        Add                                    
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Multiply                               
+        Add                                    
+        Label        --array-indexing--34-array-index-fetching-end 
+        Label        --array-indexing--34-array-index-end 
+        LoadI                                  
+        CallV                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-33-end 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        Label        -function-invocation-35-begin 
+        PushI        3                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushI        4                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-36-begin 
+        Call         $function-giveNice        
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-36-end 
+        CallV                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-35-end 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        Label        -function-invocation-37-begin 
+        PushI        3                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        PushI        4                         
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
+        Exchange                               
+        StoreI                                 
+        Label        --array-indexing--39-array-index-begin 
+        Label        -function-invocation-38-begin 
+        Call         $function-giveNiceArray   
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-38-end 
+        Duplicate                              
+        PushI        3                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-5              
+        Jump         basicBlock-26             
+        Label        basicBlock-26             
+        Exchange                               
+        Label        --array-indexing--39-array-length 
+        PushI        12                        
+        Add                                    
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-27             
+        Jump         basicBlock-6              
+        Label        basicBlock-27             
+        PushI        16                        
+        Add                                    
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        4                         
+        Multiply                               
+        Add                                    
+        Label        --array-indexing--39-array-index-fetching-end 
+        Label        --array-indexing--39-array-index-end 
+        LoadI                                  
+        CallV                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        LoadI                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        4                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        Label        -function-invocation-37-end 
+        PushD        $print-format-integer     
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        Halt                                   
+        Label        basicBlock-28             
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
         Exchange                               
@@ -1151,7 +2108,7 @@
         PushD        $mmgr-tags-return         
         LoadI                                  
         Return                                 
-        Label        basicBlock-15             
+        Label        basicBlock-29             
         Label        -mem-manager-one-tag      
         PushD        $mmgr-onetag-return       
         Exchange                               
@@ -1190,7 +2147,7 @@
         PushD        $mmgr-onetag-return       
         LoadI                                  
         Return                                 
-        Label        basicBlock-16             
+        Label        basicBlock-30             
         Label        -mem-manager-allocate     
         PushD        $mmgr-alloc-return        
         Exchange                               
@@ -1205,13 +2162,13 @@
         PushD        $mmgr-alloc-current-block 
         Exchange                               
         StoreI                                 
-        Jump         basicBlockHeader-17       
-        Label        basicBlockHeader-17       
+        Jump         basicBlockHeader-31       
+        Label        basicBlockHeader-31       
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
-        JumpFalse    basicBlock-22             
-        Jump         basicBlock-18             
-        Label        basicBlock-18             
+        JumpFalse    basicBlock-36             
+        Jump         basicBlock-32             
+        Label        basicBlock-32             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         PushI        4                         
@@ -1222,9 +2179,9 @@
         Subtract                               
         PushI        1                         
         Add                                    
-        JumpPos      basicBlock-20             
-        Jump         basicBlock-19             
-        Label        basicBlock-19             
+        JumpPos      basicBlock-34             
+        Jump         basicBlock-33             
+        Label        basicBlock-33             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         Duplicate                              
@@ -1240,8 +2197,8 @@
         PushD        $mmgr-alloc-current-block 
         Exchange                               
         StoreI                                 
-        Jump         basicBlockHeader-17       
-        Label        basicBlock-20             
+        Jump         basicBlockHeader-31       
+        Label        basicBlock-34             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         Call         -mem-manager-remove-block 
@@ -1255,9 +2212,9 @@
         Subtract                               
         PushI        26                        
         Subtract                               
-        JumpNeg      basicBlock-23             
-        Jump         basicBlock-21             
-        Label        basicBlock-21             
+        JumpNeg      basicBlock-37             
+        Jump         basicBlock-35             
+        Label        basicBlock-35             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         PushD        $mmgr-alloc-size          
@@ -1299,8 +2256,8 @@
         PushI        9                         
         Add                                    
         Call         -mem-manager-deallocate   
-        Jump         basicBlock-23             
-        Label        basicBlock-22             
+        Jump         basicBlock-37             
+        Label        basicBlock-36             
         PushD        $mmgr-alloc-size          
         LoadI                                  
         PushD        $mmgr-newblock-size       
@@ -1332,8 +2289,8 @@
         PushD        $mmgr-alloc-current-block 
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-23             
-        Label        basicBlock-23             
+        Jump         basicBlock-37             
+        Label        basicBlock-37             
         PushD        $mmgr-alloc-current-block 
         LoadI                                  
         PushI        9                         
@@ -1341,7 +2298,7 @@
         PushD        $mmgr-alloc-return        
         LoadI                                  
         Return                                 
-        Label        basicBlock-24             
+        Label        basicBlock-38             
         Label        -mem-manager-deallocate   
         PushD        $mmgr-dealloc-return      
         Exchange                               
@@ -1410,7 +2367,7 @@
         PushD        $mmgr-dealloc-return      
         LoadI                                  
         Return                                 
-        Label        basicBlock-25             
+        Label        basicBlock-39             
         Label        -mem-manager-remove-block 
         PushD        $mmgr-remove-return       
         Exchange                               
@@ -1444,9 +2401,9 @@
         Label        -mmgr-remove-process-prev 
         PushD        $mmgr-remove-prev         
         LoadI                                  
-        JumpFalse    basicBlock-27             
-        Jump         basicBlock-26             
-        Label        basicBlock-26             
+        JumpFalse    basicBlock-41             
+        Jump         basicBlock-40             
+        Label        basicBlock-40             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $mmgr-remove-prev         
@@ -1462,20 +2419,20 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-28             
-        Label        basicBlock-27             
+        Jump         basicBlock-42             
+        Label        basicBlock-41             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $heap-first-free          
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-28             
-        Label        basicBlock-28             
+        Jump         basicBlock-42             
+        Label        basicBlock-42             
         PushD        $mmgr-remove-next         
         LoadI                                  
-        JumpFalse    basicBlock-30             
-        Jump         basicBlock-29             
-        Label        basicBlock-29             
+        JumpFalse    basicBlock-44             
+        Jump         basicBlock-43             
+        Label        basicBlock-43             
         PushD        $mmgr-remove-prev         
         LoadI                                  
         PushD        $mmgr-remove-next         
@@ -1484,8 +2441,8 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-30             
-        Label        basicBlock-30             
+        Jump         basicBlock-44             
+        Label        basicBlock-44             
         PushD        $mmgr-remove-return       
         LoadI                                  
         Return                                 
