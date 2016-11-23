@@ -15,24 +15,13 @@ import semanticAnalyzer.SemanticAnalyzer;
 import tokens.Tokens;
 
 public class PikaCompiler extends PikaApplication {
-  /**
-   * Compiles a Pika file.
-   * 
-   * @param args
-   * @throws FileNotFoundException
-   */
+
   public static void main(String[] args) throws FileNotFoundException {
     checkArguments(args, className());
     Tokens.setPrintLevel(Tokens.Level.FULL);
     compile(args[0]);
   }
 
-  /**
-   * analyzes a file specified by filename.
-   * 
-   * @param filename the name of the file to be analyzed.
-   * @throws FileNotFoundException
-   */
   public static void compile(String filename) throws FileNotFoundException {
     Scanner scanner = LexicalAnalyzer.make(filename);
     ParseNode syntaxTree = Parser.parse(scanner);
