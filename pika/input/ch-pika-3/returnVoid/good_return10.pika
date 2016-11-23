@@ -1,0 +1,18 @@
+func hamburger <>-> string {
+  const x := 14.
+  if(x > 7) {
+    return "ketchup".
+  }
+
+  if(x > 3) {
+    return "pickle".
+  }
+  else {
+    return "mayonnaise".
+  }
+}
+
+exec {
+  const j := hamburger().
+  print j,_n_.
+}

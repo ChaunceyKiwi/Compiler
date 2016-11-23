@@ -1,0 +1,8 @@
+func gargoyle <>->bool {
+  return _true_.
+}
+
+exec {
+  const j := gargoyle().
+  print j,_n_.
+}

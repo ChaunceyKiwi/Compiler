@@ -17,20 +17,11 @@ func giveNiceArray <> -> [<int,int> -> int] {
 
 
 exec {
-  var plus := <int a, int b> -> int {return a + b.}.
+  var plus := <int a, int b> -> void { }.
   var minus := <int a, int b> -> int {return a - b.}.
   var multiply := <int a, int b> -> int {return a * b.}.
   var divide := <int a, int b> -> int {return a / b.}.
-  var lambdaArray := [plus, minus, multiply, divide].
 
   var plusVarCopy := plus.
   const plusConstCopy := plus.
-
-  print nice(3,4);_n_.
-  print plusVarCopy(3,4);_n_.
-  print plusConstCopy(3,4);_n_.
-  print <int a, int b> -> int {return a + b.}(3,4);_n_.
-  print lambdaArray[0](3,4);_n_.
-  print giveNice()(3,4);_n_.
-  print (giveNiceArray()[3])(3,4);_n_.
 }

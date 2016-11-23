@@ -1,0 +1,11 @@
+func gargoyle <>->[int] {
+  const result := [1, 2, 3, 4, 5].
+  return result.
+}
+
+exec {
+  const j := gargoyle().
+  const k := [1, 1, 2, 3, 5, 8, 13].
+  const l := [1, 1, 3, 7, 17].
+  print j; k; l; _n_.
+}

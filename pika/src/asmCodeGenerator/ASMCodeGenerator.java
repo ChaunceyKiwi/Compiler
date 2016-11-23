@@ -562,7 +562,7 @@ public class ASMCodeGenerator {
       // might not be void here
       newVoidCode(node);
       
-      if (node.child(0) instanceof LambdaNode) {
+      if (node.nChildren() > 0 && node.child(0) instanceof LambdaNode) {
         ASMCodeFragment rvalue = removeVoidCode(node.child(0));
         code.append(rvalue);
         code.add(PushD, ((LambdaNode) node.child(0)).getFunctionLabel());

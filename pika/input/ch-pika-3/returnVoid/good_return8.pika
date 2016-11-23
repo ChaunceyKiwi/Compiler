@@ -1,0 +1,13 @@
+func hamburger <>-> int {
+  const x := 14.
+  if(x > 3) {
+    return 42.
+  }else {
+    return 11.
+  }
+}
+
+exec {
+  const j := hamburger().
+  print j,_n_.
+}

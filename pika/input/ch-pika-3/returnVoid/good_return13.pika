@@ -1,0 +1,13 @@
+func logspur <>->void {
+  var talons := 3.
+  if(talons > 2) {
+    print "longspur";.
+    return.
+  }
+  return.
+}
+
+exec {
+  call logspur().
+  print "hello",_n_.
+}

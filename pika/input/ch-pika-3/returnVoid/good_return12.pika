@@ -1,0 +1,9 @@
+func logspur <>->void {
+  print "longspur";.
+  return.
+}
+
+exec {
+  call logspur().
+  print "hello",_n_.
+}

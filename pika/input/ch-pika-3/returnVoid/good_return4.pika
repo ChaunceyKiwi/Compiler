@@ -1,0 +1,8 @@
+func gargoyle <>->char {
+  return ^t^.
+}
+
+exec {
+  const j := gargoyle().
+  print j,_n_.
+}
