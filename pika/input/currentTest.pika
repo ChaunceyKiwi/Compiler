@@ -1,42 +1,37 @@
-func min <int x, int y> -> int {
-  if(x <= y) {
-    return x.
-  }
-
-  var a := 5.
-  while(a > 1) {
-    a := a - 1.
-  }
-
-  return y.
+func nice <int a,int b> -> int {
+  return a + b.
 }
 
-func max <int x, int y> -> int {
-  if(x >= y) {
-    return x.
-  }
+func giveNice <> -> <int,int> -> int {
+  return <int a, int b> -> int {return a + b.}.
+}
 
-  var b := 5.
-  while(b > 1) {
-    b := b - 1.
-  }
-
-  return y.
+func giveNiceArray <> -> [<int,int> -> int] {
+  var plus := <int a, int b> -> int {return a + b.}.
+  var minus := <int a, int b> -> int {return a - b.}.
+  var multiply := <int a, int b> -> int {return a * b.}.
+  var divide := <int a, int b> -> int {return a / b.}.
+  var lambdaArray := [plus, minus, multiply, divide].
+  return lambdaArray.
 }
 
 
 exec {
-  const ug := 21.
-  const dug := 29.
-  const lug := 32.
-  const bug := 44.
-  const rug := 16.
-  const jug := 19.
+  var plus := <int a, int b> -> int {return a + b.}.
+  var minus := <int a, int b> -> int {return a - b.}.
+  var multiply := <int a, int b> -> int {return a * b.}.
+  var divide := <int a, int b> -> int {return a / b.}.
+  var lambdaArray := [plus, minus, multiply, divide].
 
-  const jugALugLugBug := max(jug, max(lug, max(lug, bug))).
-  const jigALigLigBig := min(jug, min(lug, min(lug, bug))).
-  
-  const lugDugARug := max(min(lug, dug), min(max(rug, jug), max(ug, dug))).
-  
-  print jugALugLugBug;jigALigLigBig;lugDugARug, _n_.
+  var plusVarCopy := plus.
+  const plusConstCopy := plus.
+
+  print nice(3,4);_n_.
+  print plusVarCopy(3,4);_n_.
+  print plusConstCopy(3,4);_n_.
+  print <int a, int b> -> int {return a + b.}(3,4);_n_.
+  print lambdaArray[0](3,4);_n_.
+  print giveNice()(3,4);_n_.
+  print (giveNiceArray()[3])(3,4);_n_.
+  print lambdaArray;_n_.
 }
