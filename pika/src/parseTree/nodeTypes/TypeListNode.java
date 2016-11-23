@@ -32,18 +32,18 @@ public class TypeListNode extends ParseNode {
         return (LextantToken)token;
     }   
     
-//    public void setTypeList() {
-//        if(!isTypeListSet) {
-//            for(int i = 0; i < this.nChildren(); i++) {
-//                if(this.child(i).child(0) instanceof TypeNode) {
-//                    ((TypeNode)this.child(i).child(0)).setType();
-//                }
-//                typeList.add(this.child(i).child(0).getType());
-//            }
-//            isTypeListSet = true;
-//        }
-//    }
-//    
+    public void setTypeList() {
+        if(!isTypeListSet) {
+            for(int i = 0; i < this.nChildren(); i++) {
+                if(this.child(i) instanceof TypeNode) {
+                    ((TypeNode)this.child(i)).setType();
+                }
+                typeList.add(this.child(i).getType());
+            }
+            isTypeListSet = true;
+        }
+    }
+    
     public List<Type> getTypeList() {
         return typeList;
     }

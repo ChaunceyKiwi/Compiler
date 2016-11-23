@@ -349,6 +349,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
             PrimitiveType.FLOATING),
         new FunctionSignature(1, true, PrimitiveType.RATIONAL, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL),
+        new FunctionSignature(1, false, typeVariable, typeVariable, typeVariable),
         new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable),
             new ArrayType(typeVariable)));
 

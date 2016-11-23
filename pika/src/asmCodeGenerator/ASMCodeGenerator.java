@@ -258,22 +258,21 @@ public class ASMCodeGenerator {
 
     public void visitLeave(LambdaNode node) {
       ParseNode parentNode = node.getParent();
-      Labeller labeller = new Labeller("function-definition");
-      String endLabel = labeller.newLabel("end");;
+      Labeller labeller = new Labeller("lambda-definition");
+      String endLabel = labeller.newLabel("end");
       String functionName = null;
       Type resultType = node.getLambdaType().getResultType();
 
       newVoidCode(node);
 
-      // FunctionInvocationNode
-      if (parentNode instanceof FunctionInvocationNode) {
-        functionName = ((FunctionInvocationNode) parentNode).getCallLabel();
-      }
       // FunctionDefinitionNode or DeclarationNode
-      else {
+      if (parentNode instanceof FunctionDefinitionNode) {
         functionName = parentNode.child(0).getToken().getLexeme();
+      } else {
+        functionName = labeller.newLabel("Lambda");
       }
 
+      node.setFunctionLabel(functionPrefix + functionName);
       code.add(Jump, endLabel);
       code.add(Label, functionPrefix + functionName);
       functionPreparation(labeller);
@@ -352,9 +351,9 @@ public class ASMCodeGenerator {
         code.add(Label, decrementSP);
         decrementStackPointer(4);
         Macros.loadIFrom(code, RunTime.STACK_POINTER);
-                
-        code.add(Exchange);         
-        code.add(opcodeForStore(resultType));           
+
+        code.add(Exchange);
+        code.add(opcodeForStore(resultType));
       }
 
       code.add(Return);
@@ -389,14 +388,15 @@ public class ASMCodeGenerator {
         pushElementToFrameStack(type);
       }
 
-      // Either IdentifierNode or LambdaNode or Array
-      if (expressionNode instanceof IdentifierNode) {
-        String functionName = ((IdentifierNode) expressionNode).getBinding().getLambdaName();
-        code.add(Call, functionPrefix + functionName);
-      } else if (expressionNode instanceof LambdaNode) {
+      // Either LambdaNode, IdentifierNode or Array
+      if (expressionNode instanceof LambdaNode) {
         code.append(removeVoidCode(expressionNode));
-        code.add(Call, functionPrefix + node.getCallLabel());
-      } else {
+        code.add(Call, ((LambdaNode) expressionNode).getFunctionLabel());
+      } else if (expressionNode instanceof IdentifierNode && ((IdentifierNode) expressionNode)
+          .getBinding().getBindingType() == Binding.BindingType.FUNCTION) {
+        code.append(removeVoidCode(expressionNode));
+      }
+      else {
         code.append(removeValueCode(expressionNode));
         code.add(CallV);
       }
@@ -461,49 +461,43 @@ public class ASMCodeGenerator {
       new PrintStatementGenerator(code, this).generate(node);
     }
 
-    // Declatation
+    // Declaration
     public void visitLeave(DeclarationNode node) {
       newVoidCode(node);
-      if (!(node.child(1) instanceof LambdaNode)) {
-        if (!(node.getType() instanceof LambdaType)) {
-          Type type = node.getType();
-          ASMCodeFragment lvalue = removeAddressCode(node.child(0));
-          ASMCodeFragment rvalue = removeValueCode(node.child(1));
+      Type type = node.getType();
+      ASMCodeFragment lvalue = removeAddressCode(node.child(0));
 
-          code.append(lvalue);
-          code.append(rvalue);
-          code.add(opcodeForStore(type));
-        }
+      code.append(lvalue);
+
+      if (node.child(1) instanceof LambdaNode) {
+        ASMCodeFragment rvalue = removeVoidCode(node.child(1));
+        code.append(rvalue);
+        code.add(PushD, ((LambdaNode) node.child(1)).getFunctionLabel());
       } else {
-        code.append(removeVoidCode(node.child(1)));
+        ASMCodeFragment rvalue = removeValueCode(node.child(1));
+        code.append(rvalue);
       }
+
+      code.add(opcodeForStore(type));
     }
 
     // AssignmentStatement
     public void visitLeave(AssignmentStatementNode node) {
       newVoidCode(node);
       Type type = node.getType();
+      
       ASMCodeFragment lvalue = removeAddressCode(node.child(0));
-      ASMCodeFragment rvalue = removeValueCode(node.child(1));
+      code.append(lvalue);
 
-      if (type == PrimitiveType.RATIONAL && node.child(1).getType() != PrimitiveType.RATIONAL) {
-        ASMCodeFragment rightValue = new ASMCodeFragment(GENERATES_VALUE);
-        rightValue.add(PushI, 1);
-        code.append(lvalue);
-        code.append(RationalHelper.performOverPuntuator(rvalue, rightValue, GCDCalculation,
-            reg1ForFunction, reg2ForFunction, reg1, reg2));
-        code.add(opcodeForStore(type));
-      } else if (type == PrimitiveType.FLOATING
-          && node.child(1).getType() != PrimitiveType.FLOATING) {
-        code.append(lvalue);
+      if (node.child(1) instanceof LambdaNode) {
+        ASMCodeFragment rvalue = removeVoidCode(node.child(1));
         code.append(rvalue);
-        code.add(ConvertF);
-        code.add(opcodeForStore(type));
+        code.add(PushD, ((LambdaNode) node.child(1)).getFunctionLabel());
       } else {
-        code.append(lvalue);
+        ASMCodeFragment rvalue = removeValueCode(node.child(1));
         code.append(rvalue);
-        code.add(opcodeForStore(type));
       }
+      code.add(opcodeForStore(type));
     }
 
     // IfStatement
@@ -567,9 +561,15 @@ public class ASMCodeGenerator {
     public void visitLeave(ReturnStatementNode node) {
       // might not be void here
       newVoidCode(node);
-      if (node.getType() != PrimitiveType.VOID) {
+      
+      if (node.child(0) instanceof LambdaNode) {
+        ASMCodeFragment rvalue = removeVoidCode(node.child(0));
+        code.append(rvalue);
+        code.add(PushD, ((LambdaNode) node.child(0)).getFunctionLabel());
+      }else if (node.getType() != PrimitiveType.VOID) {
         code.append(removeValueCode(node.child(0)));
       }
+      
       code.add(Jump, node.getTargetLabelForReturn());
     }
 
@@ -835,7 +835,7 @@ public class ASMCodeGenerator {
       Type originalType = node.child(0).getType();
       Type targetType = node.child(1).getType();
       ASMCodeFragment value = removeValueCode(node.child(0));
-      
+
       if (originalType.match(targetType)) {
         code.append(value);
         return;
@@ -942,14 +942,14 @@ public class ASMCodeGenerator {
 
     public void visit(IdentifierNode node) {
       BindingType bindingType = node.getBinding().getBindingType();
-
       if (bindingType == Binding.BindingType.VARIABLE) {
         newAddressCode(node);
         Binding binding = node.getBinding();
         binding.generateAddress(code);
       } else if (bindingType == Binding.BindingType.FUNCTION) {
-        newValueCode(node);
-        code.add(PushD, functionPrefix + node.getBinding().getLambdaName());
+        newVoidCode(node);
+        String functionName = node.getBinding().getLambdaName();
+        code.add(Call, functionPrefix + functionName);
       }
     }
 
@@ -960,7 +960,7 @@ public class ASMCodeGenerator {
       } else {
         code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.INTEGER, node.getType(),
             node.getValue()));
-      } 
+      }
     }
 
     public void visit(FloatingConstantNode node) {
@@ -970,7 +970,7 @@ public class ASMCodeGenerator {
       } else {
         code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.FLOATING, node.getType(),
             node.getValue()));
-      }    
+      }
     }
 
     public void visit(CharConstantNode node) {

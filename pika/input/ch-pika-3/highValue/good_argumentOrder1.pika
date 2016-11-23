@@ -1,0 +1,24 @@
+func argument1<> -> int {
+	print "a1";3;_n_.
+	return 3.
+}
+
+func argument2<> -> int {
+	print "a2";8;_n_.
+	return 9.
+}
+
+func argument3<> -> int {
+	print "a3"; -10;_n_.
+	return -10.
+}
+
+func croc <int a, int b, int c> -> int {
+	print "croc(",a,^,^,b,^,^,c,^)^,_n_.
+	return a * b * c.
+}
+
+exec {
+	const result := croc(argument1(), argument2(), argument3()).
+	print result;_n_.
+}

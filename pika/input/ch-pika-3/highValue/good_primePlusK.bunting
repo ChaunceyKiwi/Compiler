@@ -1,0 +1,100 @@
+
+def bool printPrimes(int maximum) {
+	for number := 1 to maximum {
+		if(isPrime(number)) {
+			print number, nl&;
+		}
+	}
+	return true;
+}
+
+def void printInWidth(int printWidth, int n) {
+	mut m := n;
+	mut digitCount := 1;
+	
+	if(m < 0) {
+		mutate m := 0 - m;
+		mutate digitCount := digitCount + 1;
+	}
+	
+	while (m > 9) {
+		mutate m := m / 10;
+		mutate digitCount := digitCount + 1; 
+	}
+	
+	while(digitCount < printWidth) {
+		print ' &;
+		mutate digitCount := digitCount + 1;
+	}
+	print n&;
+	return;
+}
+
+def int pow(int base, int exponent) {
+	if (exponent < 0) {
+		return 0;
+	}
+
+	mut result := 1;
+	for currentPower := 1 to exponent {
+		mutate result := result * base;
+	}
+	return result;
+}
+
+
+def void printXperLineAbovePowerOfTwo(int maximum, int perLine) {
+	for number := 1 to maximum {
+		imm power := pow(2, number) ;
+		
+		call printInWidth(2, number);
+		call printInWidth(12, power); 
+		print ' ;
+	
+		for y := 1 to perLine {
+			imm candidate := power + y;
+			if(isPrime(candidate)) {
+				print 'P&;
+			}
+			else {
+				print '_&;
+			}
+		}
+		
+		print nl&;
+	}
+	return;
+}
+
+def bool isPrime(int candidate) {
+	if(candidate <= 0) {
+		return false;
+	} 
+	else {
+		if(candidate < 2) {
+			return true;
+		}
+	}
+	
+	mut factor := 2;
+	while(factor * factor <= candidate) {
+		if(isFactorOf(factor, candidate)) {
+			return false;
+		}
+		mutate factor := factor + 1;
+	}
+	return true;
+}
+
+def bool isFactorOf(int factor, int number) {
+	imm quotient := number / factor;
+	imm approx := quotient * factor;
+	return (approx == number);
+} 
+
+	
+main {
+	print isFactorOf(17, 51), nl& nl&;
+	
+	call printXperLineAbovePowerOfTwo(30, 64);
+}

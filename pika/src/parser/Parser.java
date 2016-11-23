@@ -813,23 +813,30 @@ public class Parser {
 
     ParseNode expressionToBeOperated = parseAtomicExpression();
     Token nextToken = nowReading;
-
-    // arrayIndexing
-    while (nowReading.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
-      expect(Punctuator.OPEN_SQUARE_BRACKET);
-      ParseNode expressionToGetIndex = parseExpression();
-      expect(Punctuator.CLOSE_SQUARE_BRACKET);
-      expressionToBeOperated =
-          ArrayIndexingNode.withChildren(nextToken, expressionToBeOperated, expressionToGetIndex);
-    }
-
-    // functionInvocation
-    if (nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
-      expect(Punctuator.OPEN_BRACKET);
-      ParseNode expressionToGetArgument = parseExpressionList();
-      expect(Punctuator.CLOSE_BRACKET);
-      expressionToBeOperated = FunctionInvocationNode.withChildren(nextToken,
-          expressionToBeOperated, expressionToGetArgument);
+    
+    boolean flag = true;
+    while(flag) {
+      flag = false;
+      
+      // arrayIndexing
+      while (nowReading.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
+        flag = true;
+        expect(Punctuator.OPEN_SQUARE_BRACKET);
+        ParseNode expressionToGetIndex = parseExpression();
+        expect(Punctuator.CLOSE_SQUARE_BRACKET);
+        expressionToBeOperated =
+            ArrayIndexingNode.withChildren(nextToken, expressionToBeOperated, expressionToGetIndex);
+      }
+  
+      // functionInvocation
+      while (nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
+        flag = true;
+        expect(Punctuator.OPEN_BRACKET);
+        ParseNode expressionToGetArgument = parseExpressionList();
+        expect(Punctuator.CLOSE_BRACKET);
+        expressionToBeOperated = FunctionInvocationNode.withChildren(nextToken,
+            expressionToBeOperated, expressionToGetArgument);
+      }
     }
 
     return expressionToBeOperated;
@@ -1181,7 +1188,7 @@ public class Parser {
     expect(Punctuator.GREATER);
     expect(Punctuator.RESULTIN);
     ParseNode type = parseType();
-    return LambdaTypeNode.withChildren(lambdaTypeToken, typeList, type);
+    return TypeNode.withChildren(lambdaTypeToken, LambdaTypeNode.withChildren(lambdaTypeToken, typeList, type));
   }
 
   private boolean startsLambdaType(Token token) {

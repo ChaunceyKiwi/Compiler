@@ -41,7 +41,14 @@ public class TypeNode extends ParseNode {
 	}
 	
 	public void setType() {
-		if(this.getToken().isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
+	    assert this.nChildren() <= 1;
+	    if(this.nChildren() == 1 && this.child(0) instanceof LambdaTypeNode) {
+	      ((LambdaTypeNode)this.child(0)).setType();
+	      type = ((LambdaTypeNode)this.child(0)).getType();
+	      return;
+	    }
+	    
+	    if(this.getToken().isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
 			((TypeNode)this.child(0)).setType();
 			type = new ArrayType(this.child(0).getType());
 		}else if(this.getToken().isLextant(Keyword.BOOLEAN)) {
@@ -57,7 +64,6 @@ public class TypeNode extends ParseNode {
 		}else if(this.getToken().isLextant(Keyword.VOID)) {
 		    type = PrimitiveType.VOID;
 		}
-		
 	}
 	
 	public Type getType() {

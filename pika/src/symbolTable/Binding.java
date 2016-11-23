@@ -75,6 +75,10 @@ public class Binding {
 		return type;
 	}
 	
+	public void setType(Type type) {
+        this.type = type;
+    }
+	
 	public TextLocation getLocation() {
 		return textLocation;
 	}

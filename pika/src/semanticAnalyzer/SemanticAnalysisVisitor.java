@@ -127,17 +127,19 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   public void visitEnter(LambdaNode node) {
     ParseNode parent = node.getParent();
     if (parent instanceof FunctionDefinitionNode || parent instanceof DeclarationNode
-        || parent instanceof FunctionInvocationNode) {
+        || parent instanceof FunctionInvocationNode || parent instanceof AssignmentStatementNode 
+        || parent instanceof ReturnStatementNode) {
       enterScope(node);
     } else {
-      lambdaNodeWrongEneterMethodError(node);
+      lambdaNodeWrongEnterMethodError(node);
     }
   }
 
   public void visitLeave(LambdaNode node) {
     assert node.nChildren() == 2;
     Type resultType = node.getLambdaType().getResultType();
-
+    
+    // TODO May not need return statement
     if (resultType != PrimitiveType.VOID && !node.hasReturnStatement()) {
       lambdaNodeLackReturnStatementError(node);
       return;
@@ -163,7 +165,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
     Type returnType;
     if (node.nChildren() == 0) {
-      returnType = PrimitiveType.NO_TYPE;
+      returnType = PrimitiveType.VOID;
     } else {
       returnType = node.child(0).getType();
     }
@@ -199,31 +201,28 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     ParseNode initializer = node.child(1);
     Scope scope = identifier.getLocalScope();
     Type declarationType = initializer.getType();
+    
+    if(declarationType == PrimitiveType.VOID) {
+      assignVoidToVariableError(node);
+      return;
+    }
+    
     node.setType(declarationType);
     identifier.setType(declarationType);
 
     // If identifier has already been declared in current scope, report error.
     scope.getSymbolTable().errorIfAlreadyDefined(identifier.getToken());
 
-    if (initializer instanceof LambdaNode) {
-      Binding binding = scope.createFunctionBinding(identifier, (LambdaNode) initializer);
-      identifier.setBinding(binding);
-    } else if ((initializer instanceof IdentifierNode)
-        && (initializer.getType() instanceof LambdaType)) {
-      Binding binding = scope.createFunctionBinding(identifier, declarationType,
-          ((IdentifierNode) initializer).getBinding().getLexeme());
-      identifier.setBinding(binding);
-    } else {
-      // If identifier has not been declared in current scope,
-      // binding it to current scope and its symbol table.
-      // If the declaration is var then variable is mutable, const then unmutuable
-      if (node.getToken().isLextant(Keyword.VAR))
-        addBinding(identifier, declarationType, true);
-      else if (node.getToken().isLextant(Keyword.CONST))
-        addBinding(identifier, declarationType, false);
-      else
-        logError("Declaration type is neither var nor const");
-    }
+    // If identifier has not been declared in current scope,
+    // binding it to current scope and its symbol table.
+    // If the declaration is var then variable is mutable, const then unmutuable
+    if (node.getToken().isLextant(Keyword.VAR))
+      addBinding(identifier, declarationType, true);
+    else if (node.getToken().isLextant(Keyword.CONST))
+      addBinding(identifier, declarationType, false);
+    else
+      logError("Declaration type is neither var nor const");
+
   }
 
   // assignmentStatement -> target := expression .
@@ -245,9 +244,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     }
 
     ParseNode initializer = node.child(1);
-    Type tagetType = target.getType();
+    Type targetType = target.getType();
     Type assignmentType = initializer.getType();
-    List<Type> childTypes = Arrays.asList(tagetType, assignmentType);
+    
+    List<Type> childTypes = Arrays.asList(targetType, assignmentType);
     setTypeAndCheckSignature(node, AssignmentStatementNode.VALUE_ASSIGNMENT, childTypes);
   }
 
@@ -346,7 +346,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     Lextant operator = operatorFor(node);
 
     // if both sides is array type and is comparision, skip typechecking
-    //TODO Move to signatures
+    // TODO Move to signatures
     if ((left.getType() instanceof ArrayType && right.getType() instanceof ArrayType
         && (operator == Punctuator.EQUAL || operator == Punctuator.NOTEQUAL))) {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_COMPARISON, childTypes);
@@ -450,9 +450,9 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
         }
 
         Type type = promoteToTheSameType(types);
-        if(type != PrimitiveType.NO_TYPE) {
+        if (type != PrimitiveType.NO_TYPE) {
           node.setType(new ArrayType(type, node.nChildren()));
-          if(!(type instanceof ArrayType)) {
+          if (!(type instanceof ArrayType)) {
             for (int i = 0; i < numOfChildren; i++) {
               node.child(i).setType(type);
             }
@@ -468,29 +468,29 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     // Check if can be promoted to char, int, float, rational in order
     if (promotableToType(typeList, PrimitiveType.CHARACTER)) {
       return PrimitiveType.CHARACTER;
-    } else if (promotableToType(typeList, PrimitiveType.INTEGER)){
+    } else if (promotableToType(typeList, PrimitiveType.INTEGER)) {
       return PrimitiveType.INTEGER;
     } else if (promotableToType(typeList, PrimitiveType.FLOATING)) {
       return PrimitiveType.FLOATING;
     } else if (promotableToType(typeList, PrimitiveType.RATIONAL)) {
       return PrimitiveType.RATIONAL;
     }
-    
+
     // If cannot be promote, at least they should be the same type
     // Otherwise we return NO_TYPE
     for (int i = 1; i < typeList.length; i++) {
-      if(!typeList[i].match(typeList[i-1])) {
+      if (!typeList[i].match(typeList[i - 1])) {
         return PrimitiveType.NO_TYPE;
       }
     }
-    
+
     return typeList[0];
   }
-  
+
   public boolean promotableToType(Type[] typeList, PrimitiveType primitiveType) {
     for (Type type : typeList) {
       if (!(type instanceof PrimitiveType)
-          || (!PromotionHelper.typeAIsPredecessorTypeOrSame((PrimitiveType)type, primitiveType))) {
+          || (!PromotionHelper.typeAIsPredecessorTypeOrSame((PrimitiveType) type, primitiveType))) {
         return false;
       }
     }
@@ -509,8 +509,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       PrimitiveType primitiveType = PrimitiveType.returnPrimitiveTypeByLexeme(primitiveTypeLexeme);
       node.setType(primitiveType);
       // Array Type
-    } else if (node.nChildren() == 1) {
-      assert node.child(0) instanceof TypeNode;
+    } else if (node.nChildren() == 1 && node.child(0) instanceof TypeNode) {
       node.setType(new ArrayType(node.child(0).getType()));
     }
   }
@@ -643,11 +642,12 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       node.setType(PrimitiveType.ERROR);
     }
   }
-  
-  private void assignParameterTypeFromSignature(ParseNode node, FunctionSignature signature, List<Type> childTypes) {
+
+  private void assignParameterTypeFromSignature(ParseNode node, FunctionSignature signature,
+      List<Type> childTypes) {
     Type[] parameterType = signature.getParameterType();
-    for(int i = 0; i < parameterType.length; i++) {
-      if(parameterType[i] instanceof PrimitiveType && childTypes.get(i) instanceof PrimitiveType) {
+    for (int i = 0; i < parameterType.length; i++) {
+      if (parameterType[i] instanceof PrimitiveType && childTypes.get(i) instanceof PrimitiveType) {
         node.child(i).setType(parameterType[i]);
       }
     }
@@ -669,9 +669,9 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     logError(node.getToken().getLexeme() + " Release Type Error");
   }
 
-   private void expressionElementTypeError(ParseNode node){
-   logError(node.getToken().getLexeme() + " expression list type can not be promoted Error");
-   }
+  private void expressionElementTypeError(ParseNode node) {
+    logError(node.getToken().getLexeme() + " expression list type can not be promoted Error");
+  }
 
   private void returnFindNoLambdaError(ParseNode node) {
     logError(node.getToken().getLexeme() + " return cannot find its lambda Error");
@@ -702,12 +702,16 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     logError(node.getToken().getLexeme() + " assignment to constant Error");
   }
 
-  private void lambdaNodeWrongEneterMethodError(ParseNode node) {
+  private void lambdaNodeWrongEnterMethodError(ParseNode node) {
     logError(node.getToken().getLexeme() + " lambdaNode wrong enter method Error");
   }
 
   private void lambdaNodeLackReturnStatementError(ParseNode node) {
     logError(node.getToken().getLexeme() + " lambdaNode lack return statement Error");
+  }
+  
+  private void assignVoidToVariableError(ParseNode node) {
+    logError(node.getToken().getLexeme() + " void assigned to variable Error");
   }
 
   public static void logError(String message) {

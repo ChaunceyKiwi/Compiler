@@ -1,0 +1,30 @@
+func min <int x, int y> -> int {
+  if(x <= y) {
+    return x.
+  }
+  return y.
+}
+
+func max <int x, int y> -> int {
+  if(x >= y) {
+    return x.
+  }
+  return y.
+}
+
+
+exec {
+  const ug := 21.
+  const dug := 29.
+  const lug := 32.
+  const bug := 44.
+  const rug := 16.
+  const jug := 19.
+
+  const jugALugLugBug := max(jug, max(lug, max(lug, bug))).
+  const jigALigLigBig := min(jug, min(lug, min(lug, bug))).
+  
+  const lugDugARug := max(min(lug, dug), min(max(rug, jug), max(ug, dug))).
+  
+  print jugALugLugBug;jigALigLigBig;lugDugARug, _n_.
+}

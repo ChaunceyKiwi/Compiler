@@ -11,6 +11,7 @@ import parseTree.nodeTypes.LambdaParamTypeNode;
 public class LambdaNode extends ParseNode {	
 	private LambdaType lambdaType = null;
 	private boolean hasReturnStatement = false;
+	private String functionLabel = null;
 	
 	public LambdaNode(Token token) {
 		super(token);
@@ -22,6 +23,14 @@ public class LambdaNode extends ParseNode {
 	
 	////////////////////////////////////////////////////////////
 	// attributes
+	
+	public void setFunctionLabel(String label) {
+	  functionLabel = label;
+	}
+	
+	public String getFunctionLabel() {
+	  return functionLabel;
+	}
 	
 	public Lextant getOperator() {
 		return lextantToken().getLextant();

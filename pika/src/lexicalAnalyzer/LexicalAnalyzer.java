@@ -7,7 +7,6 @@ import inputHandler.InputHandler;
 import inputHandler.LocatedChar;
 import inputHandler.LocatedCharStream;
 import inputHandler.PushbackCharStream;
-import inputHandler.TextLocation;
 import tokens.*;
 
 import static lexicalAnalyzer.PunctuatorScanningAids.*;
@@ -269,6 +268,4 @@ public class LexicalAnalyzer extends ScannerImp implements Scanner {
     PikaLogger log = PikaLogger.getLogger("compiler.lexicalAnalyzer");
     log.severe("Lexical error: identifier" + s + "exceeds 32 characters length");
   }
-
-
 }

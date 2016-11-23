@@ -23,8 +23,9 @@ public enum Keyword implements Lextant {
 	FLOATING("float"),
 	RATIONAL("rat"),
 	
-	// Void Type
+	// Function Type
 	VOID("void"),
+	LAMBDATYPE("lambdaType"),
 	
 	// for array type
 	LENGTH("length"),
