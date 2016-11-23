@@ -30,7 +30,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   public void visitEnter(ProgramNode node) {
     enterScope(node);
   }
-
+  
   @Override
   public void visitLeave(ProgramNode node) {
     leaveScope(node);
@@ -123,11 +123,15 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   ///////////////////////////////////////////////////////////////////////////
   // Lambda
-  // TODO there might be some other case to enter lambdaNode
+  // Currently only find 5 possible node can have a LamdaNode as child
+  // 1. FunctionDefinictionNode
+  // 2. DeclarationNode
+  // 3. AssignmentNode
+  // 4. ReturnStatementNode
   public void visitEnter(LambdaNode node) {
     ParseNode parent = node.getParent();
     if (parent instanceof FunctionDefinitionNode || parent instanceof DeclarationNode
-        || parent instanceof FunctionInvocationNode || parent instanceof AssignmentStatementNode 
+        || parent instanceof FunctionInvocationNode || parent instanceof AssignmentStatementNode
         || parent instanceof ReturnStatementNode) {
       enterScope(node);
     } else {
@@ -138,12 +142,11 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   public void visitLeave(LambdaNode node) {
     assert node.nChildren() == 2;
     Type resultType = node.getLambdaType().getResultType();
-    
+
     if (resultType != PrimitiveType.VOID && !node.hasReturnStatement()) {
       lambdaNodeLackReturnStatementError(node);
       return;
     }
-
     leaveScope(node);
   }
 
@@ -200,12 +203,12 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     ParseNode initializer = node.child(1);
     Scope scope = identifier.getLocalScope();
     Type declarationType = initializer.getType();
-    
-    if(declarationType == PrimitiveType.VOID) {
+
+    if (declarationType == PrimitiveType.VOID) {
       assignVoidToVariableError(node);
       return;
     }
-    
+
     node.setType(declarationType);
     identifier.setType(declarationType);
 
@@ -245,7 +248,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     ParseNode initializer = node.child(1);
     Type targetType = target.getType();
     Type assignmentType = initializer.getType();
-    
+
     List<Type> childTypes = Arrays.asList(targetType, assignmentType);
     setTypeAndCheckSignature(node, AssignmentStatementNode.VALUE_ASSIGNMENT, childTypes);
   }
@@ -345,7 +348,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     Lextant operator = operatorFor(node);
 
     // if both sides is array type and is comparision, skip typechecking
-    // TODO Move to signatures
     if ((left.getType() instanceof ArrayType && right.getType() instanceof ArrayType
         && (operator == Punctuator.EQUAL || operator == Punctuator.NOTEQUAL))) {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_COMPARISON, childTypes);
@@ -428,6 +430,9 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   ///////////////////////////////////////////////////////////////////////////
   // ExpressionList
+  // If it is the parameter of a function invocation, just skip 
+  //    without checking. InvocationStatementNode will handle it 
+  // If it is the elements of an array, all type should be promoted to the same type
   @Override
   public void visitLeave(ExpressionListNode node) {
     int numOfChildren = node.nChildren();
@@ -708,7 +713,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   private void lambdaNodeLackReturnStatementError(ParseNode node) {
     logError(node.getToken().getLexeme() + " lambdaNode lack return statement Error");
   }
-  
+
   private void assignVoidToVariableError(ParseNode node) {
     logError(node.getToken().getLexeme() + " void assigned to variable Error");
   }

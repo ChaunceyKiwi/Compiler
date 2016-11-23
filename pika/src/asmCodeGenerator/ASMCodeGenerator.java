@@ -314,6 +314,7 @@ public class ASMCodeGenerator {
       code.add(Label, subtractFrameSizeLabel);
       decrementStackPointer(procedureScopeSize);
 
+      // Function body is inserted here, which might contain return statement
       code.add(Label, functionBodyProcessLabel);
       code.append(blockStatementCode);
     }
@@ -343,6 +344,7 @@ public class ASMCodeGenerator {
       code.add(Label, incrementSP);
       incrementStackPointer(parameterScopeSize + procedureScopeSize);
 
+      // If there is no return value, do not need to store anything
       if (resultType != PrimitiveType.VOID) {
         // Exchange to put return value at the top of the ASM stack
         code.add(Exchange);
@@ -370,6 +372,7 @@ public class ASMCodeGenerator {
       String beginLabel = node.getBeginLabel();
       String endLabel = node.getEndLabel();
 
+      // Type of code depends
       if (node.getType() == PrimitiveType.VOID) {
         newVoidCode(node);
       } else {
@@ -380,6 +383,8 @@ public class ASMCodeGenerator {
       ParseNode exprList = node.child(1);
 
       code.add(Label, beginLabel);
+
+      // Push parameters needed for function into frame stack
       for (int i = 0; i < exprList.nChildren(); i++) {
         ParseNode expr = exprList.child(i);
         Type type = expr.getType();
@@ -388,14 +393,23 @@ public class ASMCodeGenerator {
         pushElementToFrameStack(type);
       }
 
+      // Call function body here
       // Either LambdaNode, IdentifierNode or Array
+
+      // functionInvocation -> Lambda (expressionList)
       if (expressionNode instanceof LambdaNode) {
         code.append(removeVoidCode(expressionNode));
         code.add(Call, ((LambdaNode) expressionNode).getFunctionLabel());
-      } else if (expressionNode instanceof IdentifierNode && ((IdentifierNode) expressionNode)
+      }
+      // functionInvocation -> Identifier (expressionList)
+      // Identifier here should be declared in global statement
+      else if (expressionNode instanceof IdentifierNode && ((IdentifierNode) expressionNode)
           .getBinding().getBindingType() == Binding.BindingType.FUNCTION) {
         code.append(removeVoidCode(expressionNode));
       }
+
+      // ArrayElement, some other identifer that is not declared in global scope
+      // The value of the identifier binding to is the location of function code
       else {
         code.append(removeValueCode(expressionNode));
         code.add(CallV);
@@ -485,7 +499,7 @@ public class ASMCodeGenerator {
     public void visitLeave(AssignmentStatementNode node) {
       newVoidCode(node);
       Type type = node.getType();
-      
+
       ASMCodeFragment lvalue = removeAddressCode(node.child(0));
       code.append(lvalue);
 
@@ -558,18 +572,21 @@ public class ASMCodeGenerator {
       code.append(ArrayHelper.arrayRelease(arrayType));
     }
 
+    /*
+     * During function definition, the value returned will be push into frame stack, and during the
+     * invocation, the value will be pop from frame stack to ASM Stack. Thus there is block generate
+     * value, also a correspoding block consume that value, Thus it will be easier to just set the
+     * code of ReturnStatementNode as void code.
+     */
     public void visitLeave(ReturnStatementNode node) {
-      // might not be void here
       newVoidCode(node);
-      
       if (node.nChildren() > 0 && node.child(0) instanceof LambdaNode) {
         ASMCodeFragment rvalue = removeVoidCode(node.child(0));
         code.append(rvalue);
         code.add(PushD, ((LambdaNode) node.child(0)).getFunctionLabel());
-      }else if (node.getType() != PrimitiveType.VOID) {
+      } else if (node.getType() != PrimitiveType.VOID) {
         code.append(removeValueCode(node.child(0)));
       }
-      
       code.add(Jump, node.getTargetLabelForReturn());
     }
 
