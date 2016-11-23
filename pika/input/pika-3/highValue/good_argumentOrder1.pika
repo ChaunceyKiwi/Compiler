@@ -5,7 +5,7 @@ func argument1<> -> int {
 
 func argument2<> -> int {
 	print "a2";8;_n_.
-	return 9.
+	return 8.
 }
 
 func argument3<> -> int {
