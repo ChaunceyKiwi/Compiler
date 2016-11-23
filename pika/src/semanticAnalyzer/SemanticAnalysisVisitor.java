@@ -139,7 +139,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     assert node.nChildren() == 2;
     Type resultType = node.getLambdaType().getResultType();
     
-    // TODO May not need return statement
     if (resultType != PrimitiveType.VOID && !node.hasReturnStatement()) {
       lambdaNodeLackReturnStatementError(node);
       return;
