@@ -23,6 +23,8 @@ public class RunTime {
 	public static final String MINUS_SIGN_PRINT_FORMAT= "$print-format-minus-sign";
 	public static final String FRAME_POINTER 		  = "$frame-pointer";
 	public static final String STACK_POINTER 		  = "$stack-pointer";
+	public static final String LAMBDATYPE_STRING      = "$lambda-type-string";
+
 
 	public static final String OPEN_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-open-square-bracket";
 	public static final String CLOSE_SQUARE_BRACKET_PRINT_FORMAT = "$print-format-close-square-bracket";
@@ -76,6 +78,8 @@ public class RunTime {
 		frag.add(DataS, " ");
 		frag.add(DLabel, BOOLEAN_TRUE_STRING);
 		frag.add(DataS, "true");
+	    frag.add(DLabel, LAMBDATYPE_STRING);
+	    frag.add(DataS, "<lambda>");
 		frag.add(DLabel, BOOLEAN_FALSE_STRING);
 		frag.add(DataS, "false");
 		frag.add(DLabel, SEPARATOR_PRINT_FORMAT);

@@ -3,6 +3,7 @@ import asmCodeGenerator.codeStorage.*;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
 import semanticAnalyzer.types.ArrayType;
+import semanticAnalyzer.types.LambdaType;
 import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 import semanticAnalyzer.types.TypeVariable;
@@ -362,7 +363,7 @@ public class ArrayHelper {
 		code.add(LoadI);
 		code.add(Exchange);
 		
-		if(subType.isReferenceType()) {
+		if(subType.isReferenceType() && !(subType instanceof LambdaType)) {
 			code.append(arrayPrint((ArrayType)subType));
 		}else if (subType == PrimitiveType.RATIONAL){
 			code.append(RationalHelper.appendPrintCodeForRational(subType));
@@ -380,6 +381,9 @@ public class ArrayHelper {
 				code.add(Label, trueLabelForBoolean);
 				code.add(PushD, RunTime.BOOLEAN_TRUE_STRING);
 				code.add(Label, endLabelForBoolean);
+			}else if (subType instanceof LambdaType) {
+			  code.add(Pop);
+			  code.add(PushD, RunTime.LAMBDATYPE_STRING);
 			}
 			String format = PrintStatementGenerator.printFormat(subType);
 			code.add(PushD, format);
