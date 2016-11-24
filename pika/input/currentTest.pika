@@ -21,8 +21,7 @@ exec {
   var minus := <int a, int b> -> int {return a - b.}.
   var multiply := <int a, int b> -> int {return a * b.}.
   var divide := <int a, int b> -> int {return a / b.}.
-  var lambdaArray := [plus, minus, multiply, divide].
-
+  var lambdaArray := [plus, minus, multiply, divide, <int a, int b> -> int {return a + 3 * b.}].
   var plusVarCopy := plus.
   const plusConstCopy := plus.
 
@@ -33,5 +32,6 @@ exec {
   print lambdaArray[0](3,4);_n_.
   print giveNice()(3,4);_n_.
   print (giveNiceArray()[3])(3,4);_n_.
+  print lambdaArray[4](3,4);_n_.
   print lambdaArray;_n_.
 }

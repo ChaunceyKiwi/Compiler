@@ -132,7 +132,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     ParseNode parent = node.getParent();
     if (parent instanceof FunctionDefinitionNode || parent instanceof DeclarationNode
         || parent instanceof FunctionInvocationNode || parent instanceof AssignmentStatementNode
-        || parent instanceof ReturnStatementNode) {
+        || parent instanceof ReturnStatementNode || parent instanceof ExpressionListNode) {
       enterScope(node);
     } else {
       lambdaNodeWrongEnterMethodError(node);

@@ -263,12 +263,13 @@ public class ASMCodeGenerator {
       String functionName = null;
       Type resultType = node.getLambdaType().getResultType();
 
-      newVoidCode(node);
-
+      
       // FunctionDefinitionNode or DeclarationNode
       if (parentNode instanceof FunctionDefinitionNode) {
+        newVoidCode(node);
         functionName = parentNode.child(0).getToken().getLexeme();
       } else {
+        newValueCode(node);
         functionName = labeller.newLabel("Lambda");
       }
 
@@ -279,6 +280,9 @@ public class ASMCodeGenerator {
       functionProcess(labeller, node);
       functionLaterStage(labeller, node, resultType);
       code.add(Label, endLabel);
+      if(!(node.getParent() instanceof FunctionDefinitionNode)) {
+        code.add(PushD, node.getFunctionLabel());
+      }
     }
 
     public void functionPreparation(Labeller labeller) {
@@ -398,7 +402,7 @@ public class ASMCodeGenerator {
 
       // functionInvocation -> Lambda (expressionList)
       if (expressionNode instanceof LambdaNode) {
-        code.append(removeVoidCode(expressionNode));
+        code.append(removeValueCode(expressionNode));
         code.add(Call, ((LambdaNode) expressionNode).getFunctionLabel());
       }
       // functionInvocation -> Identifier (expressionList)
@@ -480,18 +484,10 @@ public class ASMCodeGenerator {
       newVoidCode(node);
       Type type = node.getType();
       ASMCodeFragment lvalue = removeAddressCode(node.child(0));
+      ASMCodeFragment rvalue = removeValueCode(node.child(1));
 
       code.append(lvalue);
-
-      if (node.child(1) instanceof LambdaNode) {
-        ASMCodeFragment rvalue = removeVoidCode(node.child(1));
-        code.append(rvalue);
-        code.add(PushD, ((LambdaNode) node.child(1)).getFunctionLabel());
-      } else {
-        ASMCodeFragment rvalue = removeValueCode(node.child(1));
-        code.append(rvalue);
-      }
-
+      code.append(rvalue);
       code.add(opcodeForStore(type));
     }
 
@@ -499,18 +495,10 @@ public class ASMCodeGenerator {
     public void visitLeave(AssignmentStatementNode node) {
       newVoidCode(node);
       Type type = node.getType();
-
       ASMCodeFragment lvalue = removeAddressCode(node.child(0));
+      ASMCodeFragment rvalue = removeValueCode(node.child(1));
       code.append(lvalue);
-
-      if (node.child(1) instanceof LambdaNode) {
-        ASMCodeFragment rvalue = removeVoidCode(node.child(1));
-        code.append(rvalue);
-        code.add(PushD, ((LambdaNode) node.child(1)).getFunctionLabel());
-      } else {
-        ASMCodeFragment rvalue = removeValueCode(node.child(1));
-        code.append(rvalue);
-      }
+      code.append(rvalue);
       code.add(opcodeForStore(type));
     }
 
@@ -581,9 +569,8 @@ public class ASMCodeGenerator {
     public void visitLeave(ReturnStatementNode node) {
       newVoidCode(node);
       if (node.nChildren() > 0 && node.child(0) instanceof LambdaNode) {
-        ASMCodeFragment rvalue = removeVoidCode(node.child(0));
+        ASMCodeFragment rvalue = removeValueCode(node.child(0));
         code.append(rvalue);
-        code.add(PushD, ((LambdaNode) node.child(0)).getFunctionLabel());
       } else if (node.getType() != PrimitiveType.VOID) {
         code.append(removeValueCode(node.child(0)));
       }
