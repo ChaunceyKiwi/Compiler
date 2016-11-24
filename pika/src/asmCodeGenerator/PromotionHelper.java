@@ -12,18 +12,17 @@ public class PromotionHelper {
   // Following promotion are allowed
   // Char -> Int, Char -> Float, Char -> Rat
   // Int -> Float , Int -> Rat
-  public static ASMCodeFragment codePromoteTypeAToTypeB(Type typeA, Type typeB, Object value) {
+  
+  public static ASMCodeFragment codePromoteTypeAToTypeB(Type typeA, Type typeB) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
     // Char -> Int
     if (typeA == PrimitiveType.CHARACTER && typeB == PrimitiveType.INTEGER) {
-      code.add(PushI, (char) value);
       return code;
     }
 
     // Char -> Floating
     if (typeA == PrimitiveType.CHARACTER && typeB == PrimitiveType.FLOATING) {
-      code.add(PushI, (char) value);
       code.add(ConvertF);
     }
 
@@ -32,7 +31,6 @@ public class PromotionHelper {
       ASMCodeFragment arg1 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
       ASMCodeFragment arg2 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
 
-      arg1.add(PushI, (char) value);
       arg2.add(PushI, 1);
       code.append(RationalHelper.performOverPuntuator(arg1, arg2, ASMCodeGenerator.GCDCalculation,
           ASMCodeGenerator.reg1ForFunction, ASMCodeGenerator.reg2ForFunction, ASMCodeGenerator.reg1,
@@ -42,7 +40,6 @@ public class PromotionHelper {
 
     // Int -> Float
     if (typeA == PrimitiveType.INTEGER && typeB == PrimitiveType.FLOATING) {
-      code.add(PushI, (int) value);
       code.add(ConvertF);
       return code;
     }
@@ -52,7 +49,6 @@ public class PromotionHelper {
       ASMCodeFragment arg1 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
       ASMCodeFragment arg2 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
 
-      arg1.add(PushI, (int) value);
       arg2.add(PushI, 1);
       code.append(RationalHelper.performOverPuntuator(arg1, arg2, ASMCodeGenerator.GCDCalculation,
           ASMCodeGenerator.reg1ForFunction, ASMCodeGenerator.reg2ForFunction, ASMCodeGenerator.reg1,

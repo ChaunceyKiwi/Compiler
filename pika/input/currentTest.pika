@@ -1,6 +1,10 @@
+func nice <int a,int b> -> int {
+  return a + b.
+}
+
 exec {
-  var pop := [-14, 1, (14//3), ^a^, ^.^].
-  print pop; "[-14, 1, 4_2/3, 97, 46]";_n_.
-  pop := [17//9, 15//2].
-  print pop; _n_. 
+  var c := [1,2,3,4,5].
+  var a := 3.3.
+  a := nice(1,5).
+  print a.
 }

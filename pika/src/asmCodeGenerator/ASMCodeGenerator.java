@@ -424,7 +424,19 @@ public class ASMCodeGenerator {
       if (node.getType() != PrimitiveType.VOID) {
         popElementFromFrameToASMStack(node.getType());
       }
+      
+      addPromotionCodeIfNeeded(node);
+      
       code.add(Label, endLabel);
+    }
+    
+    private void addPromotionCodeIfNeeded(ParseNode node) {
+      Type originalType = node.getOriginalType();
+      Type currentType = node.getType();
+      
+      if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE && originalType != currentType) {
+        code.append(PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType));
+      }
     }
 
     // pop element from frame stack and increment SP
@@ -712,6 +724,7 @@ public class ASMCodeGenerator {
         code.add(Jump, joinLabel);
         code.add(Label, joinLabel);
       }
+      addPromotionCodeIfNeeded(node);
     }
 
     private void visitBooleanOperatorNode(BinaryOperatorNode node) {
@@ -751,6 +764,7 @@ public class ASMCodeGenerator {
       code.add(PushI, 0);
       code.add(Jump, joinLabel);
       code.add(Label, joinLabel);
+      addPromotionCodeIfNeeded(node);
     }
 
     private void visitRationalOperatorNode(BinaryOperatorNode node) {
@@ -769,6 +783,7 @@ public class ASMCodeGenerator {
         code.append(RationalHelper.performRationalizePuntuator(arg1, arg2, type, GCDCalculation,
             reg1ForFunction, reg2ForFunction, reg1, reg2, reg3, reg4));
       }
+      addPromotionCodeIfNeeded(node);
     }
 
     private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
@@ -804,6 +819,7 @@ public class ASMCodeGenerator {
               reg1ForFunction, reg2ForFunction));
         }
       }
+      addPromotionCodeIfNeeded(node);
     }
 
     public void visitLeave(UnaryOperatorNode node) {
@@ -827,6 +843,7 @@ public class ASMCodeGenerator {
         ArrayType arrayType = (ArrayType) node.getType();
         code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
       }
+      addPromotionCodeIfNeeded(node);
     }
 
     // Following castings are allowed
@@ -835,7 +852,6 @@ public class ASMCodeGenerator {
     // Int -> Bool, Char -> Bool
     // selfType -> selfType
     public void visitLeave(TypeCastingNode node) {
-      newValueCode(node);
       Type originalType = node.child(0).getType();
       Type targetType = node.child(1).getType();
       ASMCodeFragment value = removeValueCode(node.child(0));
@@ -939,6 +955,7 @@ public class ASMCodeGenerator {
     public void visit(BooleanConstantNode node) {
       newValueCode(node);
       code.add(PushI, node.getValue() ? 1 : 0);
+      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(IdentifierNode node) {
@@ -956,32 +973,20 @@ public class ASMCodeGenerator {
 
     public void visit(IntegerConstantNode node) {
       newValueCode(node);
-      if (node.getType() == PrimitiveType.INTEGER) {
-        code.add(PushI, node.getValue());
-      } else {
-        code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.INTEGER, node.getType(),
-            node.getValue()));
-      }
+      code.add(PushI, node.getValue());
+      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(FloatingConstantNode node) {
       newValueCode(node);
-      if (node.getType() == PrimitiveType.FLOATING) {
-        code.add(PushF, node.getValue());
-      } else {
-        code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.FLOATING, node.getType(),
-            node.getValue()));
-      }
+      code.add(PushF, node.getValue());
+      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(CharConstantNode node) {
       newValueCode(node);
-      if (node.getType() == PrimitiveType.CHARACTER) {
-        code.add(PushI, node.getValue());
-      } else {
-        code.append(PromotionHelper.codePromoteTypeAToTypeB(PrimitiveType.CHARACTER, node.getType(),
-            node.getValue()));
-      }
+      code.add(PushI, node.getValue());
+      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(StringConstantNode node) {
