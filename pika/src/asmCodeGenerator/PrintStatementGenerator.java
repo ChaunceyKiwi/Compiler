@@ -15,8 +15,7 @@ import asmCodeGenerator.runtime.RunTime;
 public class PrintStatementGenerator {
   ASMCodeFragment code;
   ASMCodeGenerator.CodeVisitor visitor;
-
-
+  
   public PrintStatementGenerator(ASMCodeFragment code, CodeVisitor visitor) {
     super();
     this.code = code;
@@ -28,26 +27,13 @@ public class PrintStatementGenerator {
       if (child instanceof NewlineNode || child instanceof SpaceNode || child instanceof TabNode) {
         ASMCodeFragment childCode = visitor.removeVoidCode(child);
         code.append(childCode);
-      }
-      else if (child.getType() instanceof ArrayType) {
+      } else if (child.getType() instanceof ArrayType) {
         code.append(visitor.removeValueCode(child));
         code.append(ArrayHelper.arrayPrint((ArrayType) child.getType()));
-      }
-      else if (child.getType() instanceof TypeVariable) {
-        Type subtype = ((TypeVariable) child.getType()).getSubtype();
-        if (subtype instanceof ArrayType) {
-          code.append(visitor.removeValueCode(child));
-          code.add(LoadI);
-          code.append(ArrayHelper.arrayPrint((ArrayType) subtype));
-        } else if (subtype instanceof PrimitiveType) {
-          appendPrintCode(child);
-        }
-      }
-      else if (child.getType() == PrimitiveType.RATIONAL) {
+      } else if (child.getType() == PrimitiveType.RATIONAL) {
         code.append(visitor.removeValueCode(child));
         code.append(RationalHelper.appendPrintCodeForRational(child.getType()));
-      }
-      else {
+      } else {
         appendPrintCode(child);
       }
     }
@@ -56,15 +42,10 @@ public class PrintStatementGenerator {
   private void appendPrintCode(ParseNode node) {
     String format;
 
-    if (node.getType() instanceof TypeVariable) {
-      format = printFormat(((TypeVariable) node.getType()).getSubtype());
-      code.append(visitor.removeValueCode(node));
-      code.add(LoadI);
-    }else if (node.getType() instanceof LambdaType) {
+    if (node.getType() instanceof LambdaType) {
       format = printFormat(node.getType());
       code.add(PushD, RunTime.LAMBDATYPE_STRING);
-    }
-    else {
+    } else {
       format = printFormat(node.getType());
       code.append(visitor.removeValueCode(node));
       if (node.getType() == PrimitiveType.STRING) {
@@ -97,7 +78,6 @@ public class PrintStatementGenerator {
 
 
   public static String printFormat(Type type) {
-
     if (type instanceof LambdaType) {
       return RunTime.STRING_PRINT_FORMAT;
     }
@@ -115,7 +95,6 @@ public class PrintStatementGenerator {
         return RunTime.CHAR_PRINT_FORMAT;
       case STRING:
         return RunTime.STRING_PRINT_FORMAT;
-
 
       default:
         assert false : "Type " + type + " unimplemented in PrintStatementGenerator.printFormat()";

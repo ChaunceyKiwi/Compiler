@@ -896,8 +896,6 @@ public class ASMCodeGenerator {
     // Helper Function
 
     private ASMOpcode opcodeForStore(Type type) {
-      if (type instanceof TypeVariable)
-        type = ((TypeVariable) type).getSubtype();
       if (type == PrimitiveType.INTEGER)
         return StoreI;
       if (type == PrimitiveType.BOOLEAN)
@@ -917,8 +915,6 @@ public class ASMCodeGenerator {
     }
 
     private ASMOpcode opcodeForLoad(Type type) {
-      if (type instanceof TypeVariable)
-        type = ((TypeVariable) type).getSubtype();
       if (type == PrimitiveType.INTEGER)
         return LoadI;
       if (type == PrimitiveType.BOOLEAN)
@@ -938,7 +934,8 @@ public class ASMCodeGenerator {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // leaf nodes (ErrorNode not necessary)
+    // leaf nodes
+    
     public void visit(BooleanConstantNode node) {
       newValueCode(node);
       code.add(PushI, node.getValue() ? 1 : 0);

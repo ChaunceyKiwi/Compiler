@@ -1,37 +1,6 @@
-func nice <int a,int b> -> int {
-  return a + b.
-}
-
-func giveNice <> -> <int,int> -> int {
-  return <int a, int b> -> int {return a + b.}.
-}
-
-func giveNiceArray <> -> [<int,int> -> int] {
-  var plus := <int a, int b> -> int {return a + b.}.
-  var minus := <int a, int b> -> int {return a - b.}.
-  var multiply := <int a, int b> -> int {return a * b.}.
-  var divide := <int a, int b> -> int {return a / b.}.
-  var lambdaArray := [plus, minus, multiply, divide].
-  return lambdaArray.
-}
-
-
 exec {
-  var plus := <int a, int b> -> int {return a + b.}.
-  var minus := <int a, int b> -> int {return a - b.}.
-  var multiply := <int a, int b> -> int {return a * b.}.
-  var divide := <int a, int b> -> int {return a / b.}.
-  var lambdaArray := [plus, minus, multiply, divide, <int a, int b> -> int {return a + 3 * b.}].
-  var plusVarCopy := plus.
-  const plusConstCopy := plus.
-
-  print nice(3,4);_n_.
-  print plusVarCopy(3,4);_n_.
-  print plusConstCopy(3,4);_n_.
-  print <int a, int b> -> int {return a + b.}(3,4);_n_.
-  print lambdaArray[0](3,4);_n_.
-  print giveNice()(3,4);_n_.
-  print (giveNiceArray()[3])(3,4);_n_.
-  print lambdaArray[4](3,4);_n_.
-  print lambdaArray;_n_.
+  var pop := [-14, 1, (14//3), ^a^, ^.^].
+  print pop; "[-14, 1, 4_2/3, 97, 46]";_n_.
+  pop := [17//9, 15//2].
+  print pop; _n_. 
 }
