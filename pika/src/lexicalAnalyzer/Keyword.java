@@ -16,6 +16,12 @@ public enum Keyword implements Lextant {
 	EXEC("exec"),
 	NULL_KEYWORD(""),
 	
+	// Used for ForStatement
+	FOR("for"),
+	INDEX("index"),
+	ELEM("elem"),
+	OF("of"),
+	
 	// Primitive Type
 	BOOLEAN("bool"),
 	CHARACTER("char"),

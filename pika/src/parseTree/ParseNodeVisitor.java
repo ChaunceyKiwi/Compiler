@@ -91,6 +91,10 @@ public interface ParseNodeVisitor {
   void visitEnter(ContinueStatementNode node);
 
   void visitLeave(ContinueStatementNode node);
+  
+  void visitEnter(ForStatementNode node);
+
+  void visitLeave(ForStatementNode node);
 
   ///////////////////////////////////////////////////////////
   // Expression Node
@@ -363,7 +367,16 @@ public interface ParseNodeVisitor {
     public void visitLeave(ContinueStatementNode node) {
       defaultVisitLeave(node);
     }
+    
+    ///////////////////////////////////////////////////////////
+    // ForStatement
+    public void visitEnter(ForStatementNode node) {
+      defaultVisitEnter(node);
+    }
 
+    public void visitLeave(ForStatementNode node) {
+      defaultVisitLeave(node);
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // ExpressionNode

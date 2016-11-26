@@ -220,6 +220,7 @@ public class Parser {
   /* callStatement */
   /* breakStatement */
   /* continueStatement */
+  /* forStatement */
 
   ///////////////////////////////////////////////////////////////////////////
   // statements
@@ -271,6 +272,10 @@ public class Parser {
     if (startsContinueStatement(nowReading)) {
       return parseContinueStatement();
     }
+    
+    if (startsForStatement(nowReading)) {
+      return parseForStatement();
+    }
 
     return syntaxErrorNode("statement");
   }
@@ -280,7 +285,7 @@ public class Parser {
         || startsWhileStatement(token) || startsPrintStatement(token) || startsBlockStatement(token)
         || startsReturnStatement(token) || startsCallStatement(token)
         || startsReleaseStatement(token) || startsBreakStatement(token)
-        || startsContinueStatement(token);
+        || startsContinueStatement(token) || startsForStatement(token);
   }
 
   ///////////////////////////////////////////////////////////
@@ -644,6 +649,34 @@ public class Parser {
 
   private boolean startsContinueStatement(Token token) {
     return token.isLextant(Keyword.CONTINUE);
+  }
+  
+  ///////////////////////////////////////////////////////////
+  // forStatement -> continue.
+  private ParseNode parseForStatement() {
+    if (!startsForStatement(nowReading)) {
+      return syntaxErrorNode("forStatement");
+    }
+    Token forStatementToken;
+    expect(Keyword.FOR);
+    if(nowReading.isLextant(Keyword.INDEX, Keyword.ELEM)) {
+      forStatementToken = nowReading;
+      readToken();
+    } 
+    else {
+      return syntaxErrorNode("forStatement");
+    }
+    
+    ParseNode identifier= parseIdentifier();
+    expect(Keyword.OF);
+    ParseNode expression = parseExpression();
+    ParseNode blockStatement = parseBlockStatement();
+    
+    return ForStatementNode.withChildren(forStatementToken, identifier, expression, blockStatement);
+  }
+
+  private boolean startsForStatement(Token token) {
+    return token.isLextant(Keyword.FOR);
   }
 
   ///////////////////////////////////////////////////////////
