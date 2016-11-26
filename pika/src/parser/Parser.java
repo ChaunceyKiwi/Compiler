@@ -31,7 +31,7 @@ public class Parser {
   }
 
   ////////////////////////////////////////////////////////////
-  // program -> globalDefinition? EXEC blockStatement
+  // program -> globalDefinition* EXEC blockStatement
   private ParseNode parseProgram() {
     if (!startsProgram(nowReading)) {
       return syntaxErrorNode("program");
@@ -40,7 +40,7 @@ public class Parser {
     ParseNode program = new ProgramNode(nowReading);
 
     // check if exist globalDefinition
-    if (startsGlobalDefinition(nowReading)) {
+    while (startsGlobalDefinition(nowReading)) {
       ParseNode globalDefinitoin = parseGlobalDefinition();
       program.appendChild(globalDefinitoin);
     }
@@ -71,24 +71,29 @@ public class Parser {
   /* parameterSpecification -> type identifier */
 
   ///////////////////////////////////////////////////////////
-  // globalDefinition -> functionDefinition*
+  // globalDefinition -> functionDefinition | declaration
   private ParseNode parseGlobalDefinition() {
     if (!startsGlobalDefinition(nowReading)) {
       return syntaxErrorNode("global definition");
     }
-
-    ParseNode globalDefinition = new GlobalDefinitionNode(nowReading);
-
-    while (startsFunctionDefinition(nowReading)) {
+    
+    Token token = nowReading;
+    
+    // Function definition
+    if (startsFunctionDefinition(nowReading)) {
       ParseNode functionDefinition = parseFunctionDefinition();
-      globalDefinition.appendChild(functionDefinition);
-    }
-
-    return globalDefinition;
+      return GlobalDefinitionNode.withChildren(token, functionDefinition);
+    } 
+    
+    // Global declaration
+    else {
+      ParseNode declaration = parseDeclaration();
+      return GlobalDefinitionNode.withChildren(token, declaration);
+    } 
   }
 
   private boolean startsGlobalDefinition(Token token) {
-    return startsFunctionDefinition(token);
+    return startsFunctionDefinition(token) || startsDeclaration(token);
   }
 
   ///////////////////////////////////////////////////////////
