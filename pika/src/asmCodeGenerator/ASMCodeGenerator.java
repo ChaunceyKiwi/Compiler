@@ -853,9 +853,23 @@ public class ASMCodeGenerator {
       }
 
       if (operator == Keyword.LENGTH) {
+        ParseNode nodeToGetLength = node.child(0);
+        Type type = nodeToGetLength.getType();
         Labeller labeller = new Labeller("-get-array-length");
         code.append(arg1);
-        code.append(ArrayHelper.pushArrayLength(labeller.newLabel("push-array-length")));
+        
+        // Get the length of a string
+        if (type == PrimitiveType.STRING) {
+          code.append(ArrayHelper.pushStringLength(labeller.newLabel("push-string-length")));
+        } 
+        // Get the length of an array
+        else if (type instanceof ArrayType){
+          code.append(ArrayHelper.pushArrayLength(labeller.newLabel("push-array-length")));
+        }
+        // Error case
+        else {
+          return;
+        }
       }
 
       if (operator == Keyword.COPY) {

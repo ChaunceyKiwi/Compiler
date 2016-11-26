@@ -1,3 +1,5 @@
 exec {
-  var a := reverse 1,1,1.
+  var a := "hello".
+  print length a,_n_.
+  print a,_n_.
 }

@@ -352,6 +352,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
             new ArrayType(typeVariable)));
 
     new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,
-        new FunctionSignature(0, false, new ArrayType(typeVariable), PrimitiveType.INTEGER));
+        new FunctionSignature(0, false, new ArrayType(typeVariable), PrimitiveType.INTEGER),
+        new FunctionSignature(0, false, PrimitiveType.STRING, PrimitiveType.INTEGER));
   }
 }
