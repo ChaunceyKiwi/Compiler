@@ -284,7 +284,7 @@
         DataC        0                         
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        12                        
+        DataZ        4                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -367,234 +367,62 @@
         StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
-        Add                                    %% c
-        Label        --expr-list--3-array-creation-begin 
-        Label        --expr-list--3-array-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
+        Add                                    %% a
+        PushI        1                         
         StoreI                                 
-        JumpNeg      basicBlock-2              
+        Jump         basicBlockHeader-2        
+        Label        basicBlockHeader-2        
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Label        -compare-2-arg2           
+        PushI        5                         
+        Label        -compare-2-sub            
+        Subtract                               
+        JumpPos      basicBlock-3              
         Jump         basicBlock-4              
-        Label        basicBlock-2              
-        PushD        $$errors-array-size-negative 
-        PushD        $errors-general-message   
-        Printf                                 
-        Halt                                   
         Label        basicBlock-3              
-        Label        $function-nice            
-        Label        -lambda-definition-2-dynamic-link 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        -4                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        -lambda-definition-2-return-address 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        -8                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        -lambda-definition-2-move-fp-to-sp 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushD        $frame-pointer            
-        Exchange                               
-        StoreI                                 
-        Label        -lambda-definition-2-subtract-frame-size 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        8                         
-        Subtract                               
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        Label        -lambda-definition-2-function-body-process 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        4                         
-        Add                                    %% a
-        LoadI                                  
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        0                         
-        Add                                    %% b
-        LoadI                                  
-        Add                                    
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        -8                        
-        Add                                    
-        LoadI                                  
-        Label        -lambda-definition-2-replace-frame-pointer 
-        PushD        $frame-pointer            
-        LoadI                                  
-        PushI        -4                        
-        Add                                    
-        LoadI                                  
-        PushD        $frame-pointer            
-        Exchange                               
-        StoreI                                 
-        Label        -lambda-definition-2-increment-stack-pointer 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        16                        
-        Add                                    
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        Label        -lambda-definition-2-decrement-stack-pointer 
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        4                         
-        Subtract                               
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        PushD        $stack-pointer            
-        LoadI                                  
-        Exchange                               
-        StoreI                                 
-        Return                                 
+        Jump         basicBlockHeader-5        
         Label        basicBlock-4              
-        PushI        4                         
-        Multiply                               
-        PushI        16                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Duplicate                              
-        PushI        7                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-status 
-        Duplicate                              
-        PushI        0                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-subtype-size 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-creation-end 
-        Label        --expr-list--3-array-initialization-begin 
-        Duplicate                              
-        PushI        1                         
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        2                         
-        Exchange                               
-        PushI        20                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        3                         
-        Exchange                               
-        PushI        24                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        4                         
-        Exchange                               
-        PushI        28                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        5                         
-        Exchange                               
-        PushI        32                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --expr-list--3-array-initialization-end 
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% a
-        PushF        3.30000                   
-        StoreF                                 
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% a
-        Label        -function-invocation-4-begin 
-        PushI        1                         
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        4                         
-        Subtract                               
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        PushD        $stack-pointer            
-        LoadI                                  
-        Exchange                               
-        StoreI                                 
-        PushI        5                         
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        4                         
-        Subtract                               
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        PushD        $stack-pointer            
-        LoadI                                  
-        Exchange                               
-        StoreI                                 
-        Call         $function-nice            
-        PushD        $stack-pointer            
-        LoadI                                  
-        LoadF                                  
-        PushD        $stack-pointer            
-        LoadI                                  
-        PushI        8                         
-        Add                                    
-        PushD        $stack-pointer            
-        Exchange                               
-        StoreI                                 
-        ConvertF                               
-        Label        -function-invocation-4-end 
-        StoreF                                 
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% a
-        LoadF                                  
-        PushD        $print-format-floating    
-        Printf                                 
         Halt                                   
-        Label        basicBlock-5              
+        Label        basicBlockHeader-5        
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Label        -compare-4-arg2           
+        PushI        5                         
+        Label        -compare-4-sub            
+        Subtract                               
+        JumpPos      basicBlock-6              
+        Jump         basicBlock-7              
+        Label        basicBlock-6              
+        Jump         basicBlockHeader-8        
+        Label        basicBlock-7              
+        Jump         basicBlockHeader-2        
+        Label        basicBlockHeader-8        
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Label        -compare-6-arg2           
+        PushI        6                         
+        Label        -compare-6-sub            
+        Subtract                               
+        JumpPos      basicBlock-9              
+        Jump         basicBlock-10             
+        Label        basicBlock-9              
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        PushD        $print-format-integer     
+        Printf                                 
+        Jump         basicBlockHeader-8        
+        Label        basicBlock-10             
+        Jump         basicBlockHeader-5        
+        Label        basicBlock-11             
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
         Exchange                               
@@ -642,7 +470,7 @@
         PushD        $mmgr-tags-return         
         LoadI                                  
         Return                                 
-        Label        basicBlock-6              
+        Label        basicBlock-12             
         Label        -mem-manager-one-tag      
         PushD        $mmgr-onetag-return       
         Exchange                               
@@ -681,158 +509,7 @@
         PushD        $mmgr-onetag-return       
         LoadI                                  
         Return                                 
-        Label        basicBlock-7              
-        Label        -mem-manager-allocate     
-        PushD        $mmgr-alloc-return        
-        Exchange                               
-        StoreI                                 
-        PushI        18                        
-        Add                                    
-        PushD        $mmgr-alloc-size          
-        Exchange                               
-        StoreI                                 
-        PushD        $heap-first-free          
-        LoadI                                  
-        PushD        $mmgr-alloc-current-block 
-        Exchange                               
-        StoreI                                 
-        Jump         basicBlockHeader-8        
-        Label        basicBlockHeader-8        
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        JumpFalse    basicBlock-13             
-        Jump         basicBlock-9              
-        Label        basicBlock-9              
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        PushD        $mmgr-alloc-size          
-        LoadI                                  
-        Subtract                               
-        PushI        1                         
-        Add                                    
-        JumpPos      basicBlock-11             
-        Jump         basicBlock-10             
-        Label        basicBlock-10             
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        Duplicate                              
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Add                                    
-        PushI        9                         
-        Subtract                               
-        PushI        0                         
-        Add                                    
-        LoadI                                  
-        PushD        $mmgr-alloc-current-block 
-        Exchange                               
-        StoreI                                 
-        Jump         basicBlockHeader-8        
-        Label        basicBlock-11             
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        Call         -mem-manager-remove-block 
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        PushD        $mmgr-alloc-size          
-        LoadI                                  
-        Subtract                               
-        PushI        26                        
-        Subtract                               
-        JumpNeg      basicBlock-14             
-        Jump         basicBlock-12             
-        Label        basicBlock-12             
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        PushD        $mmgr-alloc-size          
-        LoadI                                  
-        Add                                    
-        PushD        $mmgr-alloc-remainder-block 
-        Exchange                               
-        StoreI                                 
-        PushD        $mmgr-alloc-size          
-        LoadI                                  
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Exchange                               
-        Subtract                               
-        PushD        $mmgr-alloc-remainder-size 
-        Exchange                               
-        StoreI                                 
-        PushI        0                         
-        PushI        0                         
-        PushI        0                         
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        PushD        $mmgr-alloc-size          
-        LoadI                                  
-        Call         -mem-manager-make-tags    
-        PushI        0                         
-        PushI        0                         
-        PushI        1                         
-        PushD        $mmgr-alloc-remainder-block 
-        LoadI                                  
-        PushD        $mmgr-alloc-remainder-size 
-        LoadI                                  
-        Call         -mem-manager-make-tags    
-        PushD        $mmgr-alloc-remainder-block 
-        LoadI                                  
-        PushI        9                         
-        Add                                    
-        Call         -mem-manager-deallocate   
-        Jump         basicBlock-14             
         Label        basicBlock-13             
-        PushD        $mmgr-alloc-size          
-        LoadI                                  
-        PushD        $mmgr-newblock-size       
-        Exchange                               
-        StoreI                                 
-        PushD        $heap-after-ptr           
-        LoadI                                  
-        PushD        $mmgr-newblock-block      
-        Exchange                               
-        StoreI                                 
-        PushD        $mmgr-newblock-size       
-        LoadI                                  
-        PushD        $heap-after-ptr           
-        LoadI                                  
-        Add                                    
-        PushD        $heap-after-ptr           
-        Exchange                               
-        StoreI                                 
-        PushI        0                         
-        PushI        0                         
-        PushI        0                         
-        PushD        $mmgr-newblock-block      
-        LoadI                                  
-        PushD        $mmgr-newblock-size       
-        LoadI                                  
-        Call         -mem-manager-make-tags    
-        PushD        $mmgr-newblock-block      
-        LoadI                                  
-        PushD        $mmgr-alloc-current-block 
-        Exchange                               
-        StoreI                                 
-        Jump         basicBlock-14             
-        Label        basicBlock-14             
-        PushD        $mmgr-alloc-current-block 
-        LoadI                                  
-        PushI        9                         
-        Add                                    
-        PushD        $mmgr-alloc-return        
-        LoadI                                  
-        Return                                 
-        Label        basicBlock-15             
         Label        -mem-manager-deallocate   
         PushD        $mmgr-dealloc-return      
         Exchange                               
@@ -901,7 +578,7 @@
         PushD        $mmgr-dealloc-return      
         LoadI                                  
         Return                                 
-        Label        basicBlock-16             
+        Label        basicBlock-14             
         Label        -mem-manager-remove-block 
         PushD        $mmgr-remove-return       
         Exchange                               
@@ -935,9 +612,9 @@
         Label        -mmgr-remove-process-prev 
         PushD        $mmgr-remove-prev         
         LoadI                                  
-        JumpFalse    basicBlock-18             
-        Jump         basicBlock-17             
-        Label        basicBlock-17             
+        JumpFalse    basicBlock-16             
+        Jump         basicBlock-15             
+        Label        basicBlock-15             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $mmgr-remove-prev         
@@ -953,20 +630,20 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-19             
-        Label        basicBlock-18             
+        Jump         basicBlock-17             
+        Label        basicBlock-16             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $heap-first-free          
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-19             
-        Label        basicBlock-19             
+        Jump         basicBlock-17             
+        Label        basicBlock-17             
         PushD        $mmgr-remove-next         
         LoadI                                  
-        JumpFalse    basicBlock-21             
-        Jump         basicBlock-20             
-        Label        basicBlock-20             
+        JumpFalse    basicBlock-19             
+        Jump         basicBlock-18             
+        Label        basicBlock-18             
         PushD        $mmgr-remove-prev         
         LoadI                                  
         PushD        $mmgr-remove-next         
@@ -975,8 +652,8 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-21             
-        Label        basicBlock-21             
+        Jump         basicBlock-19             
+        Label        basicBlock-19             
         PushD        $mmgr-remove-return       
         LoadI                                  
         Return                                 

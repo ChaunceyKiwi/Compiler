@@ -1,10 +1,10 @@
-func nice <int a,int b> -> int {
-  return a + b.
-}
-
 exec {
-  var c := [1,2,3,4,5].
-  var a := 3.3.
-  a := nice(1,5).
-  print a.
+  var a := 1.
+  while(a > 5) {
+    while (a > 5) {
+      while(a > 6) {
+        print a.
+      }
+    }
+  }
 }

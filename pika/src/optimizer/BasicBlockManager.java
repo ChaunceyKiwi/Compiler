@@ -97,16 +97,33 @@ public class BasicBlockManager {
       }
     }
   }
+  
+  public boolean isStartBlock(BasicBlock basicBlock) {
+    for (BasicBlock startBlock : startBlocks) {
+      if (startBlock == basicBlock) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
 
   public void calculateDominators() {
-    for (BasicBlock basicBlock : startBlocks) {
-      basicBlock.addDominitors(basicBlock);
+    // set the dominitor of start block as itself
+    for (BasicBlock startBlock : startBlocks) {
+      startBlock.addDominitors(startBlock);
     }
-
-    for (BasicBlock basicBlock : blocks) {
-      basicBlock.addDominitors(basicBlock.getEntryBlock());
+    
+    // for all other nodes, set all other nodes as dominitor
+    for (BasicBlock basicBlock1 : blocks) {
+      if(!isStartBlock(basicBlock1)) {
+        for (BasicBlock basicBlock2 : blocks) {
+          basicBlock1.addDominitors(basicBlock2);
+        }
+      }
     }
-
+    
+    // iteratively eliminate nodes that are not dominators
     boolean hasChanged = true;
     while (hasChanged) {
       hasChanged = false;
@@ -139,7 +156,6 @@ public class BasicBlockManager {
 
   public ASMCodeFragment printAllChunksInBasicBlocks() {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-    assignIndicesToBlocks();
 
     for (BasicBlock basicBlock : blocks) {
       code.add(ASMOpcode.Label, basicBlock.getPrefix() + basicBlock.getBlockIndex());
