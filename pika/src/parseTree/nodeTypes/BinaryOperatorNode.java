@@ -45,6 +45,12 @@ public class BinaryOperatorNode extends ParseNode {
 	////////////////////////////////////////////////////////////
 	// convenience factory
 	
+    public static BinaryOperatorNode withChildren(Token token, ParseNode child) {
+      BinaryOperatorNode node = new BinaryOperatorNode(token);
+      node.appendChild(child);
+      return node;
+    }
+    
 	public static BinaryOperatorNode withChildren(Token token, ParseNode left, ParseNode right) {
 		BinaryOperatorNode node = new BinaryOperatorNode(token);
 		node.appendChild(left);

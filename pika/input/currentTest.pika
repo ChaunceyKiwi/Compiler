@@ -1,12 +1,3 @@
-func nice <> -> void {
-  print "hi".
-}
-
-static var niceCool := 1.
-
 exec {
-  var intArray := [1,2,3,4,5,6].
-  for elem a of intArray {
-    print a.
-  }
+  var a := reverse 1,1,1.
 }
