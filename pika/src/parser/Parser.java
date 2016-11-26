@@ -76,20 +76,20 @@ public class Parser {
     if (!startsGlobalDefinition(nowReading)) {
       return syntaxErrorNode("global definition");
     }
-    
+
     Token token = nowReading;
-    
+
     // Function definition
     if (startsFunctionDefinition(nowReading)) {
       ParseNode functionDefinition = parseFunctionDefinition();
       return GlobalDefinitionNode.withChildren(token, functionDefinition);
-    } 
-    
+    }
+
     // Global declaration
     else {
       ParseNode declaration = parseDeclaration();
       return GlobalDefinitionNode.withChildren(token, declaration);
-    } 
+    }
   }
 
   private boolean startsGlobalDefinition(Token token) {
@@ -380,10 +380,19 @@ public class Parser {
   }
 
   ///////////////////////////////////////////////////////////
-  // declaration -> CONST | VAR identifier := expression .
+  // declaration -> STATIC? CONST | VAR identifier := expression .
   private ParseNode parseDeclaration() {
     if (!startsDeclaration(nowReading)) {
       return syntaxErrorNode("declaration");
+    }
+
+    Token staticToken;
+
+    if (nowReading.isLextant(Keyword.STATIC)) {
+      staticToken = nowReading;
+      readToken();
+    } else {
+      staticToken = null;
     }
 
     Token declarationToken = nowReading;
@@ -392,11 +401,12 @@ public class Parser {
     expect(Punctuator.ASSIGN);
     ParseNode initializer = parseExpression();
     expect(Punctuator.TERMINATOR);
-    return DeclarationNode.withChildren(declarationToken, identifier, initializer);
+    return DeclarationNode.withChildren(staticToken, declarationToken, identifier, initializer);
   }
 
   private boolean startsDeclaration(Token token) {
-    return token.isLextant(Keyword.CONST) || token.isLextant(Keyword.VAR);
+    return token.isLextant(Keyword.CONST) || token.isLextant(Keyword.VAR)
+        || token.isLextant(Keyword.STATIC);
   }
 
   ///////////////////////////////////////////////////////////
@@ -644,7 +654,8 @@ public class Parser {
   // comparisonExpression -> additiveExpression [compareOperator additiveExpression]? (left-assoc)
   // additiveExpression -> multiplicativeExpression [+|- multiplicativeExpression]* (left-assoc)
   // multiplicativeExpression -> unaryExpression [*|/|//|//|/// unaryExpression]* (left-assoc)
-  // unaryExpression -> !operatorExpression | length operatorExpression | copyExpression (right-associative)
+  // unaryExpression -> !operatorExpression | length operatorExpression | copyExpression
+  /////////////////////////////////////////////////////////// (right-associative)
   // operatorExpression -> atomicExpression[expression] | atomicExpression(expressionList)
   // atomicExpression -> literal
   // literal -> intNumber | identifier | booleanConstant
@@ -784,7 +795,7 @@ public class Parser {
   ///////////////////////////////////////////////////////////
   // unaryExpression -> unaryOperator* operatorExpression (right-associative)
   // unaryOperator -> not | length | copy
-  
+
   private ParseNode parseUnaryExpression() {
     if (!startsUnaryExpression(nowReading)) {
       return syntaxErrorNode("unaryExpression");
@@ -819,11 +830,11 @@ public class Parser {
 
     ParseNode expressionToBeOperated = parseAtomicExpression();
     Token nextToken = nowReading;
-    
+
     boolean flag = true;
-    while(flag) {
+    while (flag) {
       flag = false;
-      
+
       // arrayIndexing
       while (nowReading.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
         flag = true;
@@ -833,7 +844,7 @@ public class Parser {
         expressionToBeOperated =
             ArrayIndexingNode.withChildren(nextToken, expressionToBeOperated, expressionToGetIndex);
       }
-  
+
       // functionInvocation
       while (nowReading.isLextant(Punctuator.OPEN_BRACKET)) {
         flag = true;
@@ -905,9 +916,9 @@ public class Parser {
 
   ///////////////////////////////////////////////////////////
   // castingOrArrayPopulationExpression
-  // functionCasting    -> expression[expression]
+  // functionCasting -> expression[expression]
   // functionInvocation -> expression(expressionList)
-  
+
   private ParseNode parseCastingOrArrayPopulationExpression() {
     if (!startsCastingOrArrayPopulationExpression(nowReading)) {
       return syntaxErrorNode("typeCastingOrArrayPopulationExpression");
@@ -1194,7 +1205,8 @@ public class Parser {
     expect(Punctuator.GREATER);
     expect(Punctuator.RESULTIN);
     ParseNode type = parseType();
-    return TypeNode.withChildren(lambdaTypeToken, LambdaTypeNode.withChildren(lambdaTypeToken, typeList, type));
+    return TypeNode.withChildren(lambdaTypeToken,
+        LambdaTypeNode.withChildren(lambdaTypeToken, typeList, type));
   }
 
   private boolean startsLambdaType(Token token) {

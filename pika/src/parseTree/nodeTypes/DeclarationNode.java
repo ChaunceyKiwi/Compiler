@@ -8,7 +8,8 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class DeclarationNode extends ParseNode {
-
+    protected Token staicToken = null;
+  
 	public DeclarationNode(Token token) {
 		super(token);
 		assert(token.isLextant(Keyword.CONST, Keyword.VAR));
@@ -29,12 +30,20 @@ public class DeclarationNode extends ParseNode {
 		return (LextantToken)token;
 	}	
 	
+	public void setStaticToken(Token token) {
+	  this.staicToken = token;
+	}
+	
+	public Token getStaticToken(Token token) {
+	  return this.staicToken;
+	}
 	
 	////////////////////////////////////////////////////////////
 	// convenience factory
 	
-	public static DeclarationNode withChildren(Token token, ParseNode declaredName, ParseNode initializer) {
+	public static DeclarationNode withChildren(Token staicToken, Token token, ParseNode declaredName, ParseNode initializer) {
 		DeclarationNode node = new DeclarationNode(token);
+		node.setStaticToken(staicToken);
 		node.appendChild(declaredName);
 		node.appendChild(initializer);
 		return node;
