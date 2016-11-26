@@ -1,10 +1,5 @@
 exec {
-  var a := 1.
-  while(a > 5) {
-    while (a > 5) {
-      while(a > 6) {
-        print a.
-      }
-    }
-  }
+  var goo := 4.77.
+  goo := length [3,4,5,6,7].  
+  print goo.
 }

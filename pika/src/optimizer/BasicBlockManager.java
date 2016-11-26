@@ -97,7 +97,7 @@ public class BasicBlockManager {
       }
     }
   }
-  
+
   public boolean isStartBlock(BasicBlock basicBlock) {
     for (BasicBlock startBlock : startBlocks) {
       if (startBlock == basicBlock) {
@@ -106,23 +106,23 @@ public class BasicBlockManager {
     }
     return false;
   }
-  
+
 
   public void calculateDominators() {
     // set the dominitor of start block as itself
     for (BasicBlock startBlock : startBlocks) {
       startBlock.addDominitors(startBlock);
     }
-    
+
     // for all other nodes, set all other nodes as dominitor
     for (BasicBlock basicBlock1 : blocks) {
-      if(!isStartBlock(basicBlock1)) {
+      if (!isStartBlock(basicBlock1)) {
         for (BasicBlock basicBlock2 : blocks) {
           basicBlock1.addDominitors(basicBlock2);
         }
       }
     }
-    
+
     // iteratively eliminate nodes that are not dominators
     boolean hasChanged = true;
     while (hasChanged) {
@@ -200,14 +200,14 @@ public class BasicBlockManager {
         for (Tuple<BasicBlock, ASMOpcode> outNeighbor : outNeighbors) {
           ASMInstruction instr = basicBlock.getLastInstruction();
           ASMOpcode branch = outNeighbor.y;
-          
+
           if (instr == null) {
             break;
           }
-          
+
           ASMOpcode opcode = instr.getOpcode();
-          
-          if(opcode== ASMOpcode.PushI) {
+
+          if (opcode == ASMOpcode.PushI) {
             if (branch == ASMOpcode.JumpFalse) {
               if (Integer.parseInt(instr.getArgument().toString()) == 0) {
                 basicBlock.getCodeChunk().remove(instr);
@@ -251,13 +251,13 @@ public class BasicBlockManager {
                 outNeighbors.add(new Tuple<BasicBlock, ASMOpcode>(outNeighbor.x, ASMOpcode.Jump));
                 basicBlock.updateOutNeighbors(outNeighbors);
                 updateInnerNeighbors();
-              }else {
+              } else {
                 basicBlock.getCodeChunk().remove(instr);
                 neighborsToRemove.add(outNeighbor);
                 updateInnerNeighbors();
               }
             }
-          }else if(instr.getOpcode() == ASMOpcode.PushF) {
+          } else if (instr.getOpcode() == ASMOpcode.PushF) {
             if (branch == ASMOpcode.JumpFNeg) {
               if (Float.parseFloat(instr.getArgument().toString()) < 0) {
                 basicBlock.getCodeChunk().remove(instr);
@@ -295,7 +295,7 @@ public class BasicBlockManager {
                 updateInnerNeighbors();
               }
             }
-          } else if(instr.getOpcode() == ASMOpcode.Nop) {
+          } else if (instr.getOpcode() == ASMOpcode.Nop) {
             basicBlock.getCodeChunk().remove(instr);
           }
         }
@@ -555,7 +555,8 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
-        if (lineNumCount >= start && lineNumCount <= end && instruction.getOpcode() != ASMOpcode.Nop) {
+        if (lineNumCount >= start && lineNumCount <= end
+            && instruction.getOpcode() != ASMOpcode.Nop) {
           codeInRange.add(instruction);
         }
         lineNumCount++;
@@ -583,11 +584,11 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
-        
-        if(lineNumCount == 175) {
+
+        if (lineNumCount == 175) {
           lineNumCount = lineNumCount + 1 - 1;
         }
-        
+
         if (instruction.getOpcode() == ASMOpcode.Jump || instruction.getOpcode() == ASMOpcode.Halt
             || instruction.getOpcode() == ASMOpcode.Return
             || instruction.getOpcode() == ASMOpcode.PopPC) {
@@ -709,11 +710,12 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         currentState = 0;
-        
+
         if (blockStartSet.contains(lineNumCount)) {
           currentState = 1;
-          if(previousState == 1 || previousState == 2) {
-            blockSet.add(new Triplet<Integer, Integer, Integer>(lineNumCount-1, lineNumCount-1, blockIndex++));
+          if (previousState == 1 || previousState == 2) {
+            blockSet.add(new Triplet<Integer, Integer, Integer>(lineNumCount - 1, lineNumCount - 1,
+                blockIndex++));
           }
           if (!previousIsJump && lineNumCount > 1) {
             linkSet.add(new Triplet<Integer, Integer, ASMOpcode>(lineNumCount - 1, lineNumCount,
@@ -722,13 +724,14 @@ public class BasicBlockManager {
           begin = lineNumCount;
         }
         if (blockEndSet.contains(lineNumCount)) {
-          if(currentState == 1) {
+          if (currentState == 1) {
             currentState = 2;
-          }else {
+          } else {
             currentState = -1;
           }
-          if(previousState == 2 || previousState == -1) {
-            blockSet.add(new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, blockIndex++));
+          if (previousState == 2 || previousState == -1) {
+            blockSet.add(
+                new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, blockIndex++));
           }
           end = lineNumCount;
           if (blockStartSet.contains(begin)) {

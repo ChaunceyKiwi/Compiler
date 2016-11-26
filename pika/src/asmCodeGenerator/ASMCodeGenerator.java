@@ -174,23 +174,39 @@ public class ASMCodeGenerator {
     }
 
     private void turnAddressIntoValue(ASMCodeFragment code, ParseNode node) {
-      if (node.getType() == PrimitiveType.INTEGER) {
+      Type currentType = node.getType();
+      Type originalType = node.getOriginalType();
+      Type type;
+      
+      if(originalType != PrimitiveType.NO_TYPE) {
+        type = originalType;
+      } else {
+        type = currentType;
+      }
+      
+      if (type == PrimitiveType.INTEGER) {
         code.add(LoadI);
-      } else if (node.getType() == PrimitiveType.BOOLEAN) {
+      } else if (type == PrimitiveType.BOOLEAN) {
         code.add(LoadC);
-      } else if (node.getType() == PrimitiveType.FLOATING) {
+      } else if (type == PrimitiveType.FLOATING) {
         code.add(LoadF);
-      } else if (node.getType() == PrimitiveType.CHARACTER) {
+      } else if (type == PrimitiveType.CHARACTER) {
         code.add(LoadC);
-      } else if (node.getType() == PrimitiveType.STRING) {
+      } else if (type == PrimitiveType.STRING) {
         code.add(LoadI);
-      } else if (node.getType() == PrimitiveType.RATIONAL) {
+      } else if (type == PrimitiveType.RATIONAL) {
         code.add(LoadI);
-      } else if (node.getType().isReferenceType()) {
+      } else if (type.isReferenceType()) {
         code.add(LoadI);
       } else {
         assert false : "node " + node;
       }
+            
+      if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE
+          && originalType != currentType) {
+        code.append(PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType));
+      }
+            
       code.markAsValue();
     }
 
@@ -263,7 +279,6 @@ public class ASMCodeGenerator {
       String functionName = null;
       Type resultType = node.getLambdaType().getResultType();
 
-      
       // FunctionDefinitionNode or DeclarationNode
       if (parentNode instanceof FunctionDefinitionNode) {
         newVoidCode(node);
@@ -280,7 +295,7 @@ public class ASMCodeGenerator {
       functionProcess(labeller, node);
       functionLaterStage(labeller, node, resultType);
       code.add(Label, endLabel);
-      if(!(node.getParent() instanceof FunctionDefinitionNode)) {
+      if (!(node.getParent() instanceof FunctionDefinitionNode)) {
         code.add(PushD, node.getFunctionLabel());
       }
     }
@@ -375,9 +390,17 @@ public class ASMCodeGenerator {
     public void visitLeave(FunctionInvocationNode node) {
       String beginLabel = node.getBeginLabel();
       String endLabel = node.getEndLabel();
+      Type originalType = node.getOriginalType();
+      Type currentType = node.getType();
+      Type type;
+      if (originalType != PrimitiveType.NO_TYPE) {
+        type = originalType;
+      } else {
+        type = currentType;
+      }
 
       // Type of code depends
-      if (node.getType() == PrimitiveType.VOID) {
+      if (type == PrimitiveType.VOID) {
         newVoidCode(node);
       } else {
         newValueCode(node);
@@ -391,10 +414,9 @@ public class ASMCodeGenerator {
       // Push parameters needed for function into frame stack
       for (int i = 0; i < exprList.nChildren(); i++) {
         ParseNode expr = exprList.child(i);
-        Type type = expr.getType();
         ASMCodeFragment exprCode = removeValueCode(expr);
         code.append(exprCode);
-        pushElementToFrameStack(type);
+        pushElementToFrameStack(expr.getType());
       }
 
       // Call function body here
@@ -421,20 +443,21 @@ public class ASMCodeGenerator {
 
       // take the return value from the location pointed at
       // by the stack counter and place it on the ASM stack
-      if (node.getType() != PrimitiveType.VOID) {
-        popElementFromFrameToASMStack(node.getType());
+      if (type != PrimitiveType.VOID) {
+        popElementFromFrameToASMStack(type);
       }
-      
+
       addPromotionCodeIfNeeded(node);
-      
+
       code.add(Label, endLabel);
     }
-    
+
     private void addPromotionCodeIfNeeded(ParseNode node) {
       Type originalType = node.getOriginalType();
       Type currentType = node.getType();
-      
-      if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE && originalType != currentType) {
+
+      if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE
+          && originalType != currentType) {
         code.append(PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType));
       }
     }
@@ -724,7 +747,6 @@ public class ASMCodeGenerator {
         code.add(Jump, joinLabel);
         code.add(Label, joinLabel);
       }
-      addPromotionCodeIfNeeded(node);
     }
 
     private void visitBooleanOperatorNode(BinaryOperatorNode node) {
@@ -764,7 +786,6 @@ public class ASMCodeGenerator {
       code.add(PushI, 0);
       code.add(Jump, joinLabel);
       code.add(Label, joinLabel);
-      addPromotionCodeIfNeeded(node);
     }
 
     private void visitRationalOperatorNode(BinaryOperatorNode node) {
@@ -783,7 +804,6 @@ public class ASMCodeGenerator {
         code.append(RationalHelper.performRationalizePuntuator(arg1, arg2, type, GCDCalculation,
             reg1ForFunction, reg2ForFunction, reg1, reg2, reg3, reg4));
       }
-      addPromotionCodeIfNeeded(node);
     }
 
     private void visitNormalBinaryOperatorNode(BinaryOperatorNode node) {
@@ -951,12 +971,6 @@ public class ASMCodeGenerator {
 
     ///////////////////////////////////////////////////////////////////////////
     // leaf nodes
-    
-    public void visit(BooleanConstantNode node) {
-      newValueCode(node);
-      code.add(PushI, node.getValue() ? 1 : 0);
-      addPromotionCodeIfNeeded(node);
-    }
 
     public void visit(IdentifierNode node) {
       BindingType bindingType = node.getBinding().getBindingType();
@@ -969,6 +983,12 @@ public class ASMCodeGenerator {
         String functionName = node.getBinding().getLambdaName();
         code.add(Call, functionPrefix + functionName);
       }
+    }
+    
+    public void visit(BooleanConstantNode node) {
+      newValueCode(node);
+      code.add(PushI, node.getValue() ? 1 : 0);
+      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(IntegerConstantNode node) {
