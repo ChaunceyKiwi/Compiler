@@ -328,7 +328,7 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        12                        
+        DataZ        5                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -438,89 +438,9 @@
         PushD        $global-memory-block      
         PushI        4                         
         Add                                    %% str2
-        Label        --string-creation--2-string-creation-begin 
-        Label        --string-creation--2-string-creation-get-length 
-        PushI        5                         
-        Duplicate                              
-        Duplicate                              
-        PushD        reg1-system               
-        Exchange                               
-        StoreI                                 
-        JumpNeg      $$array-size-negative     
-        Label        --string-creation--2-string-creation-size 
-        PushI        1                         
-        Multiply                               
-        PushI        12                        
-        Add                                    
-        Call         -mem-manager-allocate     
-        Label        --string-creation--2-string-creation-type 
-        Duplicate                              
-        PushI        6                         
-        Exchange                               
-        PushI        0                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --string-creation--2-string-creation-status 
-        Duplicate                              
-        PushI        9                         
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --string-creation--2-string-creation-length 
-        Duplicate                              
-        PushD        reg1-system               
-        LoadI                                  
-        Exchange                               
-        PushI        8                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --string-creation--2-string-creation-end 
-        Label        --string-creation--2-string-initialization-begin 
-        Duplicate                              
-        PushI        119                       
-        Exchange                               
-        PushI        12                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        111                       
-        Exchange                               
-        PushI        13                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        114                       
-        Exchange                               
-        PushI        14                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        108                       
-        Exchange                               
-        PushI        15                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        PushI        100                       
-        Exchange                               
-        PushI        16                        
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --string-creation--2-string-initialization-end 
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% a
-        Label        --string-concatenation--3--begin- 
+        PushI        75                        
+        StoreC                                 
+        Label        --char-string-concatenation--2--begin- 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% str1
@@ -528,37 +448,21 @@
         PushD        reg1-system               
         Exchange                               
         StoreI                                 
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% str2
-        LoadI                                  
-        PushD        reg2-system               
-        Exchange                               
-        StoreI                                 
         PushD        reg1-system               
         LoadI                                  
         PushI        8                         
         Add                                    
         LoadI                                  
-        PushD        reg3-system               
-        Exchange                               
-        StoreI                                 
         PushD        reg2-system               
-        LoadI                                  
-        PushI        8                         
-        Add                                    
-        LoadI                                  
-        PushD        reg4-system               
         Exchange                               
         StoreI                                 
         PushD        reg-counter               
         LoadI                                  
-        Label        --string-concatenation--3-string-creation-begin 
-        Label        --string-concatenation--3-string-creation-get-length 
-        PushD        reg3-system               
+        Label        --char-string-concatenation--2-string-creation-begin 
+        Label        --char-string-concatenation--2-string-creation-get-length 
+        PushD        reg2-system               
         LoadI                                  
-        PushD        reg4-system               
-        LoadI                                  
+        PushI        1                         
         Add                                    
         Duplicate                              
         Duplicate                              
@@ -566,13 +470,13 @@
         Exchange                               
         StoreI                                 
         JumpNeg      $$array-size-negative     
-        Label        --string-concatenation--3-string-creation-size 
+        Label        --char-string-concatenation--2-string-creation-size 
         PushI        1                         
         Multiply                               
         PushI        12                        
         Add                                    
         Call         -mem-manager-allocate     
-        Label        --string-concatenation--3-string-creation-type 
+        Label        --char-string-concatenation--2-string-creation-type 
         Duplicate                              
         PushI        6                         
         Exchange                               
@@ -580,7 +484,7 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        --string-concatenation--3-string-creation-status 
+        Label        --char-string-concatenation--2-string-creation-status 
         Duplicate                              
         PushI        9                         
         Exchange                               
@@ -588,7 +492,7 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        --string-concatenation--3-string-creation-length 
+        Label        --char-string-concatenation--2-string-creation-length 
         Duplicate                              
         PushD        reg-counter               
         LoadI                                  
@@ -597,13 +501,13 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        --string-concatenation--3-string-creation-end 
+        Label        --char-string-concatenation--2-string-creation-end 
         Exchange                               
         PushD        reg-counter               
         Exchange                               
         StoreI                                 
         Duplicate                              
-        PushD        reg5-system               
+        PushD        reg3-system               
         Exchange                               
         StoreI                                 
         PushD        reg1-system               
@@ -612,7 +516,7 @@
         PushI        12                        
         Add                                    
         StoreI                                 
-        PushD        reg5-system               
+        PushD        reg3-system               
         Duplicate                              
         LoadI                                  
         PushI        12                        
@@ -620,89 +524,55 @@
         StoreI                                 
         PushD        reg3-system               
         LoadI                                  
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        Label        --string-concatenation--3-first-string-element-copy-begin 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --string-concatenation--3-first-string-element-copy-end 
-        PushD        reg5-system               
-        LoadI                                  
-        PushD        reg1-system               
-        LoadI                                  
-        LoadC                                  
-        StoreC                                 
-        PushD        reg1-system               
-        Duplicate                              
-        LoadI                                  
-        PushI        1                         
-        Add                                    
-        StoreI                                 
-        PushD        reg5-system               
-        Duplicate                              
-        LoadI                                  
-        PushI        1                         
-        Add                                    
-        StoreI                                 
-        PushI        -1                        
-        PushD        reg-counter               
-        LoadI                                  
-        Add                                    
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        Jump         --string-concatenation--3-first-string-element-copy-begin 
-        Label        --string-concatenation--3-first-string-element-copy-end 
-        PushD        reg2-system               
-        Duplicate                              
-        LoadI                                  
-        PushI        12                        
-        Add                                    
-        StoreI                                 
-        PushD        reg4-system               
-        LoadI                                  
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        Label        --string-concatenation--3-second-string-element-copy-begin 
-        PushD        reg-counter               
-        LoadI                                  
-        JumpFalse    --string-concatenation--3-second-string-element-copy-end 
-        PushD        reg5-system               
-        LoadI                                  
-        PushD        reg2-system               
-        LoadI                                  
-        LoadC                                  
-        StoreC                                 
-        PushD        reg2-system               
-        Duplicate                              
-        LoadI                                  
-        PushI        1                         
-        Add                                    
-        StoreI                                 
-        PushD        reg5-system               
-        Duplicate                              
-        LoadI                                  
-        PushI        1                         
-        Add                                    
-        StoreI                                 
-        PushI        -1                        
-        PushD        reg-counter               
-        LoadI                                  
-        Add                                    
-        PushD        reg-counter               
-        Exchange                               
-        StoreI                                 
-        Jump         --string-concatenation--3-second-string-element-copy-begin 
-        Label        --string-concatenation--3-second-string-element-copy-end 
-        Label        --string-concatenation--3--end- 
-        StoreI                                 
         PushD        $global-memory-block      
-        PushI        8                         
-        Add                                    %% a
+        PushI        4                         
+        Add                                    %% str2
+        LoadC                                  
+        StoreC                                 
+        PushD        reg3-system               
+        Duplicate                              
         LoadI                                  
-        Label        --print-string--4--begin- 
+        PushI        1                         
+        Add                                    
+        StoreI                                 
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg-counter               
+        Exchange                               
+        StoreI                                 
+        Label        --char-string-concatenation--2-string-element-copy-begin 
+        PushD        reg-counter               
+        LoadI                                  
+        JumpFalse    --char-string-concatenation--2-string-element-copy-end 
+        PushD        reg3-system               
+        LoadI                                  
+        PushD        reg1-system               
+        LoadI                                  
+        LoadC                                  
+        StoreC                                 
+        PushD        reg1-system               
+        Duplicate                              
+        LoadI                                  
+        PushI        1                         
+        Add                                    
+        StoreI                                 
+        PushD        reg3-system               
+        Duplicate                              
+        LoadI                                  
+        PushI        1                         
+        Add                                    
+        StoreI                                 
+        PushI        -1                        
+        PushD        reg-counter               
+        LoadI                                  
+        Add                                    
+        PushD        reg-counter               
+        Exchange                               
+        StoreI                                 
+        Jump         --char-string-concatenation--2-string-element-copy-begin 
+        Label        --char-string-concatenation--2-string-element-copy-end 
+        Label        --char-string-concatenation--2--end- 
+        Label        --print-string--3--begin- 
         Duplicate                              
         PushI        8                         
         Add                                    
@@ -712,10 +582,10 @@
         StoreI                                 
         PushI        12                        
         Add                                    
-        Label        --print-string--4--loop-begin- 
+        Label        --print-string--3--loop-begin- 
         PushD        reg1-system               
         LoadI                                  
-        JumpFalse    --print-string--4--loop-end- 
+        JumpFalse    --print-string--3--loop-end- 
         Duplicate                              
         PushI        1                         
         Add                                    
@@ -736,10 +606,178 @@
         PushD        reg1-system               
         Exchange                               
         StoreI                                 
-        Jump         --print-string--4--loop-begin- 
-        Label        --print-string--4--loop-end- 
+        Jump         --print-string--3--loop-begin- 
+        Label        --print-string--3--loop-end- 
         Pop                                    
-        Label        --print-string--4--end-   
+        Label        --print-string--3--end-   
+        PushD        $print-format-newline     
+        Printf                                 
+        Label        --string-char-concatenation--4--begin- 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% str1
+        LoadI                                  
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg-counter               
+        LoadI                                  
+        Label        --string-char-concatenation--4-string-creation-begin 
+        Label        --string-char-concatenation--4-string-creation-get-length 
+        PushD        reg2-system               
+        LoadI                                  
+        PushI        1                         
+        Add                                    
+        Duplicate                              
+        Duplicate                              
+        PushD        reg-counter               
+        Exchange                               
+        StoreI                                 
+        JumpNeg      $$array-size-negative     
+        Label        --string-char-concatenation--4-string-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        12                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        --string-char-concatenation--4-string-creation-type 
+        Duplicate                              
+        PushI        6                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --string-char-concatenation--4-string-creation-status 
+        Duplicate                              
+        PushI        9                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --string-char-concatenation--4-string-creation-length 
+        Duplicate                              
+        PushD        reg-counter               
+        LoadI                                  
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --string-char-concatenation--4-string-creation-end 
+        Exchange                               
+        PushD        reg-counter               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushD        reg3-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg1-system               
+        Duplicate                              
+        LoadI                                  
+        PushI        12                        
+        Add                                    
+        StoreI                                 
+        PushD        reg3-system               
+        Duplicate                              
+        LoadI                                  
+        PushI        12                        
+        Add                                    
+        StoreI                                 
+        PushD        reg2-system               
+        LoadI                                  
+        PushD        reg-counter               
+        Exchange                               
+        StoreI                                 
+        Label        --string-char-concatenation--4-string-element-copy-begin 
+        PushD        reg-counter               
+        LoadI                                  
+        JumpFalse    --string-char-concatenation--4-string-element-copy-end 
+        PushD        reg3-system               
+        LoadI                                  
+        PushD        reg1-system               
+        LoadI                                  
+        LoadC                                  
+        StoreC                                 
+        PushD        reg1-system               
+        Duplicate                              
+        LoadI                                  
+        PushI        1                         
+        Add                                    
+        StoreI                                 
+        PushD        reg3-system               
+        Duplicate                              
+        LoadI                                  
+        PushI        1                         
+        Add                                    
+        StoreI                                 
+        PushI        -1                        
+        PushD        reg-counter               
+        LoadI                                  
+        Add                                    
+        PushD        reg-counter               
+        Exchange                               
+        StoreI                                 
+        Jump         --string-char-concatenation--4-string-element-copy-begin 
+        Label        --string-char-concatenation--4-string-element-copy-end 
+        PushD        reg3-system               
+        LoadI                                  
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% str2
+        LoadC                                  
+        StoreC                                 
+        Label        --string-char-concatenation--4--end- 
+        Label        --print-string--5--begin- 
+        Duplicate                              
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushI        12                        
+        Add                                    
+        Label        --print-string--5--loop-begin- 
+        PushD        reg1-system               
+        LoadI                                  
+        JumpFalse    --print-string--5--loop-end- 
+        Duplicate                              
+        PushI        1                         
+        Add                                    
+        Exchange                               
+        LoadI                                  
+        PushD        reg1-system               
+        LoadI                                  
+        Exchange                               
+        PushD        $print-format-char        
+        Printf                                 
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        PushI        -1                        
+        PushD        reg1-system               
+        LoadI                                  
+        Add                                    
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Jump         --print-string--5--loop-begin- 
+        Label        --print-string--5--loop-end- 
+        Pop                                    
+        Label        --print-string--5--end-   
+        PushD        $print-format-newline     
+        Printf                                 
         Halt                                   
         Label        -mem-manager-make-tags    
         DLabel       $mmgr-tags-size           
@@ -1155,28 +1193,28 @@
         Return                                 
         DLabel       $heap-memory              
         Label        GCDCalculation            
-        Label        --GCD-Calculation--5--function-begin- 
+        Label        --GCD-Calculation--6--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--5--check-initial-zero 
+        JumpTrue     --GCD-Calculation--6--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--5--function-end- 
-        Label        --GCD-Calculation--5--check-initial-zero 
-        Label        --GCD-Calculation--5--loop-begin- 
+        Jump         --GCD-Calculation--6--function-end- 
+        Label        --GCD-Calculation--6--check-initial-zero 
+        Label        --GCD-Calculation--6--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--5--loop-end- 
+        JumpFalse    --GCD-Calculation--6--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--5--loop-end- 
+        JumpFalse    --GCD-Calculation--6--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--5--positive-case- 
-        Label        --GCD-Calculation--5--not-positive-case- 
+        JumpPos      --GCD-Calculation--6--positive-case- 
+        Label        --GCD-Calculation--6--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -1185,8 +1223,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--5--join- 
-        Label        --GCD-Calculation--5--positive-case- 
+        Jump         --GCD-Calculation--6--join- 
+        Label        --GCD-Calculation--6--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -1195,11 +1233,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--5--join- 
-        Label        --GCD-Calculation--5--join- 
-        Jump         --GCD-Calculation--5--loop-begin- 
-        Label        --GCD-Calculation--5--loop-end- 
+        Jump         --GCD-Calculation--6--join- 
+        Label        --GCD-Calculation--6--join- 
+        Jump         --GCD-Calculation--6--loop-begin- 
+        Label        --GCD-Calculation--6--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--5--function-end- 
+        Label        --GCD-Calculation--6--function-end- 
         Exchange                               
         Return                                 

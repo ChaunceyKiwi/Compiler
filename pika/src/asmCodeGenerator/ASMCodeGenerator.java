@@ -842,7 +842,15 @@ public class ASMCodeGenerator {
                 reg1ForFunction, reg2ForFunction));
           }
         } else if (operation == BinaryOperatorNode.CONCATENATION) {
-          code.append(StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5, regCounter));
+          Type type1 = node.child(0).getType();
+          Type type2 = node.child(1).getType();
+          if(type1 == PrimitiveType.STRING && type2 == PrimitiveType.STRING) {
+            code.append(StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5, regCounter));
+          } else if (type1 == PrimitiveType.STRING && type2 == PrimitiveType.CHARACTER) {
+            code.append(StringHelper.stringCharConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
+          } else if (type1 == PrimitiveType.CHARACTER && type2 == PrimitiveType.STRING) {
+            code.append(StringHelper.charStringConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
+          }
         }
       }
       addPromotionCodeIfNeeded(node);

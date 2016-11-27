@@ -96,37 +96,254 @@ public class StringHelper {
     return code;
   }
 
+  public static ASMCodeFragment stringCharConcatenation(ASMCodeFragment arg1, ASMCodeFragment arg2,
+      String originalStringPointer, String lenPointer, String newStringPointer, String counter) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    Labeller labeller = new Labeller("-string-char-concatenation-");
+
+    String beginLabel = labeller.newLabel("-begin-");
+    String endLabel = labeller.newLabel("-end-");
+    String beginElementCopyLabel = labeller.newLabel("string-element-copy-begin");
+    String endElementCopyLabel = labeller.newLabel("string-element-copy-end");
+
+    code.add(Label, beginLabel);
+
+    // store the address of array in register
+    code.append(arg1);
+    Macros.storeITo(code, originalStringPointer);
+
+    // store the length of array in register
+    code.add(PushD, originalStringPointer);
+    code.add(LoadI);
+    code.append(pushStringLength());
+    Macros.storeITo(code, lenPointer);
+
+    // create an empty string to store values
+    ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
+    length.add(PushD, lenPointer);
+    length.add(LoadI);
+    length.add(PushI, 1);
+    length.add(Add);
+
+    // Create string with length as len(m) + 1
+    // Store the address of new string in newStringPointer
+    code.append(backupRegister(counter));
+    code.append(stringCreation(length, labeller, counter));
+    code.add(Exchange);
+    code.append(restoreRegister(counter));
+    code.add(Duplicate);
+    Macros.storeITo(code, newStringPointer);
+
+    // move originArrayMemoryPointer to first address of element
+    code.add(PushD, originalStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 12);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to address of first element to store
+    code.add(PushD, newStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 12);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Set counter's value as the length of string1
+    code.add(PushD, lenPointer);
+    code.add(LoadI);
+    Macros.storeITo(code, counter);
+
+    code.add(Label, beginElementCopyLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementCopyLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, newStringPointer);
+    code.add(LoadI);
+    code.add(PushD, originalStringPointer);
+    code.add(LoadI);
+    code.add(LoadC);
+    code.add(StoreC);
+
+    // move originArrayMemoryPointer to next address of element
+    code.add(PushD, originalStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to next address of new element to store
+    code.add(PushD, newStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementCopyLabel);
+    code.add(Label, endElementCopyLabel);
+
+    // Store the char at the end of string
+    code.add(PushD, newStringPointer);
+    code.add(LoadI);
+    code.append(arg2);
+    code.add(StoreC);
+
+    code.add(Label, endLabel);
+
+    return code;
+  }
+
+  public static ASMCodeFragment charStringConcatenation(ASMCodeFragment arg1, ASMCodeFragment arg2,
+      String originalStringPointer, String lenPointer, String newStringPointer, String counter) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    Labeller labeller = new Labeller("-char-string-concatenation-");
+
+    String beginLabel = labeller.newLabel("-begin-");
+    String endLabel = labeller.newLabel("-end-");
+    String beginElementCopyLabel = labeller.newLabel("string-element-copy-begin");
+    String endElementCopyLabel = labeller.newLabel("string-element-copy-end");
+
+    code.add(Label, beginLabel);
+
+    // store the address of array in register
+    code.append(arg2);
+    Macros.storeITo(code, originalStringPointer);
+
+    // store the length of array in register
+    code.add(PushD, originalStringPointer);
+    code.add(LoadI);
+    code.append(pushStringLength());
+    Macros.storeITo(code, lenPointer);
+
+    // create an empty string to store values
+    ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
+    length.add(PushD, lenPointer);
+    length.add(LoadI);
+    length.add(PushI, 1);
+    length.add(Add);
+
+    // Create string with length as len(m) + 1
+    // Store the address of new string in newStringPointer
+    code.append(backupRegister(counter));
+    code.append(stringCreation(length, labeller, counter));
+    code.add(Exchange);
+    code.append(restoreRegister(counter));
+    code.add(Duplicate);
+    Macros.storeITo(code, newStringPointer);
+
+    // move originArrayMemoryPointer to first address of element
+    code.add(PushD, originalStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 12);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to address of first element to store
+    code.add(PushD, newStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 12);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Store character at the start
+    code.add(PushD, newStringPointer);
+    code.add(LoadI);
+    code.append(arg1);
+    code.add(StoreC);
+
+    // move newArrayMemoryPointer to next address of new element to store
+    code.add(PushD, newStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Set counter's value as the length of string
+    code.add(PushD, lenPointer);
+    code.add(LoadI);
+    Macros.storeITo(code, counter);
+
+    code.add(Label, beginElementCopyLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementCopyLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, newStringPointer);
+    code.add(LoadI);
+    code.add(PushD, originalStringPointer);
+    code.add(LoadI);
+    code.add(LoadC);
+    code.add(StoreC);
+
+    // move originArrayMemoryPointer to next address of element
+    code.add(PushD, originalStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to next address of new element to store
+    code.add(PushD, newStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementCopyLabel);
+    code.add(Label, endElementCopyLabel);
+
+    code.add(Label, endLabel);
+    return code;
+  }
+
   public static ASMCodeFragment stringConcatenation(ASMCodeFragment arg1, ASMCodeFragment arg2,
-      String originalString1Pointer, String originalString2Pointer, String len1Pointer, String len2Pointer, 
-      String newStringPointer,  String counter) {
+      String originalString1Pointer, String originalString2Pointer, String len1Pointer,
+      String len2Pointer, String newStringPointer, String counter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     Labeller labeller = new Labeller("-string-concatenation-");
-    
+
     String beginLabel = labeller.newLabel("-begin-");
     String endLabel = labeller.newLabel("-end-");
     String firstBeginElementCopyLabel = labeller.newLabel("first-string-element-copy-begin");
     String firstEndElementCopyLabel = labeller.newLabel("first-string-element-copy-end");
     String secondBeginElementCopyLabel = labeller.newLabel("second-string-element-copy-begin");
     String secondEndElementCopyLabel = labeller.newLabel("second-string-element-copy-end");
-    
+
     code.add(Label, beginLabel);
-    
+
     // store the address of two array in registers
     code.append(arg1);
     Macros.storeITo(code, originalString1Pointer);
     code.append(arg2);
     Macros.storeITo(code, originalString2Pointer);
-    
+
     // store the length of two array in registers
-    code.add(PushD,originalString1Pointer);
+    code.add(PushD, originalString1Pointer);
     code.add(LoadI);
     code.append(pushStringLength());
     Macros.storeITo(code, len1Pointer);
-    code.add(PushD,originalString2Pointer);
+    code.add(PushD, originalString2Pointer);
     code.add(LoadI);
     code.append(pushStringLength());
     Macros.storeITo(code, len2Pointer);
-    
+
     // create an empty string to store values
     ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
     length.add(PushD, len1Pointer);
@@ -134,16 +351,16 @@ public class StringHelper {
     length.add(PushD, len2Pointer);
     length.add(LoadI);
     length.add(Add);
-    
+
     // Create string with length as len(m) + len(n)
     // Store the address of new string in newStringPointer
     code.append(backupRegister(counter));
     code.append(stringCreation(length, labeller, counter));
     code.add(Exchange);
-    code.append(restoreRegister(counter));    
+    code.append(restoreRegister(counter));
     code.add(Duplicate);
     Macros.storeITo(code, newStringPointer);
-    
+
     // move originArrayMemoryPointer to first address of element
     code.add(PushD, originalString1Pointer);
     code.add(Duplicate);
@@ -159,12 +376,12 @@ public class StringHelper {
     code.add(PushI, 12);
     code.add(Add);
     code.add(StoreI);
-    
+
     // Set counter's value as the length of string1
     code.add(PushD, len1Pointer);
     code.add(LoadI);
     Macros.storeITo(code, counter);
-    
+
     code.add(Label, firstBeginElementCopyLabel);
     code.add(PushD, counter);
     code.add(LoadI);
@@ -178,7 +395,7 @@ public class StringHelper {
     code.add(LoadI);
     code.add(LoadC);
     code.add(StoreC);
-    
+
     // move originArrayMemoryPointer to next address of element
     code.add(PushD, originalString1Pointer);
     code.add(Duplicate);
@@ -199,7 +416,7 @@ public class StringHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, firstBeginElementCopyLabel);
     code.add(Label, firstEndElementCopyLabel);
-    
+
     /////////////////////////////////////////////////////////
     // Copy second string
     // move originArrayMemoryPointer to first address of element
@@ -209,12 +426,12 @@ public class StringHelper {
     code.add(PushI, 12);
     code.add(Add);
     code.add(StoreI);
-    
+
     // Set counter's value as the length of string2
     code.add(PushD, len2Pointer);
     code.add(LoadI);
     Macros.storeITo(code, counter);
-    
+
     code.add(Label, secondBeginElementCopyLabel);
     code.add(PushD, counter);
     code.add(LoadI);
@@ -228,7 +445,7 @@ public class StringHelper {
     code.add(LoadI);
     code.add(LoadC);
     code.add(StoreC);
-    
+
     // move originArrayMemoryPointer to next address of element
     code.add(PushD, originalString2Pointer);
     code.add(Duplicate);
@@ -249,15 +466,15 @@ public class StringHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, secondBeginElementCopyLabel);
     code.add(Label, secondEndElementCopyLabel);
-    code.add(Label, endLabel);  
-    
+    code.add(Label, endLabel);
+
     return code;
   }
 
   public static ASMCodeFragment subStringInRange(ASMCodeFragment stringAddress,
       ASMCodeFragment indexStart, ASMCodeFragment indexEnd, Labeller labeller, String counter,
-      String originStringMemoryPointer, String newStringMemoryPointer,
-      String indexStartPointer, String indexEndPointer) {
+      String originStringMemoryPointer, String newStringMemoryPointer, String indexStartPointer,
+      String indexEndPointer) {
 
     String beginLabel = labeller.newLabel("string-range-copy-begin");
     String endLabel = labeller.newLabel("string-range-copy-end");
@@ -267,7 +484,7 @@ public class StringHelper {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
     code.add(Label, beginLabel);
-    
+
     // store indexStart in indexStartPointer
     code.append(indexStart);
     Macros.storeITo(code, indexStartPointer);
@@ -301,19 +518,19 @@ public class StringHelper {
     length.add(PushD, indexStartPointer);
     length.add(LoadI);
     length.add(Subtract);
-    
+
     code.append(backupRegister(counter));
     code.append(stringCreation(length, labeller, counter));
     code.add(Exchange);
     code.append(restoreRegister(counter));
 
-    
+
     code.add(Duplicate);
 
     // store new string in newStringMemoryPointer
     Macros.storeITo(code, newStringMemoryPointer);
 
-    // store the length in the counter    
+    // store the length in the counter
     code.add(PushD, indexEndPointer);
     code.add(LoadI);
     code.add(PushD, indexStartPointer);
@@ -435,7 +652,7 @@ public class StringHelper {
     Macros.readIOffset(code, 8);
     return code;
   }
-  
+
   // Sys: Address of the array is on the stack before running
   public static ASMCodeFragment stringPrint(String regCounter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
@@ -492,14 +709,14 @@ public class StringHelper {
 
     return code;
   }
-  
+
   public static ASMCodeFragment backupRegister(String reg) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     code.add(PushD, reg);
     code.add(LoadI);
     return code;
   }
-  
+
   public static ASMCodeFragment restoreRegister(String reg) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
     Macros.storeITo(code, reg);
