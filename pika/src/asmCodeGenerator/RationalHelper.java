@@ -243,7 +243,8 @@ public class RationalHelper {
 	// Assume rational number is n // m
 	// The format to print is: a_b//c
 	// a = int(n/m), b = sig(n) * (n-a*m), c = abs(m)
-	public static ASMCodeFragment appendPrintCodeForRational(Type type){
+	// Sys: have address of rational on the stack before running
+	public static ASMCodeFragment appendPrintCodeForRational(Type type, String addressOfRationalLabel){
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 		Labeller labeller = new Labeller("-print-rational-");
 		String beginLabel = labeller.newLabel("-begin-");
@@ -255,7 +256,6 @@ public class RationalHelper {
 		String numeratorZeroLabel = labeller.newLabel("numerator-zero");
 		String avoidDuplicateLabel = labeller.newLabel("avoidDuplicateLabel");
 		
-		String addressOfRationalLabel =  ASMCodeGenerator.reg1;
 		String format = PrintStatementGenerator.printFormat(type);
 					
 		code.add(Label, beginLabel);

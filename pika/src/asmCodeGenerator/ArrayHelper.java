@@ -1,15 +1,11 @@
 package asmCodeGenerator;
 
+import java.util.List;
+
 import asmCodeGenerator.codeStorage.*;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
-import semanticAnalyzer.types.ArrayType;
-import semanticAnalyzer.types.LambdaType;
-import semanticAnalyzer.types.PrimitiveType;
-import semanticAnalyzer.types.Type;
-import semanticAnalyzer.types.TypeVariable;
-
-import java.util.List;
+import semanticAnalyzer.types.*;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
@@ -101,7 +97,6 @@ public class ArrayHelper {
       code.add(op);
     }
     code.add(Label, endLabel);
-
     return code;
   }
 
@@ -142,7 +137,7 @@ public class ArrayHelper {
 
     // Get the length of array
     code.add(Label, sizeLabel);
-    code.append(pushArrayLength(labeller.newLabel("push-array-length1")));
+    code.append(pushArrayLength());
 
     // Copy length as a counter
     code.add(Duplicate);
@@ -192,7 +187,7 @@ public class ArrayHelper {
     code.add(Duplicate);
     code.add(PushD, originArrayMemoryPointer);
     code.add(LoadI);
-    code.append(pushArrayLength(labeller.newLabel("push-array-length2")));
+    code.append(pushArrayLength());
     code.add(Exchange);
     Macros.writeIOffset(code, 12);
 
@@ -286,7 +281,7 @@ public class ArrayHelper {
 
     // index boundry check
     code.add(Exchange);
-    code.append(pushArrayLength(labeller.newLabel("array-length")));
+    code.append(pushArrayLength());
     code.add(Exchange);
     code.add(Subtract);
     code.add(JumpPos, beginFetchingLabel);
@@ -310,14 +305,12 @@ public class ArrayHelper {
     code.add(Label, endLabel);
     return code;
   }
-
-  public static ASMCodeFragment arrayPrint(ArrayType type) {
+  
+  // Sys: Address of the array is on the stack before running
+  public static ASMCodeFragment arrayPrint(ArrayType type, String reg1) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 
     Type subType = type.getSubType();
-    if (subType instanceof TypeVariable) {
-      subType = ((TypeVariable) subType).getSubtype();
-    }
 
     int subTypeSize = type.getSubType().getSize();
     Labeller labeller = new Labeller("-print-array-");
@@ -331,8 +324,8 @@ public class ArrayHelper {
     code.add(Duplicate);
 
     // store the length of array as the loop counter
-    code.append(pushArrayLength(labeller.newLabel("-push-array-length")));
-    Macros.storeITo(code, ASMCodeGenerator.regCounter);
+    code.append(pushArrayLength());
+    Macros.storeITo(code, reg1);
 
     // get the address of first element
     code.add(PushI, ArrayType.header_size);
@@ -341,7 +334,7 @@ public class ArrayHelper {
     code.add(PushD, RunTime.OPEN_SQUARE_BRACKET_PRINT_FORMAT);
     code.add(Printf);
     code.add(Label, loopBeginLabel);
-    code.add(PushD, ASMCodeGenerator.regCounter);
+    code.add(PushD, reg1);
     code.add(LoadI);
 
     // Counter counts from length to 0
@@ -361,16 +354,21 @@ public class ArrayHelper {
       code.add(LoadI);
     }
 
-    code.add(PushD, ASMCodeGenerator.regCounter);
-    code.add(LoadI);
-    code.add(Exchange);
-
     if (subType.isReferenceType() && !(subType instanceof LambdaType)) {
-      code.append(arrayPrint((ArrayType) subType));
+      code.append(backupRegister(reg1));
+      code.add(Exchange);
+      code.append(arrayPrint((ArrayType) subType, reg1));
+      code.append(restoreRegister(reg1));
     } else if (subType == PrimitiveType.RATIONAL) {
-      code.append(RationalHelper.appendPrintCodeForRational(subType));
+      code.append(backupRegister(reg1));
+      code.add(Exchange);
+      code.append(RationalHelper.appendPrintCodeForRational(subType, reg1));
+      code.append(restoreRegister(reg1));
     } else if (subType == PrimitiveType.STRING) {
-      code.append(StringHelper.stringPrint());
+      code.append(backupRegister(reg1));
+      code.add(Exchange);
+      code.append(StringHelper.stringPrint(reg1));
+      code.append(restoreRegister(reg1));
     } else {
       if (subType == PrimitiveType.STRING) {
         code.add(PushI, 12);
@@ -393,13 +391,11 @@ public class ArrayHelper {
       code.add(Printf);
     }
 
-    Macros.storeITo(code, ASMCodeGenerator.regCounter);
-
     // Decrement the counter by 1
-    Macros.decrementInteger(code, ASMCodeGenerator.regCounter);
+    Macros.decrementInteger(code, reg1);
 
     // Print separator and space if not last element
-    code.add(PushD, ASMCodeGenerator.regCounter);
+    code.add(PushD, reg1);
     code.add(LoadI);
     code.add(JumpFalse, loopEndLabel);
     code.add(PushD, RunTime.SEPARATOR_PRINT_FORMAT);
@@ -417,15 +413,11 @@ public class ArrayHelper {
     return code;
   }
 
-  public static ASMCodeFragment arrayRelease(ArrayType arrayType) {
+  public static ASMCodeFragment arrayRelease(ArrayType arrayType, String regCounter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
     code.add(Duplicate);
 
     Type subType = arrayType.getSubType();
-    if (subType instanceof TypeVariable) {
-      subType = ((TypeVariable) subType).getSubtype();
-    }
-
     int subTypeSize = arrayType.getSubType().getSize();
     Labeller labeller = new Labeller("-release-array-");
     String beginLabel = labeller.newLabel("-begin-");
@@ -438,15 +430,15 @@ public class ArrayHelper {
     code.add(Duplicate);
 
     // store the length of array as the loop counter
-    code.append(pushArrayLength(labeller.newLabel("-push-array-length")));
-    Macros.storeITo(code, ASMCodeGenerator.regCounter);
+    code.append(pushArrayLength());
+    Macros.storeITo(code, regCounter);
 
     // get the address of first element
     code.add(PushI, ArrayType.header_size);
     code.add(Add);
 
     code.add(Label, loopBeginLabel);
-    code.add(PushD, ASMCodeGenerator.regCounter);
+    code.add(PushD, regCounter);
     code.add(LoadI);
 
     // Counter counts from length to 0
@@ -459,20 +451,17 @@ public class ArrayHelper {
     code.add(Exchange);
     code.add(LoadI);
 
-    code.add(PushD, ASMCodeGenerator.regCounter);
-    code.add(LoadI);
-    code.add(Exchange);
-
     if (subType.isReferenceType()) {
-      code.append(arrayRelease((ArrayType) subType));
+      code.append(backupRegister(regCounter));
+      code.add(Exchange);
+      code.append(arrayRelease((ArrayType) subType, regCounter));
+      code.append(restoreRegister(regCounter));
     } else {
       code.add(Pop);
     }
 
-    Macros.storeITo(code, ASMCodeGenerator.regCounter);
-
     // Decrement the counter by 1
-    Macros.decrementInteger(code, ASMCodeGenerator.regCounter);
+    Macros.decrementInteger(code, regCounter);
 
     code.add(Jump, loopBeginLabel);
     code.add(Label, loopEndLabel);
@@ -483,17 +472,28 @@ public class ArrayHelper {
     return code;
   }
 
-  public static ASMCodeFragment pushArrayLength(String label) {
+  public static ASMCodeFragment pushArrayLength() {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-    code.add(Label, label);
     Macros.readIOffset(code, 12);
     return code;
   }
 
-  public static ASMCodeFragment pushSubtypeSize(String label) {
+  public static ASMCodeFragment pushSubtypeSize() {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-    code.add(Label, label);
     Macros.readIOffset(code, 8);
+    return code;
+  }
+  
+  public static ASMCodeFragment backupRegister(String reg) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    code.add(PushD, reg);
+    code.add(LoadI);
+    return code;
+  }
+  
+  public static ASMCodeFragment restoreRegister(String reg) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+    Macros.storeITo(code, reg);
     return code;
   }
 }

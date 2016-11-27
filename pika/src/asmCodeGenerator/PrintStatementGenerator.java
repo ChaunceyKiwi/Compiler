@@ -29,13 +29,13 @@ public class PrintStatementGenerator {
         code.append(childCode);
       } else if (child.getType() instanceof ArrayType) {
         code.append(visitor.removeValueCode(child));
-        code.append(ArrayHelper.arrayPrint((ArrayType) child.getType()));
+        code.append(ArrayHelper.arrayPrint((ArrayType) child.getType(), ASMCodeGenerator.reg1));
       } else if (child.getType() == PrimitiveType.RATIONAL) {
         code.append(visitor.removeValueCode(child));
-        code.append(RationalHelper.appendPrintCodeForRational(child.getType()));
+        code.append(RationalHelper.appendPrintCodeForRational(child.getType(), ASMCodeGenerator.reg1));
       } else if (child.getType() == PrimitiveType.STRING) {
         code.append(visitor.removeValueCode(child));
-        code.append(StringHelper.stringPrint());
+        code.append(StringHelper.stringPrint(ASMCodeGenerator.reg1));
       }
       else {
         appendPrintCode(child);

@@ -592,7 +592,7 @@ public class ASMCodeGenerator {
       newVoidCode(node);
       code.append(removeValueCode(node.child(0)));
       ArrayType arrayType = (ArrayType) node.child(0).getType();
-      code.append(ArrayHelper.arrayRelease(arrayType));
+      code.append(ArrayHelper.arrayRelease(arrayType, reg1));
     }
 
     /*
@@ -856,15 +856,16 @@ public class ASMCodeGenerator {
         ParseNode nodeToGetLength = node.child(0);
         Type type = nodeToGetLength.getType();
         Labeller labeller = new Labeller("-get-array-length");
+        code.add(Label, labeller.newLabel("begin"));
         code.append(arg1);
 
         // Get the length of a string
         if (type == PrimitiveType.STRING) {
-          code.append(StringHelper.pushStringLength(labeller.newLabel("push-string-length")));
+          code.append(StringHelper.pushStringLength());
         }
         // Get the length of an array
         else if (type instanceof ArrayType) {
-          code.append(ArrayHelper.pushArrayLength(labeller.newLabel("push-array-length")));
+          code.append(ArrayHelper.pushArrayLength());
         }
         // Error case
         else {

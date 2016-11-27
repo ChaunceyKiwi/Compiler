@@ -5,16 +5,10 @@ import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.GENERATES_VO
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
 import java.util.List;
-
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
-import asmCodeGenerator.codeStorage.ASMOpcode;
 import asmCodeGenerator.runtime.MemoryManager;
 import asmCodeGenerator.runtime.RunTime;
-import semanticAnalyzer.types.ArrayType;
-import semanticAnalyzer.types.LambdaType;
 import semanticAnalyzer.types.PrimitiveType;
-import semanticAnalyzer.types.Type;
-import semanticAnalyzer.types.TypeVariable;
 
 public class StringHelper {
   public static ASMCodeFragment stringCreation(ASMCodeFragment length, Labeller labeller,
@@ -139,7 +133,7 @@ public class StringHelper {
     code.add(LoadI);
     code.add(PushD, originStringMemoryPointer);
     code.add(LoadI);
-    code.append(pushStringLength(labeller.newLabel("string-length")));
+    code.append(pushStringLength());
     code.add(Subtract);
     code.add(JumpPos, RunTime.ARRAY_INDEX_EXCEED_BOUND_ERROR);
 
@@ -247,7 +241,7 @@ public class StringHelper {
 
     // index boundry check
     code.add(Exchange);
-    code.append(pushStringLength(labeller.newLabel("string-length")));
+    code.append(pushStringLength());
     code.add(Exchange);
     code.add(Subtract);
     code.add(JumpPos, beginFetchingLabel);
@@ -274,14 +268,14 @@ public class StringHelper {
     return code;
   }
 
-  public static ASMCodeFragment pushStringLength(String label) {
+  public static ASMCodeFragment pushStringLength() {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-    code.add(Label, label);
     Macros.readIOffset(code, 8);
     return code;
   }
-
-  public static ASMCodeFragment stringPrint() {
+  
+  // Sys: Address of the array is on the stack before running
+  public static ASMCodeFragment stringPrint(String regCounter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 
     Labeller labeller = new Labeller("-print-string-");
@@ -291,19 +285,19 @@ public class StringHelper {
     String loopEndLabel = labeller.newLabel("-loop-end-");
 
     code.add(Label, beginLabel);
-    // get the address of the array
+    // get the address of the string
     code.add(Duplicate);
 
-    // store the length of array as the loop counter
-    code.append(pushStringLength(labeller.newLabel("-push-string-length")));
-    Macros.storeITo(code, ASMCodeGenerator.regCounter);
+    // store the length of string as the loop counter
+    code.append(pushStringLength());
+    Macros.storeITo(code, regCounter);
 
     // get the address of first element
     code.add(PushI, 12);
     code.add(Add);
 
     code.add(Label, loopBeginLabel);
-    code.add(PushD, ASMCodeGenerator.regCounter);
+    code.add(PushD, regCounter);
     code.add(LoadI);
 
     // Counter counts from length to 0
@@ -316,7 +310,7 @@ public class StringHelper {
     code.add(Exchange);
     code.add(LoadI);
 
-    code.add(PushD, ASMCodeGenerator.regCounter);
+    code.add(PushD, regCounter);
     code.add(LoadI);
     code.add(Exchange);
 
@@ -324,10 +318,10 @@ public class StringHelper {
     code.add(PushD, format);
     code.add(Printf);
 
-    Macros.storeITo(code, ASMCodeGenerator.regCounter);
+    Macros.storeITo(code, regCounter);
 
     // Decrement the counter by 1
-    Macros.decrementInteger(code, ASMCodeGenerator.regCounter);
+    Macros.decrementInteger(code, regCounter);
 
     code.add(Jump, loopBeginLabel);
     code.add(Label, loopEndLabel);
