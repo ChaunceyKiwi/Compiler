@@ -860,7 +860,7 @@ public class ASMCodeGenerator {
         
         // Get the length of a string
         if (type == PrimitiveType.STRING) {
-          code.append(ArrayHelper.pushStringLength(labeller.newLabel("push-string-length")));
+          code.append(StringHelper.pushStringLength(labeller.newLabel("push-string-length")));
         } 
         // Get the length of an array
         else if (type instanceof ArrayType){
@@ -900,11 +900,34 @@ public class ASMCodeGenerator {
 
     public void visitLeave(ArrayIndexingNode node) {
       newAddressCode(node);
-      Labeller labeller = new Labeller("-array-indexing-");
-      ArrayType arrayType = (ArrayType) node.child(0).getType();
-      ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
-      ASMCodeFragment index = removeValueCode(node.child(1));
-      code.append(ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, labeller, reg1));
+      Type identifierType = node.child(0).getType();
+      
+      if (identifierType instanceof ArrayType) {
+        Labeller labeller = new Labeller("-array-indexing-");
+        ArrayType arrayType = (ArrayType) identifierType;
+        ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
+        ASMCodeFragment index = removeValueCode(node.child(1));
+        code.append(ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, labeller, reg1));
+      } else if (identifierType == PrimitiveType.STRING) {
+        // string[i] -> character
+        if (node.nChildren() == 2) {
+          Labeller labeller = new Labeller("-string-indexing-");
+          ASMCodeFragment stringAddress = removeValueCode(node.child(0));
+          ASMCodeFragment index = removeValueCode(node.child(1));
+          code.append(StringHelper.stringElementAtIndex(stringAddress, index, labeller, reg1));
+        } 
+        
+        // string[i,j] -> subString
+        else if (node.nChildren() == 3){
+          Labeller labeller = new Labeller("-string-range-");
+          ASMCodeFragment stringAddress = removeValueCode(node.child(0));
+          ASMCodeFragment indexStart = removeValueCode(node.child(1));
+          ASMCodeFragment indexEnd = removeValueCode(node.child(2));
+
+          code.append(StringHelper.subStringInRange(stringAddress, indexStart, indexEnd, labeller, reg1));
+        }
+      }
+      
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -1029,7 +1052,10 @@ public class ASMCodeGenerator {
       Labeller label = new Labeller("stringConstant");
 
       code.add(DLabel, label.newLabel(value));
+      // The type identifier for a string is the integer 6.
       code.add(DataI, 6);
+      
+      // Status header is 1001 = 9.
       code.add(DataI, 9);
       code.add(DataI, value.length());
       code.add(DataS, value);

@@ -7,45 +7,52 @@ import tokens.LextantToken;
 import tokens.Token;
 
 public class ArrayIndexingNode extends ParseNode {
-	public final static String ARRAY_INDEXING = "array_indexing";
-	
-	public ArrayIndexingNode(Token token) {
-		super(token);
-		assert(token instanceof LextantToken);
-	}
+  public final static String ARRAY_INDEXING = "array_indexing";
 
-	public ArrayIndexingNode(ParseNode node) {
-		super(node);
-	}
-	
-	
-	////////////////////////////////////////////////////////////
-	// attributes
-	
-	public Lextant getOperator() {
-		return lextantToken().getLextant();
-	}
-	public LextantToken lextantToken() {
-		return (LextantToken)token;
-	}	
-	
-	
-	////////////////////////////////////////////////////////////
-	// convenience factory
-	
-	public static ArrayIndexingNode withChildren(Token token, ParseNode left, ParseNode right) {
-		ArrayIndexingNode node = new ArrayIndexingNode(token);
-		node.appendChild(left);
-		node.appendChild(right);
-		return node;
-	}
-	
-	///////////////////////////////////////////////////////////
-	// boilerplate for visitors
-			
-	public void accept(ParseNodeVisitor visitor) {
-		visitor.visitEnter(this);
-		visitChildren(visitor);
-		visitor.visitLeave(this);
-	}
+  public ArrayIndexingNode(Token token) {
+    super(token);
+    assert (token instanceof LextantToken);
+  }
+
+  public ArrayIndexingNode(ParseNode node) {
+    super(node);
+  }
+
+
+  ////////////////////////////////////////////////////////////
+  // attributes
+
+  public Lextant getOperator() {
+    return lextantToken().getLextant();
+  }
+
+  public LextantToken lextantToken() {
+    return (LextantToken) token;
+  }
+
+
+  ////////////////////////////////////////////////////////////
+  // convenience factory
+
+  public static ArrayIndexingNode withChildren(Token token, ParseNode left, ParseNode right) {
+    ArrayIndexingNode node = new ArrayIndexingNode(token);
+    node.appendChild(left);
+    node.appendChild(right);
+    return node;
+  }
+
+  public static ArrayIndexingNode withChildren(Token token, ParseNode child) {
+    ArrayIndexingNode node = new ArrayIndexingNode(token);
+    node.appendChild(child);
+    return node;
+  }
+
+  ///////////////////////////////////////////////////////////
+  // boilerplate for visitors
+
+  public void accept(ParseNodeVisitor visitor) {
+    visitor.visitEnter(this);
+    visitChildren(visitor);
+    visitor.visitLeave(this);
+  }
 }

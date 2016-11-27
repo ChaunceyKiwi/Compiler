@@ -1,5 +1,4 @@
 exec {
   var a := "hello".
-  print length a,_n_.
-  print a,_n_.
+  print a[0];a[1];a[2];a[3];a[4];a[5];_n_.
 }

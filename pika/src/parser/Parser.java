@@ -925,6 +925,8 @@ public class Parser {
   ///////////////////////////////////////////////////////////
   // operatorExpression -> atomicExpression[expression] | atomicExpression(expressionList)
   // expression[expression] as arrayIndexing and expression (expressionList) as functionInvocation
+  // Index for array is array[index], for string can be string[i,j] to show a range
+
   private ParseNode parseOperatorExpression() {
     if (!startsOperatorExpression(nowReading)) {
       return syntaxErrorNode("arrayIndexingExpression");
@@ -940,11 +942,14 @@ public class Parser {
       // arrayIndexing
       while (nowReading.isLextant(Punctuator.OPEN_SQUARE_BRACKET)) {
         flag = true;
+        expressionToBeOperated = ArrayIndexingNode.withChildren(nextToken, expressionToBeOperated);
         expect(Punctuator.OPEN_SQUARE_BRACKET);
-        ParseNode expressionToGetIndex = parseExpression();
+        expressionToBeOperated.appendChild(parseExpression());
+        if(nowReading.isLextant(Punctuator.SEPARATOR)) {
+          readToken();
+          expressionToBeOperated.appendChild(parseExpression());
+        }
         expect(Punctuator.CLOSE_SQUARE_BRACKET);
-        expressionToBeOperated =
-            ArrayIndexingNode.withChildren(nextToken, expressionToBeOperated, expressionToGetIndex);
       }
 
       // functionInvocation

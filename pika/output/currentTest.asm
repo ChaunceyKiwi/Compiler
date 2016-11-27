@@ -380,30 +380,254 @@
         Add                                    %% a
         PushD        -stringConstant-1-hello   
         StoreI                                 
+        Label        --string-indexing--2-string-index-begin 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
-        Label        --get-array-length-2-push-string-length 
+        Duplicate                              
+        PushI        0                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-3              
+        Jump         basicBlock-5              
+        Label        basicBlock-2              
+        PushD        $errors-general-message   
+        Printf                                 
+        Halt                                   
+        Label        basicBlock-3              
+        PushD        $$errors-array-index-negative 
+        Jump         basicBlock-2              
+        Label        basicBlock-4              
+        PushD        $$errors-index-exceed-bound 
+        Jump         basicBlock-2              
+        Label        basicBlock-5              
+        Exchange                               
+        Label        --string-indexing--2-string-length 
         PushI        8                         
         Add                                    
         LoadI                                  
-        PushD        $print-format-integer     
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-6              
+        Jump         basicBlock-4              
+        Label        basicBlock-6              
+        PushI        12                        
+        Add                                    
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        1                         
+        Multiply                               
+        Add                                    
+        Label        --string-indexing--2-string-index-fetching-end 
+        Label        --string-indexing--2-string-index-end 
+        LoadC                                  
+        PushD        $print-format-char        
         Printf                                 
-        PushD        $print-format-newline     
+        PushD        $print-format-space       
         Printf                                 
+        Label        --string-indexing--3-string-index-begin 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% a
         LoadI                                  
+        Duplicate                              
+        PushI        1                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-3              
+        Jump         basicBlock-7              
+        Label        basicBlock-7              
+        Exchange                               
+        Label        --string-indexing--3-string-length 
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-8              
+        Jump         basicBlock-4              
+        Label        basicBlock-8              
         PushI        12                        
         Add                                    
-        PushD        $print-format-string      
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        1                         
+        Multiply                               
+        Add                                    
+        Label        --string-indexing--3-string-index-fetching-end 
+        Label        --string-indexing--3-string-index-end 
+        LoadC                                  
+        PushD        $print-format-char        
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Label        --string-indexing--4-string-index-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Duplicate                              
+        PushI        2                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-3              
+        Jump         basicBlock-9              
+        Label        basicBlock-9              
+        Exchange                               
+        Label        --string-indexing--4-string-length 
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-10             
+        Jump         basicBlock-4              
+        Label        basicBlock-10             
+        PushI        12                        
+        Add                                    
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        1                         
+        Multiply                               
+        Add                                    
+        Label        --string-indexing--4-string-index-fetching-end 
+        Label        --string-indexing--4-string-index-end 
+        LoadC                                  
+        PushD        $print-format-char        
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Label        --string-indexing--5-string-index-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Duplicate                              
+        PushI        3                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-3              
+        Jump         basicBlock-11             
+        Label        basicBlock-11             
+        Exchange                               
+        Label        --string-indexing--5-string-length 
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-12             
+        Jump         basicBlock-4              
+        Label        basicBlock-12             
+        PushI        12                        
+        Add                                    
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        1                         
+        Multiply                               
+        Add                                    
+        Label        --string-indexing--5-string-index-fetching-end 
+        Label        --string-indexing--5-string-index-end 
+        LoadC                                  
+        PushD        $print-format-char        
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Label        --string-indexing--6-string-index-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Duplicate                              
+        PushI        4                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-3              
+        Jump         basicBlock-13             
+        Label        basicBlock-13             
+        Exchange                               
+        Label        --string-indexing--6-string-length 
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-14             
+        Jump         basicBlock-4              
+        Label        basicBlock-14             
+        PushI        12                        
+        Add                                    
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        1                         
+        Multiply                               
+        Add                                    
+        Label        --string-indexing--6-string-index-fetching-end 
+        Label        --string-indexing--6-string-index-end 
+        LoadC                                  
+        PushD        $print-format-char        
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Label        --string-indexing--7-string-index-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% a
+        LoadI                                  
+        Duplicate                              
+        PushI        5                         
+        Duplicate                              
+        PushD        reg1-system               
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        JumpNeg      basicBlock-3              
+        Jump         basicBlock-15             
+        Label        basicBlock-15             
+        Exchange                               
+        Label        --string-indexing--7-string-length 
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        Exchange                               
+        Subtract                               
+        JumpPos      basicBlock-16             
+        Jump         basicBlock-4              
+        Label        basicBlock-16             
+        PushI        12                        
+        Add                                    
+        PushD        reg1-system               
+        LoadI                                  
+        PushI        1                         
+        Multiply                               
+        Add                                    
+        Label        --string-indexing--7-string-index-fetching-end 
+        Label        --string-indexing--7-string-index-end 
+        LoadC                                  
+        PushD        $print-format-char        
+        Printf                                 
+        PushD        $print-format-space       
         Printf                                 
         PushD        $print-format-newline     
         Printf                                 
         Halt                                   
-        Label        basicBlock-2              
+        Label        basicBlock-17             
         Label        -mem-manager-make-tags    
         PushD        $mmgr-tags-return         
         Exchange                               
@@ -451,7 +675,7 @@
         PushD        $mmgr-tags-return         
         LoadI                                  
         Return                                 
-        Label        basicBlock-3              
+        Label        basicBlock-18             
         Label        -mem-manager-one-tag      
         PushD        $mmgr-onetag-return       
         Exchange                               
@@ -490,7 +714,7 @@
         PushD        $mmgr-onetag-return       
         LoadI                                  
         Return                                 
-        Label        basicBlock-4              
+        Label        basicBlock-19             
         Label        -mem-manager-deallocate   
         PushD        $mmgr-dealloc-return      
         Exchange                               
@@ -559,7 +783,7 @@
         PushD        $mmgr-dealloc-return      
         LoadI                                  
         Return                                 
-        Label        basicBlock-5              
+        Label        basicBlock-20             
         Label        -mem-manager-remove-block 
         PushD        $mmgr-remove-return       
         Exchange                               
@@ -593,9 +817,9 @@
         Label        -mmgr-remove-process-prev 
         PushD        $mmgr-remove-prev         
         LoadI                                  
-        JumpFalse    basicBlock-7              
-        Jump         basicBlock-6              
-        Label        basicBlock-6              
+        JumpFalse    basicBlock-22             
+        Jump         basicBlock-21             
+        Label        basicBlock-21             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $mmgr-remove-prev         
@@ -611,20 +835,20 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-8              
-        Label        basicBlock-7              
+        Jump         basicBlock-23             
+        Label        basicBlock-22             
         PushD        $mmgr-remove-next         
         LoadI                                  
         PushD        $heap-first-free          
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-8              
-        Label        basicBlock-8              
+        Jump         basicBlock-23             
+        Label        basicBlock-23             
         PushD        $mmgr-remove-next         
         LoadI                                  
-        JumpFalse    basicBlock-10             
-        Jump         basicBlock-9              
-        Label        basicBlock-9              
+        JumpFalse    basicBlock-25             
+        Jump         basicBlock-24             
+        Label        basicBlock-24             
         PushD        $mmgr-remove-prev         
         LoadI                                  
         PushD        $mmgr-remove-next         
@@ -633,8 +857,8 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Jump         basicBlock-10             
-        Label        basicBlock-10             
+        Jump         basicBlock-25             
+        Label        basicBlock-25             
         PushD        $mmgr-remove-return       
         LoadI                                  
         Return                                 

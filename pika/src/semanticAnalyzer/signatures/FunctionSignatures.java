@@ -331,8 +331,17 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     new FunctionSignatures(UnaryOperatorNode.ARRAY_CLONE,
         new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable)));
 
-    new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING, new FunctionSignature(1, true,
-        new ArrayType(typeVariable), PrimitiveType.INTEGER, typeVariable));
+    new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING,
+        new FunctionSignature(1, true, new ArrayType(typeVariable), PrimitiveType.INTEGER,
+            typeVariable),
+        
+        // s[i] -> char
+        new FunctionSignature(1, true, PrimitiveType.STRING, PrimitiveType.INTEGER,
+            PrimitiveType.CHARACTER),
+        
+        // s[i,j] -> string
+        new FunctionSignature(1, true, PrimitiveType.STRING, PrimitiveType.INTEGER,
+            PrimitiveType.INTEGER, PrimitiveType.STRING));
 
     new FunctionSignatures(AssignmentStatementNode.VALUE_ASSIGNMENT,
         new FunctionSignature(1, true, PrimitiveType.BOOLEAN, PrimitiveType.BOOLEAN,

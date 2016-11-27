@@ -295,7 +295,7 @@ public class ArrayHelper {
 		code.add(PushI, arrayType.getHeaderSize());
 		code.add(Add);
 		
-		// get the address offset to first element
+		// get the address offset to that element
 		code.add(PushD, memoryPointer);
 		code.add(LoadI);
 		code.add(PushI, arrayType.getSubType().getSize());
@@ -487,13 +487,6 @@ public class ArrayHelper {
 		Macros.readIOffset(code, 12);
 		return code;
 	}
-	
-	   public static ASMCodeFragment pushStringLength(String label){
-	        ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-	        code.add(Label, label);
-	        Macros.readIOffset(code, 8);
-	        return code;
-	    }
 	
 	public static ASMCodeFragment pushSubtypeSize(String label){
 		ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);		

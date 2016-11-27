@@ -401,13 +401,31 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   // ArrayIndexingExpression
   @Override
   public void visitLeave(ArrayIndexingNode node) {
-    assert node.nChildren() == 2;
-    ParseNode left = node.child(0);
-    ParseNode right = node.child(1);
-    List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
-
-    // check if operands meet the signature of operator
-    setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
+    Type type = node.child(0).getType();
+    if (type instanceof ArrayType) {
+      assert node.nChildren() == 2; 
+      ParseNode left = node.child(0);
+      ParseNode right = node.child(1);
+      List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
+      setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
+    } else if (type == PrimitiveType.STRING) {
+        assert node.nChildren() == 2 || node.nChildren() == 3;
+        ParseNode indexTarget = node.child(0);
+        ParseNode index1 = node.child(1);
+        List<Type> childTypes;
+        
+        if (node.nChildren() == 3) {
+          ParseNode index2 = node.child(2);
+          childTypes = Arrays.asList(indexTarget.getType(), index1.getType(), index2.getType());
+        } else {
+          childTypes = Arrays.asList(indexTarget.getType(), index1.getType());
+        }
+        
+        setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
+    } else {
+        indexingTargetError(node);
+        return;
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -668,6 +686,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   private void controlFlowError(ParseNode node) {
     logError(node.getToken().getLexeme() + "Statement Expression Error");
+  }
+  
+  private void indexingTargetError(ParseNode node) {
+    logError(node.getToken().getLexeme() + " the target can not be indexed Error");
   }
 
   private void releaseTypeError(ParseNode node) {
