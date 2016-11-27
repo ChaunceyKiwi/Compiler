@@ -177,13 +177,13 @@ public class ASMCodeGenerator {
       Type currentType = node.getType();
       Type originalType = node.getOriginalType();
       Type type;
-      
-      if(originalType != PrimitiveType.NO_TYPE) {
+
+      if (originalType != PrimitiveType.NO_TYPE) {
         type = originalType;
       } else {
         type = currentType;
       }
-      
+
       if (type == PrimitiveType.INTEGER) {
         code.add(LoadI);
       } else if (type == PrimitiveType.BOOLEAN) {
@@ -201,12 +201,12 @@ public class ASMCodeGenerator {
       } else {
         assert false : "node " + node;
       }
-            
+
       if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE
           && originalType != currentType) {
         code.append(PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType));
       }
-            
+
       code.markAsValue();
     }
 
@@ -857,13 +857,13 @@ public class ASMCodeGenerator {
         Type type = nodeToGetLength.getType();
         Labeller labeller = new Labeller("-get-array-length");
         code.append(arg1);
-        
+
         // Get the length of a string
         if (type == PrimitiveType.STRING) {
           code.append(StringHelper.pushStringLength(labeller.newLabel("push-string-length")));
-        } 
+        }
         // Get the length of an array
-        else if (type instanceof ArrayType){
+        else if (type instanceof ArrayType) {
           code.append(ArrayHelper.pushArrayLength(labeller.newLabel("push-array-length")));
         }
         // Error case
@@ -899,35 +899,38 @@ public class ASMCodeGenerator {
     }
 
     public void visitLeave(ArrayIndexingNode node) {
-      newAddressCode(node);
       Type identifierType = node.child(0).getType();
-      
+
       if (identifierType instanceof ArrayType) {
+        newAddressCode(node);
         Labeller labeller = new Labeller("-array-indexing-");
         ArrayType arrayType = (ArrayType) identifierType;
         ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
         ASMCodeFragment index = removeValueCode(node.child(1));
-        code.append(ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, labeller, reg1));
+        code.append(
+            ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, labeller, reg1));
       } else if (identifierType == PrimitiveType.STRING) {
         // string[i] -> character
         if (node.nChildren() == 2) {
+          newAddressCode(node);
           Labeller labeller = new Labeller("-string-indexing-");
           ASMCodeFragment stringAddress = removeValueCode(node.child(0));
           ASMCodeFragment index = removeValueCode(node.child(1));
           code.append(StringHelper.stringElementAtIndex(stringAddress, index, labeller, reg1));
-        } 
-        
+        }
+
         // string[i,j] -> subString
-        else if (node.nChildren() == 3){
+        else if (node.nChildren() == 3) {
+          newValueCode(node);
           Labeller labeller = new Labeller("-string-range-");
           ASMCodeFragment stringAddress = removeValueCode(node.child(0));
           ASMCodeFragment indexStart = removeValueCode(node.child(1));
           ASMCodeFragment indexEnd = removeValueCode(node.child(2));
 
-          code.append(StringHelper.subStringInRange(stringAddress, indexStart, indexEnd, labeller, reg1));
+          code.append(StringHelper.subStringInRange(stringAddress, indexStart, indexEnd, labeller,
+              regCounter, reg1, reg2, reg3, reg4));
         }
       }
-      
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -952,8 +955,7 @@ public class ASMCodeGenerator {
         ArrayType arrayType = (ArrayType) (node.getType());
         List<ASMCodeFragment> arrayElement = new ArrayList<>();
 
-        ASMCodeFragment lengthOfArray =
-            new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
+        ASMCodeFragment lengthOfArray = new ASMCodeFragment(GENERATES_VALUE);
         lengthOfArray.add(PushI, arrayType.getLength());
 
         for (int i = 0; i < node.nChildren(); i++) {
@@ -1021,7 +1023,7 @@ public class ASMCodeGenerator {
         code.add(Call, functionPrefix + functionName);
       }
     }
-    
+
     public void visit(BooleanConstantNode node) {
       newValueCode(node);
       code.add(PushI, node.getValue() ? 1 : 0);
@@ -1048,16 +1050,21 @@ public class ASMCodeGenerator {
 
     public void visit(StringConstantNode node) {
       newValueCode(node);
-      String value = node.getValue();      
+      String value = node.getValue();
       Labeller labeller = new Labeller("-string-creation-");
-      List<Character> stringElement = new ArrayList<Character>();
-  
-      int lengthOfString = value.length();    
+
+      List<ASMCodeFragment> stringElement = new ArrayList<ASMCodeFragment>();
+
       for (int i = 0; i < value.length(); i++) {
-        stringElement.add(value.charAt(i));
+        ASMCodeFragment element = new ASMCodeFragment(GENERATES_VALUE);
+        element.add(PushI, value.charAt(i));
+        stringElement.add(element);
       }
-      
-      code.append(StringHelper.stringCreation(lengthOfString, labeller));
+
+      ASMCodeFragment lengthOfString = new ASMCodeFragment(GENERATES_VALUE);
+      lengthOfString.add(PushI, value.length());
+
+      code.append(StringHelper.stringCreation(lengthOfString, labeller, reg1));
       code.append(StringHelper.stringInitialization(stringElement, labeller));
     }
 

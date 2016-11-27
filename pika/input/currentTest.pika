@@ -1,4 +1,5 @@
 exec {
-  var a := ["abc","bcd"].
-  print a,_n_.
+  var a := "Hello".
+  var b := a[1,2].
+  print b.
 }

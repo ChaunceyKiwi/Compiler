@@ -17,7 +17,8 @@ import semanticAnalyzer.types.Type;
 import semanticAnalyzer.types.TypeVariable;
 
 public class StringHelper {
-  public static ASMCodeFragment stringCreation(int lengthOfString, Labeller labeller) {
+  public static ASMCodeFragment stringCreation(ASMCodeFragment length, Labeller labeller,
+      String reg1) {
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     String beginLabel = labeller.newLabel("string-creation-begin");
@@ -32,8 +33,10 @@ public class StringHelper {
     code.add(Label, getLengthLabel);
 
     // Length of array cannot be negative
-    code.add(PushI, lengthOfString);
+    code.append(length);
     code.add(Duplicate);
+    code.add(Duplicate);
+    Macros.storeITo(code, reg1);
     code.add(JumpNeg, RunTime.ARRAY_SIZE_NEGATIVE_ERROR);
 
     // Get the size of whole array including header and element
@@ -67,7 +70,8 @@ public class StringHelper {
     // add length of array
     code.add(Label, lengthLabel);
     code.add(Duplicate);
-    code.add(PushI, lengthOfString);
+    code.add(PushD, reg1);
+    code.add(LoadI);
     code.add(Exchange);
     Macros.writeIOffset(code, 8);
 
@@ -75,7 +79,7 @@ public class StringHelper {
     return code;
   }
 
-  public static ASMCodeFragment stringInitialization(List<Character> arrayElement,
+  public static ASMCodeFragment stringInitialization(List<ASMCodeFragment> arrayElement,
       Labeller labeller) {
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
@@ -86,7 +90,7 @@ public class StringHelper {
     code.add(Label, beginLabel);
     for (int i = 0; i < arrayElement.size(); i++) {
       code.add(Duplicate);
-      code.add(PushI, arrayElement.get(i));
+      code.append(arrayElement.get(i));
       code.add(Exchange);
       code.add(PushI, headerSize + i);
       code.add(Add);
@@ -100,71 +104,121 @@ public class StringHelper {
 
 
   public static ASMCodeFragment subStringInRange(ASMCodeFragment stringAddress,
-      ASMCodeFragment indexStart, ASMCodeFragment indexEnd, Labeller labeller, String reg1) {
+      ASMCodeFragment indexStart, ASMCodeFragment indexEnd, Labeller labeller, String counter,
+      String originStringMemoryPointer, String newStringMemoryPointer,
+      String indexStartPointer, String indexEndPointer) {
+
+    String beginLabel = labeller.newLabel("string-range-copy-begin");
+    String endLabel = labeller.newLabel("string-range-copy-end");
+    String beginElementCopyLabel = labeller.newLabel("string-element-copy-begin");
+    String endElementCopyLabel = labeller.newLabel("string-element-copy-end");
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-    String newStringLabel = labeller.newLabel("string-creation");
-    String beginLabel = labeller.newLabel("string-creation-begin");
-    String getLengthLabel = labeller.newLabel("string-creation-get-length");
-    String sizeLabel = labeller.newLabel("string-creation-size");
-    String typeLabel = labeller.newLabel("string-creation-type");
-    String statusLabel = labeller.newLabel("string-creation-status");
-    String subTypeSize = labeller.newLabel("string-creation-subtype-size");
-    String lengthLabel = labeller.newLabel("string-creation-length");
-    String endLabel = labeller.newLabel("string-creation-end");
 
     code.add(Label, beginLabel);
-    code.add(Label, getLengthLabel);
-
-    // Length of array cannot be negative
-    code.append(indexEnd);
+    
+    // store indexStart in indexStartPointer
     code.append(indexStart);
-    code.add(Subtract);
-    code.add(Duplicate);
-    code.add(Duplicate);
-    Macros.storeITo(code, reg1);
-    code.add(JumpNeg, RunTime.ARRAY_SIZE_NEGATIVE_ERROR);
+    Macros.storeITo(code, indexStartPointer);
 
-    // Get the size of whole array including header and element
-    // Subtype is character with size as 1
-    // Header size is 12 for string
-    code.add(Label, sizeLabel);
-    code.add(PushI, 1);
-    code.add(Multiply);
+    // store indexEnd in indexEndPointer
+    code.append(indexEnd);
+    Macros.storeITo(code, indexEndPointer);
+
+    // store original string in originStringMemoryPointer
+    code.append(stringAddress);
+    Macros.storeITo(code, originStringMemoryPointer);
+
+    // start index shoud >= 0
+    code.add(PushD, indexStartPointer);
+    code.add(LoadI);
+    code.add(JumpNeg, RunTime.ARRAY_INDEX_NEGATIVE_ERROR);
+
+    // make sure end index <= length
+    code.add(PushD, indexEndPointer);
+    code.add(LoadI);
+    code.add(PushD, originStringMemoryPointer);
+    code.add(LoadI);
+    code.append(pushStringLength(labeller.newLabel("string-length")));
+    code.add(Subtract);
+    code.add(JumpPos, RunTime.ARRAY_INDEX_EXCEED_BOUND_ERROR);
+
+    // create an empty string to store values
+    ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
+    length.add(PushD, indexEndPointer);
+    length.add(LoadI);
+    length.add(PushD, indexStartPointer);
+    length.add(LoadI);
+    length.add(Subtract);
+    
+    code.append(stringCreation(length, labeller, counter));
+    code.add(Duplicate);
+
+    // store new string in newStringMemoryPointer
+    Macros.storeITo(code, newStringMemoryPointer);
+
+    // store the length in the counter    
+    code.add(PushD, indexEndPointer);
+    code.add(LoadI);
+    code.add(PushD, indexStartPointer);
+    code.add(LoadI);
+    code.add(Subtract);
+    Macros.storeITo(code, counter);
+
+    // move originArrayMemoryPointer to ith address of element
+    // Should be arrayAddr + hedersize + 1 * startIndex
+    code.add(PushD, originStringMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
     code.add(PushI, 12);
     code.add(Add);
-
-    // call the memory manager to get address allocated
-    code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
-
-    // // add type identifier of array
-    // code.add(Label, typeLabel);
-    // code.add(Duplicate);
-    // code.add(PushI, arrayType.getTypeIdentifier());
-    // code.add(Exchange);
-    // Macros.writeIOffset(code, 0);
-    //
-    // // add status of array
-    // code.add(Label, statusLabel);
-    // code.add(Duplicate);
-    // code.add(PushI, arrayType.getStatus());
-    // code.add(Exchange);
-    // Macros.writeIOffset(code, 4);
-    //
-    // // add subtype size of array
-    // code.add(Label, subTypeSize);
-    // code.add(Duplicate);
-    // code.add(PushI, arrayType.getSubType().getSize());
-    // code.add(Exchange);
-    // Macros.writeIOffset(code, 8);
-
-    // add length of array
-    code.add(Label, lengthLabel);
-    code.add(Duplicate);
-    code.add(PushD, reg1);
+    code.add(PushD, indexStartPointer);
     code.add(LoadI);
-    code.add(Exchange);
-    Macros.writeIOffset(code, 12);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to address of first element to store
+    code.add(PushD, newStringMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 12);
+    code.add(Add);
+    code.add(StoreI);
+
+    code.add(Label, beginElementCopyLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementCopyLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, newStringMemoryPointer);
+    code.add(LoadI);
+    code.add(PushD, originStringMemoryPointer);
+    code.add(LoadI);
+    code.add(LoadC);
+    code.add(StoreC);
+
+    // move originArrayMemoryPointer to next address of element
+    code.add(PushD, originStringMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to next address of new element to store
+    code.add(PushD, newStringMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementCopyLabel);
+    code.add(Label, endElementCopyLabel);
 
     code.add(Label, endLabel);
     return code;
