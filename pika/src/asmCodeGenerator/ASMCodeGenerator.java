@@ -871,7 +871,7 @@ public class ASMCodeGenerator {
         code.add(BNegate);
       }
 
-      if (operator == Keyword.LENGTH) {
+      else if (operator == Keyword.LENGTH) {
         ParseNode nodeToGetLength = node.child(0);
         Type type = nodeToGetLength.getType();
         Labeller labeller = new Labeller("-get-array-length");
@@ -892,11 +892,16 @@ public class ASMCodeGenerator {
         }
       }
 
-      if (operator == Keyword.COPY) {
+      else if (operator == Keyword.COPY) {
         Labeller labeller = new Labeller("-copy-operator-");
         ArrayType arrayType = (ArrayType) node.getType();
         code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
       }
+      
+      else if (operator == Keyword.REVERSE) {
+        code.append(StringHelper.stringReversal(arg1, reg1, reg2, reg3, reg4));
+      }
+      
       addPromotionCodeIfNeeded(node);
     }
 

@@ -305,7 +305,6 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     // Rat -> Int, Rat-> Float,
     // Char -> Rat, Int -> Rat, Float -> Rat
 
-
     new FunctionSignatures(TypeCastingNode.TYPE_CASTING,
         new FunctionSignature(0, false, PrimitiveType.CHARACTER, PrimitiveType.INTEGER,
             PrimitiveType.INTEGER),
@@ -334,6 +333,9 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     new FunctionSignatures(NewArrayTypeLengthNode.EMPTY_ARRAY_CREATION, new FunctionSignature(1,
         true, new ArrayType(typeVariable), PrimitiveType.INTEGER, new ArrayType(typeVariable)));
 
+    new FunctionSignatures(UnaryOperatorNode.ARRAY_REVERSE,
+        new FunctionSignature(1, false, PrimitiveType.STRING, PrimitiveType.STRING));
+    
     new FunctionSignatures(UnaryOperatorNode.ARRAY_CLONE,
         new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable)));
 

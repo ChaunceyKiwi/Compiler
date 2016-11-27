@@ -313,6 +313,107 @@ public class StringHelper {
     return code;
   }
 
+  public static ASMCodeFragment stringReversal(ASMCodeFragment arg1, String originalStringPointer,
+      String lenPointer, String newStringPointer, String counter) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    Labeller labeller = new Labeller("-string-reversal-");
+
+    String beginLabel = labeller.newLabel("-begin-");
+    String endLabel = labeller.newLabel("-end-");
+    String beginElementCopyLabel = labeller.newLabel("string-element-copy-begin");
+    String endElementCopyLabel = labeller.newLabel("string-element-copy-end");
+
+    code.add(Label, beginLabel);
+
+    // store the address of array in register
+    code.append(arg1);
+    Macros.storeITo(code, originalStringPointer);
+
+    // store the length of array in register
+    code.add(PushD, originalStringPointer);
+    code.add(LoadI);
+    code.append(pushStringLength());
+    Macros.storeITo(code, lenPointer);
+
+    // create an empty string to store values
+    ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
+    length.add(PushD, lenPointer);
+    length.add(LoadI);
+
+    // Create string with length as len(m) + 1
+    // Store the address of new string in newStringPointer
+    code.append(backupRegister(counter));
+    code.append(stringCreation(length, labeller, counter));
+    code.add(Exchange);
+    code.append(restoreRegister(counter));
+    code.add(Duplicate);
+    Macros.storeITo(code, newStringPointer);
+
+    // move originArrayMemoryPointer to the address of last element
+    code.add(PushD, originalStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 12);
+    code.add(Add);
+    code.add(PushD, lenPointer);
+    code.add(LoadI);
+    code.add(Add);
+    code.add(PushI, 1);
+    code.add(Subtract);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to address of first element to store
+    code.add(PushD, newStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 12);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Set counter's value as the length of string
+    code.add(PushD, lenPointer);
+    code.add(LoadI);
+    Macros.storeITo(code, counter);
+
+    code.add(Label, beginElementCopyLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementCopyLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, newStringPointer);
+    code.add(LoadI);
+    code.add(PushD, originalStringPointer);
+    code.add(LoadI);
+    code.add(LoadC);
+    code.add(StoreC);
+
+    // move originArrayMemoryPointer to last address of element
+    code.add(PushD, originalStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Subtract);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to next address of new element to store
+    code.add(PushD, newStringPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementCopyLabel);
+    code.add(Label, endElementCopyLabel);
+
+    code.add(Label, endLabel);
+    return code;
+  }
+
   public static ASMCodeFragment stringConcatenation(ASMCodeFragment arg1, ASMCodeFragment arg2,
       String originalString1Pointer, String originalString2Pointer, String len1Pointer,
       String len2Pointer, String newStringPointer, String counter) {

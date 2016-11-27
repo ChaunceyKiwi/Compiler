@@ -378,6 +378,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       setTypeAndCheckSignature(node, UnaryOperatorNode.BOOLEAN_NOT, childTypes);
     } else if (operator == Keyword.COPY) {
       setTypeAndCheckSignature(node, UnaryOperatorNode.ARRAY_CLONE, childTypes);
+    } else if (operator == Keyword.REVERSE) {
+      setTypeAndCheckSignature(node, UnaryOperatorNode.ARRAY_REVERSE, childTypes);
     }
   }
 

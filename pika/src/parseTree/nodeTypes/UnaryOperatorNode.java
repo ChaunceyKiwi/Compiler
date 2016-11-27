@@ -10,6 +10,7 @@ public class UnaryOperatorNode extends ParseNode {
   public final static String ARRAY_LENGTH = "array_length";
   public final static String BOOLEAN_NOT = "boolean_not";
   public final static String ARRAY_CLONE = "array_clone";
+  public final static String ARRAY_REVERSE = "array_reverse";
 
   public UnaryOperatorNode(Token token) {
     super(token);
