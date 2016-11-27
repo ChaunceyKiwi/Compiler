@@ -1,4 +1,4 @@
 exec {
-  var a := "hello".
-  print a[0];a[1];a[2];a[3];a[4];a[5];_n_.
+  var a := ["abc","bcd"].
+  print a,_n_.
 }

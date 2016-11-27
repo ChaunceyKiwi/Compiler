@@ -1048,18 +1048,17 @@ public class ASMCodeGenerator {
 
     public void visit(StringConstantNode node) {
       newValueCode(node);
-      String value = node.getValue();
-      Labeller label = new Labeller("stringConstant");
-
-      code.add(DLabel, label.newLabel(value));
-      // The type identifier for a string is the integer 6.
-      code.add(DataI, 6);
+      String value = node.getValue();      
+      Labeller labeller = new Labeller("-string-creation-");
+      List<Character> stringElement = new ArrayList<Character>();
+  
+      int lengthOfString = value.length();    
+      for (int i = 0; i < value.length(); i++) {
+        stringElement.add(value.charAt(i));
+      }
       
-      // Status header is 1001 = 9.
-      code.add(DataI, 9);
-      code.add(DataI, value.length());
-      code.add(DataS, value);
-      code.add(PushD, label.newLabel(value));
+      code.append(StringHelper.stringCreation(lengthOfString, labeller));
+      code.append(StringHelper.stringInitialization(stringElement, labeller));
     }
 
     public void visit(NewlineNode node) {

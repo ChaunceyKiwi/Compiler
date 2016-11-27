@@ -33,7 +33,11 @@ public class PrintStatementGenerator {
       } else if (child.getType() == PrimitiveType.RATIONAL) {
         code.append(visitor.removeValueCode(child));
         code.append(RationalHelper.appendPrintCodeForRational(child.getType()));
-      } else {
+      } else if (child.getType() == PrimitiveType.STRING) {
+        code.append(visitor.removeValueCode(child));
+        code.append(StringHelper.stringPrint());
+      }
+      else {
         appendPrintCode(child);
       }
     }
@@ -48,10 +52,6 @@ public class PrintStatementGenerator {
     } else {
       format = printFormat(node.getType());
       code.append(visitor.removeValueCode(node));
-      if (node.getType() == PrimitiveType.STRING) {
-        code.add(PushI, 12);
-        code.add(Add);
-      }
     }
     convertToStringIfBoolean(node);
     code.add(PushD, format);
