@@ -520,7 +520,7 @@ public class BasicBlockManager {
   }
 
   private void sortBlocks() {
-    for (int i = blocks.size() - 1; i > 0; i--)
+    for (int i = blocks.size() - 1; i > 0; i--) {
       for (int j = 0; j < i; j++) {
         if (blocks.get(j).getBlockIndex() > blocks.get(j + 1).getBlockIndex()) {
           BasicBlock temp = blocks.get(j);
@@ -528,6 +528,7 @@ public class BasicBlockManager {
           blocks.set(j + 1, temp);
         }
       }
+    }
   }
 
   private void setNeighborForBlocks() {
