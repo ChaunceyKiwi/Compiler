@@ -259,6 +259,12 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   // 3). an identifier
   public boolean isTargetable(ParseNode node) {
     if (node instanceof IdentifierNode || node instanceof ArrayIndexingNode) {
+      
+      // String is immutable
+      if(node instanceof ArrayIndexingNode && node.child(0).getType() == PrimitiveType.STRING) {
+        return false;
+      }
+      
       return true;
     } else {
       return false;

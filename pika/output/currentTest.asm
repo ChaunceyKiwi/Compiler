@@ -328,7 +328,7 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        8                         
+        DataZ        4                         
         DLabel       reg1-func                 
         DataI        0                         
         DLabel       reg2-func                 
@@ -456,10 +456,15 @@
         StoreI                                 
         Label        --string-creation--1-string-initialization-end 
         StoreI                                 
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% str2
-        Label        --string-reversal--2--begin- 
+        Label        --string-range--2-string-range-copy-begin 
+        PushI        1                         
+        PushD        reg3-system               
+        Exchange                               
+        StoreI                                 
+        PushI        3                         
+        PushD        reg4-system               
+        Exchange                               
+        StoreI                                 
         PushD        $global-memory-block      
         PushI        0                         
         Add                                    %% str1
@@ -467,33 +472,40 @@
         PushD        reg1-system               
         Exchange                               
         StoreI                                 
+        PushD        reg3-system               
+        LoadI                                  
+        JumpNeg      $$array-index-negative    
+        PushD        reg4-system               
+        LoadI                                  
         PushD        reg1-system               
         LoadI                                  
         PushI        8                         
         Add                                    
         LoadI                                  
-        PushD        reg2-system               
-        Exchange                               
-        StoreI                                 
+        Subtract                               
+        JumpPos      $$array-index-exceed-bound 
+        PushD        reg-counter               
+        LoadI                                  
+        Label        --string-range--2-string-creation-begin 
+        Label        --string-range--2-string-creation-get-length 
         PushD        reg4-system               
         LoadI                                  
-        Label        --string-reversal--2-string-creation-begin 
-        Label        --string-reversal--2-string-creation-get-length 
-        PushD        reg2-system               
+        PushD        reg3-system               
         LoadI                                  
+        Subtract                               
         Duplicate                              
         Duplicate                              
-        PushD        reg4-system               
+        PushD        reg-counter               
         Exchange                               
         StoreI                                 
         JumpNeg      $$array-size-negative     
-        Label        --string-reversal--2-string-creation-size 
+        Label        --string-range--2-string-creation-size 
         PushI        1                         
         Multiply                               
         PushI        12                        
         Add                                    
         Call         -mem-manager-allocate     
-        Label        --string-reversal--2-string-creation-type 
+        Label        --string-range--2-string-creation-type 
         Duplicate                              
         PushI        6                         
         Exchange                               
@@ -501,7 +513,7 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        --string-reversal--2-string-creation-status 
+        Label        --string-range--2-string-creation-status 
         Duplicate                              
         PushI        9                         
         Exchange                               
@@ -509,22 +521,30 @@
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        --string-reversal--2-string-creation-length 
+        Label        --string-range--2-string-creation-length 
         Duplicate                              
-        PushD        reg4-system               
+        PushD        reg-counter               
         LoadI                                  
         Exchange                               
         PushI        8                         
         Add                                    
         Exchange                               
         StoreI                                 
-        Label        --string-reversal--2-string-creation-end 
+        Label        --string-range--2-string-creation-end 
         Exchange                               
-        PushD        reg4-system               
+        PushD        reg-counter               
         Exchange                               
         StoreI                                 
         Duplicate                              
+        PushD        reg2-system               
+        Exchange                               
+        StoreI                                 
+        PushD        reg4-system               
+        LoadI                                  
         PushD        reg3-system               
+        LoadI                                  
+        Subtract                               
+        PushD        reg-counter               
         Exchange                               
         StoreI                                 
         PushD        reg1-system               
@@ -532,28 +552,21 @@
         LoadI                                  
         PushI        12                        
         Add                                    
-        PushD        reg2-system               
+        PushD        reg3-system               
         LoadI                                  
         Add                                    
-        PushI        1                         
-        Subtract                               
         StoreI                                 
-        PushD        reg3-system               
+        PushD        reg2-system               
         Duplicate                              
         LoadI                                  
         PushI        12                        
         Add                                    
         StoreI                                 
+        Label        --string-range--2-string-element-copy-begin 
+        PushD        reg-counter               
+        LoadI                                  
+        JumpFalse    --string-range--2-string-element-copy-end 
         PushD        reg2-system               
-        LoadI                                  
-        PushD        reg4-system               
-        Exchange                               
-        StoreI                                 
-        Label        --string-reversal--2-string-element-copy-begin 
-        PushD        reg4-system               
-        LoadI                                  
-        JumpFalse    --string-reversal--2-string-element-copy-end 
-        PushD        reg3-system               
         LoadI                                  
         PushD        reg1-system               
         LoadI                                  
@@ -563,29 +576,24 @@
         Duplicate                              
         LoadI                                  
         PushI        1                         
-        Subtract                               
+        Add                                    
         StoreI                                 
-        PushD        reg3-system               
+        PushD        reg2-system               
         Duplicate                              
         LoadI                                  
         PushI        1                         
         Add                                    
         StoreI                                 
         PushI        -1                        
-        PushD        reg4-system               
+        PushD        reg-counter               
         LoadI                                  
         Add                                    
-        PushD        reg4-system               
+        PushD        reg-counter               
         Exchange                               
         StoreI                                 
-        Jump         --string-reversal--2-string-element-copy-begin 
-        Label        --string-reversal--2-string-element-copy-end 
-        Label        --string-reversal--2--end- 
-        StoreI                                 
-        PushD        $global-memory-block      
-        PushI        4                         
-        Add                                    %% str2
-        LoadI                                  
+        Jump         --string-range--2-string-element-copy-begin 
+        Label        --string-range--2-string-element-copy-end 
+        Label        --string-range--2-string-range-copy-end 
         Label        --print-string--3--begin- 
         Duplicate                              
         PushI        8                         
@@ -624,8 +632,6 @@
         Label        --print-string--3--loop-end- 
         Pop                                    
         Label        --print-string--3--end-   
-        PushD        $print-format-newline     
-        Printf                                 
         Halt                                   
         Label        -mem-manager-make-tags    
         DLabel       $mmgr-tags-size           

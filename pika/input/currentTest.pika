@@ -1,5 +1,4 @@
 exec {
   var str1 := "lkjhgfdsa".
-  var str2 := reverse str1.
-  print str2,_n_.
+  print str1[1,3].
 }
