@@ -18,6 +18,8 @@ public class BinaryOperatorNode extends ParseNode {
 	public final static String RATIONAL_NOTEQUAL = "ration_not_equal";
 	public final static String RATIONAL_GREATER = "ration_greater";
 	public final static String RATIONAL_GREATEROREQUAL = "ration_greater_or_equal";
+	public final static String CONCATENATION = "concatenation";
+
 
 	public final static String ARRAY_COMPARISON = "array_comparison";
 

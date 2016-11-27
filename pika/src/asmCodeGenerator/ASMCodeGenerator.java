@@ -34,6 +34,7 @@ public class ASMCodeGenerator {
   static String reg2 = "reg2-system";
   static String reg3 = "reg3-system";
   static String reg4 = "reg4-system";
+  static String reg5 = "reg5-system";
   static String regCounter = "reg-counter";
   static String GCDCalculation = "GCDCalculation";
 
@@ -83,6 +84,7 @@ public class ASMCodeGenerator {
     createRegister(code, reg2);
     createRegister(code, reg3);
     createRegister(code, reg4);
+    createRegister(code, reg5);
     createRegister(code, regCounter);
     return code;
   }
@@ -825,21 +827,30 @@ public class ASMCodeGenerator {
         }
         code.add(opcode);
       } else if (operation instanceof String) {
-        if (operation == BinaryOperatorNode.RATIONAL_ADD) {
-          code.append(RationalHelper.rationalAdd(arg1, arg2, GCDCalculation, reg1, reg2,
-              reg1ForFunction, reg2ForFunction));
-        } else if (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT) {
-          code.append(RationalHelper.rationalSubtract(arg1, arg2, GCDCalculation, reg1, reg2,
-              reg1ForFunction, reg2ForFunction));
-        } else if (operation == BinaryOperatorNode.RATIONAL_MULTIPLY) {
-          code.append(RationalHelper.rationalMultiply(arg1, arg2, GCDCalculation, reg1, reg2,
-              reg1ForFunction, reg2ForFunction));
-        } else if (operation == BinaryOperatorNode.RATIONAL_DIVIDE) {
-          code.append(RationalHelper.rationalDivide(arg1, arg2, GCDCalculation, reg1, reg2,
-              reg1ForFunction, reg2ForFunction));
+        if (isRationalOperation((String)operation)) {
+          if (operation == BinaryOperatorNode.RATIONAL_ADD) {
+            code.append(RationalHelper.rationalAdd(arg1, arg2, GCDCalculation, reg1, reg2,
+                reg1ForFunction, reg2ForFunction));
+          } else if (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT) {
+            code.append(RationalHelper.rationalSubtract(arg1, arg2, GCDCalculation, reg1, reg2,
+                reg1ForFunction, reg2ForFunction));
+          } else if (operation == BinaryOperatorNode.RATIONAL_MULTIPLY) {
+            code.append(RationalHelper.rationalMultiply(arg1, arg2, GCDCalculation, reg1, reg2,
+                reg1ForFunction, reg2ForFunction));
+          } else if (operation == BinaryOperatorNode.RATIONAL_DIVIDE) {
+            code.append(RationalHelper.rationalDivide(arg1, arg2, GCDCalculation, reg1, reg2,
+                reg1ForFunction, reg2ForFunction));
+          }
+        } else if (operation == BinaryOperatorNode.CONCATENATION) {
+          code.append(StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5, regCounter));
         }
       }
       addPromotionCodeIfNeeded(node);
+    }
+    
+    public boolean isRationalOperation(String operation) {
+      return (operation == BinaryOperatorNode.RATIONAL_ADD) || (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT) ||
+          (operation == BinaryOperatorNode.RATIONAL_MULTIPLY) || (operation == BinaryOperatorNode.RATIONAL_DIVIDE);
     }
 
     public void visitLeave(UnaryOperatorNode node) {

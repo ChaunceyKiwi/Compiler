@@ -164,6 +164,12 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
             PrimitiveType.INTEGER),
         new FunctionSignature(ASMOpcode.FAdd, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.FLOATING),
+        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.STRING, PrimitiveType.STRING,
+            PrimitiveType.STRING),
+        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.STRING, PrimitiveType.CHARACTER,
+            PrimitiveType.STRING),
+        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.CHARACTER, PrimitiveType.STRING,
+            PrimitiveType.STRING),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_ADD, true, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL, PrimitiveType.RATIONAL));
 
