@@ -7,19 +7,16 @@ import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import semanticAnalyzer.types.*;
 
 public class LoopHelper {
-  public static ASMCodeFragment generateStringIndexLoopCode(ASMCodeFragment codeOfIdentifier,
+  public static ASMCodeFragment generateStringIndexLoopCode(Labeller labeller, ASMCodeFragment codeOfIdentifier,
       String regIdentifier, ASMCodeFragment codeOfSequence, String regSequence,
       ASMCodeFragment codeOfForBody, String regLooper) {
 
-    Labeller labeller = new Labeller("-for-statement-");
-    String beginLabel = labeller.newLabel("-begin-");
-    String endLabel = labeller.newLabel("-end-");
     String loopBeginLabel = labeller.newLabel("-loop-begin-");
     String loopEndLabel = labeller.newLabel("-loop-end-");
+    String continueLabel = labeller.newLabel("continue");
+    String breakLabel = labeller.newLabel("break");
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-
-    code.add(Label, beginLabel);
 
     // Store the address of identifier in regIdentifier
     code.append(codeOfIdentifier);
@@ -50,6 +47,7 @@ public class LoopHelper {
 
     // Append for body here
     code.append(codeOfForBody);
+    code.add(Label, continueLabel);
 
     // set regSequence as index + 1
     code.add(PushD, regSequence);
@@ -62,24 +60,20 @@ public class LoopHelper {
     // Decrement the counter by 1
     Macros.decrementInteger(code, regLooper);
     code.add(Jump, loopBeginLabel);
+    code.add(Label, breakLabel);
     code.add(Label, loopEndLabel);
-
-    code.add(Label, endLabel);
     return code;
   }
 
-  public static ASMCodeFragment generateArrayIndexLoopCode(ASMCodeFragment codeOfIdentifier,
+  public static ASMCodeFragment generateArrayIndexLoopCode(Labeller labeller, ASMCodeFragment codeOfIdentifier,
       String regIdentifier, ASMCodeFragment codeOfSequence, String regSequence,
       ASMCodeFragment codeOfForBody, String regLooper) {
-    Labeller labeller = new Labeller("-for-statement-");
-    String beginLabel = labeller.newLabel("-begin-");
-    String endLabel = labeller.newLabel("-end-");
     String loopBeginLabel = labeller.newLabel("-loop-begin-");
     String loopEndLabel = labeller.newLabel("-loop-end-");
+    String continueLabel = labeller.newLabel("continue");
+    String breakLabel = labeller.newLabel("break");
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-
-    code.add(Label, beginLabel);
 
     // Store the address of identifier in regIdentifier
     code.append(codeOfIdentifier);
@@ -110,6 +104,7 @@ public class LoopHelper {
 
     // Append for body here
     code.append(codeOfForBody);
+    code.add(Label, continueLabel);
 
     // set regSequence as index + 1
     code.add(PushD, regSequence);
@@ -122,25 +117,21 @@ public class LoopHelper {
     // Decrement the counter by 1
     Macros.decrementInteger(code, regLooper);
     code.add(Jump, loopBeginLabel);
+    code.add(Label, breakLabel);
     code.add(Label, loopEndLabel);
-    code.add(Label, endLabel);
-
     return code;
   }
 
-  public static ASMCodeFragment generateStringElementLoopCode(ASMCodeFragment codeOfIdentifier,
+  public static ASMCodeFragment generateStringElementLoopCode(Labeller labeller, ASMCodeFragment codeOfIdentifier,
       String regIdentifier, ASMCodeFragment codeOfSequence, String regSequence,
       ASMCodeFragment codeOfForBody, String regLooper) {
 
-    Labeller labeller = new Labeller("-for-statement-");
-    String beginLabel = labeller.newLabel("-begin-");
-    String endLabel = labeller.newLabel("-end-");
     String loopBeginLabel = labeller.newLabel("-loop-begin-");
     String loopEndLabel = labeller.newLabel("-loop-end-");
+    String continueLabel = labeller.newLabel("continue");
+    String breakLabel = labeller.newLabel("break");
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-
-    code.add(Label, beginLabel);
     
     // Store the address of identifier in regIdentifier
     code.append(codeOfIdentifier);
@@ -180,6 +171,7 @@ public class LoopHelper {
 
     // Append for body here
     code.append(codeOfForBody);
+    code.add(Label, continueLabel);
 
     // move regSequence to next address of new element
     code.add(PushD, regSequence);
@@ -192,24 +184,23 @@ public class LoopHelper {
     // Decrement the counter by 1
     Macros.decrementInteger(code, regLooper);
     code.add(Jump, loopBeginLabel);
+    code.add(Label, breakLabel);
     code.add(Label, loopEndLabel);
-    code.add(Label, endLabel);
     return code;
   }
   
-  public static ASMCodeFragment generateArrayElementLoopCode(Type sequenceType, ASMCodeFragment codeOfIdentifier,
+  public static ASMCodeFragment generateArrayElementLoopCode(Labeller labeller, Type sequenceType, ASMCodeFragment codeOfIdentifier,
       String regIdentifier, ASMCodeFragment codeOfSequence, String regSequence,
       ASMCodeFragment codeOfForBody, String regLooper) {
 
-    Labeller labeller = new Labeller("-for-statement-");
-    String beginLabel = labeller.newLabel("-begin-");
-    String endLabel = labeller.newLabel("-end-");
     String loopBeginLabel = labeller.newLabel("-loop-begin-");
     String loopEndLabel = labeller.newLabel("-loop-end-");
+    String continueLabel = labeller.newLabel("continue");
+    String breakLabel = labeller.newLabel("break");
+    
     int subTypeSize = ((ArrayType) sequenceType).getSubType().getSize();
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-    code.add(Label, beginLabel);    
     
     // Store the address of identifier in regIdentifier
     code.append(codeOfIdentifier);
@@ -258,6 +249,7 @@ public class LoopHelper {
 
     // Append for body here
     code.append(codeOfForBody);
+    code.add(Label, continueLabel);
 
     // move regSequence to next address of new element
     code.add(PushD, regSequence);
@@ -270,9 +262,8 @@ public class LoopHelper {
     // Decrement the counter by 1
     Macros.decrementInteger(code, regLooper);
     code.add(Jump, loopBeginLabel);
+    code.add(Label, breakLabel);
     code.add(Label, loopEndLabel);
-    
-    code.add(Label, endLabel);
     return code;
   }
   

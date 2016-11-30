@@ -343,7 +343,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     if (loopStatementNode == null) {
       loopControlFindNoLoopError(node);
     } else {
-      node.setLoopStatementNode((WhileStatementNode) loopStatementNode);
+      node.setLoopStatementNode(loopStatementNode);
     }
   }
 
@@ -358,7 +358,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     if (loopStatementNode == null) {
       loopControlFindNoLoopError(node);
     } else {
-      node.setLoopStatementNode((WhileStatementNode) loopStatementNode);
+      node.setLoopStatementNode(loopStatementNode);
     }
   }
 

@@ -643,16 +643,33 @@ public class ASMCodeGenerator {
       newVoidCode(node);
       code.add(Jump, node.getTargetLabelForContinue());
     }
+    
+    // WhileStatement
+    public void visitEnter(ForStatementNode node) {
+      Labeller labeller = new Labeller("-for-statement-");
+      node.setLabeller(labeller);
+      String continueLabel = labeller.newLabel("continue");
+      String breakLabel = labeller.newLabel("break");
+
+      node.setLabelForContinue(continueLabel);
+      node.setLabelForBreak(breakLabel);
+    }
 
     public void visitLeave(ForStatementNode node) {
       newVoidCode(node);
       IdentifierNode identifier = (IdentifierNode) node.child(0);
+      Labeller labeller = node.getLabeller();
       ParseNode sequence = node.child(1);
       BlockStatementNode blockStatement = (BlockStatementNode) node.child(2);
       ASMCodeFragment codeOfIdentifier = removeAddressCode(identifier);
       ASMCodeFragment codeOfSequence = removeValueCode(sequence);
       ASMCodeFragment codeOfForBody = removeVoidCode(blockStatement);
       Type sequenceType = sequence.getType();
+      String beginLabel = labeller.newLabel("begin");
+      String endLabel= labeller.newLabel("end");
+
+      // begin label
+      code.add(Label, beginLabel);
       
       // Backup values of registers for restoring later
       code.append(LoopHelper.backupRegister(regIdentifier));
@@ -661,18 +678,18 @@ public class ASMCodeGenerator {
 
       if (node.getToken().isLextant(Keyword.INDEX)) {
         if (sequenceType == PrimitiveType.STRING) {
-          code.append(LoopHelper.generateStringIndexLoopCode(codeOfIdentifier, regIdentifier,
+          code.append(LoopHelper.generateStringIndexLoopCode(labeller, codeOfIdentifier, regIdentifier,
               codeOfSequence, regSequence, codeOfForBody, regLooper));
         } else if (sequenceType instanceof ArrayType) {
-          code.append(LoopHelper.generateArrayIndexLoopCode(codeOfIdentifier, regIdentifier,
+          code.append(LoopHelper.generateArrayIndexLoopCode(labeller, codeOfIdentifier, regIdentifier,
               codeOfSequence, regSequence, codeOfForBody, regLooper));
         }
       } else if (node.getToken().isLextant(Keyword.ELEM)) {
         if (sequenceType == PrimitiveType.STRING) {
-          code.append(LoopHelper.generateStringElementLoopCode(codeOfIdentifier, regIdentifier,
+          code.append(LoopHelper.generateStringElementLoopCode(labeller, codeOfIdentifier, regIdentifier,
               codeOfSequence, regSequence, codeOfForBody, regLooper));
         } else if (sequenceType instanceof ArrayType) {
-          code.append(LoopHelper.generateArrayElementLoopCode(sequenceType, codeOfIdentifier,
+          code.append(LoopHelper.generateArrayElementLoopCode(labeller, sequenceType, codeOfIdentifier,
               regIdentifier, codeOfSequence, regSequence, codeOfForBody, regLooper));
         }
       }
@@ -680,6 +697,9 @@ public class ASMCodeGenerator {
       code.append(LoopHelper.restoreRegister(regLooper));
       code.append(LoopHelper.restoreRegister(regSequence));
       code.append(LoopHelper.restoreRegister(regIdentifier));
+      
+      // end label
+      code.add(Label, endLabel);
     }
 
     ///////////////////////////////////////////////////////////////////////////

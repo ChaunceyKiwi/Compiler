@@ -469,13 +469,13 @@
         StoreI                                 
         Label        --string-creation--1-string-initialization-end 
         StoreI                                 
+        Label        --for-statement--2-begin  
         PushD        reg-identifier            
         LoadI                                  
         PushD        reg-sequence              
         LoadI                                  
         PushD        reg-looper                
         LoadI                                  
-        Label        --for-statement--2--begin- 
         PushD        $global-memory-block      
         PushI        4                         
         Add                                    %% intElement
@@ -505,6 +505,29 @@
         PushD        reg-sequence              
         LoadI                                  
         StoreI                                 
+        Label        -compare-3-arg1           
+        PushD        $global-memory-block      
+        PushI        4                         
+        Add                                    %% intElement
+        LoadI                                  
+        Label        -compare-3-arg2           
+        PushI        7                         
+        Label        -compare-3-sub            
+        Subtract                               
+        JumpFalse    -compare-3-true           
+        Jump         -compare-3-false          
+        Label        -compare-3-true           
+        PushI        1                         
+        Jump         -compare-3-join           
+        Label        -compare-3-false          
+        PushI        0                         
+        Jump         -compare-3-join           
+        Label        -compare-3-join           
+        Label        --if-statement--4-begin   
+        JumpFalse    --if-statement--4-end-of-if-statement 
+        Jump         --for-statement--2-continue 
+        Jump         --if-statement--4-end-of-if-statement 
+        Label        --if-statement--4-end-of-if-statement 
         PushD        $global-memory-block      
         PushI        4                         
         Add                                    %% intElement
@@ -513,6 +536,7 @@
         Printf                                 
         PushD        $print-format-space       
         Printf                                 
+        Label        --for-statement--2-continue 
         PushD        reg-sequence              
         Duplicate                              
         LoadI                                  
@@ -527,8 +551,8 @@
         Exchange                               
         StoreI                                 
         Jump         --for-statement--2--loop-begin- 
+        Label        --for-statement--2-break  
         Label        --for-statement--2--loop-end- 
-        Label        --for-statement--2--end-  
         PushD        reg-looper                
         Exchange                               
         StoreI                                 
@@ -538,6 +562,7 @@
         PushD        reg-identifier            
         Exchange                               
         StoreI                                 
+        Label        --for-statement--2-end    
         Halt                                   
         Label        -mem-manager-make-tags    
         DLabel       $mmgr-tags-size           
@@ -953,28 +978,28 @@
         Return                                 
         DLabel       $heap-memory              
         Label        GCDCalculation            
-        Label        --GCD-Calculation--3--function-begin- 
+        Label        --GCD-Calculation--5--function-begin- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--3--check-initial-zero 
+        JumpTrue     --GCD-Calculation--5--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--3--function-end- 
-        Label        --GCD-Calculation--3--check-initial-zero 
-        Label        --GCD-Calculation--3--loop-begin- 
+        Jump         --GCD-Calculation--5--function-end- 
+        Label        --GCD-Calculation--5--check-initial-zero 
+        Label        --GCD-Calculation--5--loop-begin- 
         PushD        reg1-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--5--loop-end- 
         PushD        reg2-func                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--5--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--3--positive-case- 
-        Label        --GCD-Calculation--3--not-positive-case- 
+        JumpPos      --GCD-Calculation--5--positive-case- 
+        Label        --GCD-Calculation--5--not-positive-case- 
         PushD        reg2-func                 
         LoadI                                  
         PushD        reg1-func                 
@@ -983,8 +1008,8 @@
         PushD        reg2-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--positive-case- 
+        Jump         --GCD-Calculation--5--join- 
+        Label        --GCD-Calculation--5--positive-case- 
         PushD        reg1-func                 
         LoadI                                  
         PushD        reg2-func                 
@@ -993,11 +1018,11 @@
         PushD        reg1-func                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--join- 
-        Jump         --GCD-Calculation--3--loop-begin- 
-        Label        --GCD-Calculation--3--loop-end- 
+        Jump         --GCD-Calculation--5--join- 
+        Label        --GCD-Calculation--5--join- 
+        Jump         --GCD-Calculation--5--loop-begin- 
+        Label        --GCD-Calculation--5--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--3--function-end- 
+        Label        --GCD-Calculation--5--function-end- 
         Exchange                               
         Return                                 

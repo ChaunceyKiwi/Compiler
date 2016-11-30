@@ -1,6 +1,9 @@
 exec {
-  var intArray := "Hello World".
-  for element intElement of intArray {
+  var intArray := "HelloWorld".
+  for index intElement of intArray {
+    if(intElement == 7) {
+      continue.
+    }
     print intElement;.
   }
 }
