@@ -1,26 +1,6 @@
-var a := 1 + d.
-
-func nice3 <>->void {
-  print b.
-  print "cool".
-}
-
-var b := a + 3.
-
-func nice4 <>->void {
-  print d.
-  print "cool".
-}
-
-func nice5 <>->void {
-  print "cool".
-}
-
-var c := a + 3.
-
-var d := a + 3.
-
 exec {
-  var nice := a.
-  var nice2 := b.
+  var intArray := "Hello World".
+  for element intElement of intArray {
+    print intElement;.
+  }
 }

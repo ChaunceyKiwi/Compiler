@@ -30,7 +30,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   public void visitEnter(ProgramNode node) {
     enterScope(node);
   }
-  
+
   @Override
   public void visitLeave(ProgramNode node) {
     leaveScope(node);
@@ -39,6 +39,31 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   @Override
   public void visitEnter(BlockStatementNode node) {
     enterScope(node);
+
+    if (node.getParent() instanceof ForStatementNode) {
+      IdentifierNode identifier = (IdentifierNode) (node.getParent().child(0));
+      ParseNode sequence = node.getParent().child(1);
+      Scope scope = identifier.getLocalScope();
+      Type sequenceType = sequence.getType();
+
+      // If identifier has already been declared in current scope, report error.
+      scope.getSymbolTable().errorIfAlreadyDefined(identifier.getToken());
+
+      // The expression is called the sequence of the loop, which must be
+      // of stringType or arrayType
+      if (sequenceType != PrimitiveType.STRING && !(sequenceType instanceof ArrayType)) {
+        forStatementSequenceTypeError(node);
+        return;
+      }
+      
+      if (node.getParent().getToken().isLextant(Keyword.INDEX)) {
+        addBinding(identifier, PrimitiveType.INTEGER, false);
+      } else if (sequenceType == PrimitiveType.STRING) {
+        addBinding(identifier, PrimitiveType.CHARACTER, false);
+      } else if (sequenceType instanceof ArrayType) {
+        addBinding(identifier, ((ArrayType)sequenceType).getSubType(), false);
+      }
+    }
   }
 
   @Override
@@ -194,6 +219,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   /* callStatement */
   /* breakStatement */
   /* continueStatement */
+  /* forStatement */
 
   ///////////////////////////////////////////////////////////////////////////
   // Declaration
@@ -224,7 +250,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       addBinding(identifier, declarationType, false);
     else
       logError("Declaration type is neither var nor const");
-
   }
 
   // assignmentStatement -> target := expression .
@@ -259,12 +284,11 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   // 3). an identifier
   public boolean isTargetable(ParseNode node) {
     if (node instanceof IdentifierNode || node instanceof ArrayIndexingNode) {
-      
+
       // String is immutable
-      if(node instanceof ArrayIndexingNode && node.child(0).getType() == PrimitiveType.STRING) {
+      if (node instanceof ArrayIndexingNode && node.child(0).getType() == PrimitiveType.STRING) {
         return false;
       }
-      
       return true;
     } else {
       return false;
@@ -283,6 +307,13 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   public void visitLeave(WhileStatementNode node) {
     assert node.nChildren() == 2;
     checkIfExpressionIsBoolean(node.child(0));
+  }
+
+  // ForStatement
+  @Override
+  public void visitLeave(ForStatementNode node) {
+    // The type checking is done in BlockStatement
+    assert node.nChildren() == 3;
   }
 
   // PrintStatement
@@ -411,28 +442,28 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   public void visitLeave(ArrayIndexingNode node) {
     Type type = node.child(0).getType();
     if (type instanceof ArrayType) {
-      assert node.nChildren() == 2; 
+      assert node.nChildren() == 2;
       ParseNode left = node.child(0);
       ParseNode right = node.child(1);
       List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
       setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
     } else if (type == PrimitiveType.STRING) {
-        assert node.nChildren() == 2 || node.nChildren() == 3;
-        ParseNode indexTarget = node.child(0);
-        ParseNode index1 = node.child(1);
-        List<Type> childTypes;
-        
-        if (node.nChildren() == 3) {
-          ParseNode index2 = node.child(2);
-          childTypes = Arrays.asList(indexTarget.getType(), index1.getType(), index2.getType());
-        } else {
-          childTypes = Arrays.asList(indexTarget.getType(), index1.getType());
-        }
-        
-        setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
+      assert node.nChildren() == 2 || node.nChildren() == 3;
+      ParseNode indexTarget = node.child(0);
+      ParseNode index1 = node.child(1);
+      List<Type> childTypes;
+
+      if (node.nChildren() == 3) {
+        ParseNode index2 = node.child(2);
+        childTypes = Arrays.asList(indexTarget.getType(), index1.getType(), index2.getType());
+      } else {
+        childTypes = Arrays.asList(indexTarget.getType(), index1.getType());
+      }
+
+      setTypeAndCheckSignature(node, ArrayIndexingNode.ARRAY_INDEXING, childTypes);
     } else {
-        indexingTargetError(node);
-        return;
+      indexingTargetError(node);
+      return;
     }
   }
 
@@ -456,8 +487,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   ///////////////////////////////////////////////////////////////////////////
   // ExpressionList
-  // If it is the parameter of a function invocation, just skip 
-  //    without checking. InvocationStatementNode will handle it 
+  // If it is the parameter of a function invocation, just skip
+  // without checking. InvocationStatementNode will handle it
   // If it is the elements of an array, all type should be promoted to the same type
   @Override
   public void visitLeave(ExpressionListNode node) {
@@ -627,7 +658,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   private boolean isBeingDeclared(IdentifierNode node) {
     ParseNode parent = node.getParent();
     return (parent instanceof ParameterSpecificationNode)
-        || ((parent instanceof DeclarationNode) && (node == parent.child(0)));
+        || ((parent instanceof DeclarationNode) && (node == parent.child(0)))
+        || ((parent instanceof ForStatementNode) && (node == parent.child(0)));
   }
 
   private void addBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
@@ -695,7 +727,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   private void controlFlowError(ParseNode node) {
     logError(node.getToken().getLexeme() + "Statement Expression Error");
   }
-  
+
   private void indexingTargetError(ParseNode node) {
     logError(node.getToken().getLexeme() + " the target can not be indexed Error");
   }
@@ -747,6 +779,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   private void assignVoidToVariableError(ParseNode node) {
     logError(node.getToken().getLexeme() + " void assigned to variable Error");
+  }
+
+  private void forStatementSequenceTypeError(ParseNode node) {
+    logError(node.getToken().getLexeme() + " for statement have a wrong type of sequence Error");
   }
 
   public static void logError(String message) {

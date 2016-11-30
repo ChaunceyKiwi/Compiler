@@ -24,6 +24,7 @@ statement       ->  blockStatement
                     callStatement
                     breakStatement  
                     continueStatement 
+                    forStatement
 
 declaration ->  const identifier := expression .
                 var identifier := expression .

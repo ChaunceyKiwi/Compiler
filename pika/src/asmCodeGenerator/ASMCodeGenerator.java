@@ -36,6 +36,9 @@ public class ASMCodeGenerator {
   static String reg4 = "reg4-system";
   static String reg5 = "reg5-system";
   static String regCounter = "reg-counter";
+  static String regLooper = "reg-looper";
+  static String regSequence = "reg-sequence";
+  static String regIdentifier = "reg-identifier";
   static String GCDCalculation = "GCDCalculation";
 
   public static ASMCodeFragment generate(ParseNode syntaxTree) {
@@ -86,6 +89,9 @@ public class ASMCodeGenerator {
     createRegister(code, reg4);
     createRegister(code, reg5);
     createRegister(code, regCounter);
+    createRegister(code, regLooper);
+    createRegister(code, regSequence);
+    createRegister(code, regIdentifier);
     return code;
   }
 
@@ -638,6 +644,43 @@ public class ASMCodeGenerator {
       code.add(Jump, node.getTargetLabelForContinue());
     }
 
+    public void visitLeave(ForStatementNode node) {
+      newVoidCode(node);
+      IdentifierNode identifier = (IdentifierNode) node.child(0);
+      ParseNode sequence = node.child(1);
+      BlockStatementNode blockStatement = (BlockStatementNode) node.child(2);
+      ASMCodeFragment codeOfIdentifier = removeAddressCode(identifier);
+      ASMCodeFragment codeOfSequence = removeValueCode(sequence);
+      ASMCodeFragment codeOfForBody = removeVoidCode(blockStatement);
+      Type sequenceType = sequence.getType();
+      
+      // Backup values of registers for restoring later
+      code.append(LoopHelper.backupRegister(regIdentifier));
+      code.append(LoopHelper.backupRegister(regSequence));
+      code.append(LoopHelper.backupRegister(regLooper));
+
+      if (node.getToken().isLextant(Keyword.INDEX)) {
+        if (sequenceType == PrimitiveType.STRING) {
+          code.append(LoopHelper.generateStringIndexLoopCode(codeOfIdentifier, regIdentifier,
+              codeOfSequence, regSequence, codeOfForBody, regLooper));
+        } else if (sequenceType instanceof ArrayType) {
+          code.append(LoopHelper.generateArrayIndexLoopCode(codeOfIdentifier, regIdentifier,
+              codeOfSequence, regSequence, codeOfForBody, regLooper));
+        }
+      } else if (node.getToken().isLextant(Keyword.ELEM)) {
+        if (sequenceType == PrimitiveType.STRING) {
+          code.append(LoopHelper.generateStringElementLoopCode(codeOfIdentifier, regIdentifier,
+              codeOfSequence, regSequence, codeOfForBody, regLooper));
+        } else if (sequenceType instanceof ArrayType) {
+          code.append(LoopHelper.generateArrayElementLoopCode(sequenceType, codeOfIdentifier,
+              regIdentifier, codeOfSequence, regSequence, codeOfForBody, regLooper));
+        }
+      }
+      
+      code.append(LoopHelper.restoreRegister(regLooper));
+      code.append(LoopHelper.restoreRegister(regSequence));
+      code.append(LoopHelper.restoreRegister(regIdentifier));
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Expressions
@@ -827,7 +870,7 @@ public class ASMCodeGenerator {
         }
         code.add(opcode);
       } else if (operation instanceof String) {
-        if (isRationalOperation((String)operation)) {
+        if (isRationalOperation((String) operation)) {
           if (operation == BinaryOperatorNode.RATIONAL_ADD) {
             code.append(RationalHelper.rationalAdd(arg1, arg2, GCDCalculation, reg1, reg2,
                 reg1ForFunction, reg2ForFunction));
@@ -844,21 +887,26 @@ public class ASMCodeGenerator {
         } else if (operation == BinaryOperatorNode.CONCATENATION) {
           Type type1 = node.child(0).getType();
           Type type2 = node.child(1).getType();
-          if(type1 == PrimitiveType.STRING && type2 == PrimitiveType.STRING) {
-            code.append(StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5, regCounter));
+          if (type1 == PrimitiveType.STRING && type2 == PrimitiveType.STRING) {
+            code.append(StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5,
+                regCounter));
           } else if (type1 == PrimitiveType.STRING && type2 == PrimitiveType.CHARACTER) {
-            code.append(StringHelper.stringCharConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
+            code.append(
+                StringHelper.stringCharConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
           } else if (type1 == PrimitiveType.CHARACTER && type2 == PrimitiveType.STRING) {
-            code.append(StringHelper.charStringConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
+            code.append(
+                StringHelper.charStringConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
           }
         }
       }
       addPromotionCodeIfNeeded(node);
     }
-    
+
     public boolean isRationalOperation(String operation) {
-      return (operation == BinaryOperatorNode.RATIONAL_ADD) || (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT) ||
-          (operation == BinaryOperatorNode.RATIONAL_MULTIPLY) || (operation == BinaryOperatorNode.RATIONAL_DIVIDE);
+      return (operation == BinaryOperatorNode.RATIONAL_ADD)
+          || (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT)
+          || (operation == BinaryOperatorNode.RATIONAL_MULTIPLY)
+          || (operation == BinaryOperatorNode.RATIONAL_DIVIDE);
     }
 
     public void visitLeave(UnaryOperatorNode node) {
@@ -897,11 +945,11 @@ public class ASMCodeGenerator {
         ArrayType arrayType = (ArrayType) node.getType();
         code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
       }
-      
+
       else if (operator == Keyword.REVERSE) {
         code.append(StringHelper.stringReversal(arg1, reg1, reg2, reg3, reg4));
       }
-      
+
       addPromotionCodeIfNeeded(node);
     }
 
