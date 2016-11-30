@@ -10,6 +10,252 @@ import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
 public class ArrayHelper {
+  public static ASMCodeFragment arrayMapWithLambda(ArrayType originalArrayType,
+      ArrayType targetArrayType, ASMCodeFragment originalArray, ASMCodeFragment lambda,
+      Labeller labeller, String counter, String originArrayMemoryPointer,
+      String newArrayMemoryPointer) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+
+    String beginLabel = labeller.newLabel("array-map-begin");
+    String endLabel = labeller.newLabel("array-map-end");
+
+    String beginHeaderCopyLabel = labeller.newLabel("array-header-map-begin");
+    String endHeaderCopyLabel = labeller.newLabel("array-header-map-end");
+
+    String beginElementCopyLabel = labeller.newLabel("array-element-map-begin");
+    String endElementCopyLabel = labeller.newLabel("array-element-map-end");
+
+    String sizeLabel = labeller.newLabel("array-map-size");
+    String typeLabel = labeller.newLabel("array-map-type");
+    String statusLabel = labeller.newLabel("array-map-status");
+    String subTypeSizeLabel = labeller.newLabel("array-map-subtype-size");
+    String lengthLabel = labeller.newLabel("array-map-length");
+
+    int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
+    int targetArraySubTypeSize = targetArrayType.getSubType().getSize();
+
+    // Location of original array start
+    code.add(Label, beginLabel);
+    code.append(originalArray);
+
+    // Get the address of original array
+    // Store it in the originArrayMemoryPointer
+    code.add(Duplicate);
+    Macros.storeITo(code, originArrayMemoryPointer);
+
+    // Get the length of array
+    code.add(Label, sizeLabel);
+    code.append(pushArrayLength());
+
+    // Copy length as a counter
+    code.add(Duplicate);
+    Macros.storeITo(code, counter);
+
+    // length * size = whole size for element part
+    code.add(PushI, targetArraySubTypeSize);
+    code.add(Multiply);
+
+    // length * size + headSize = whole size for origin array
+    // which is also the space need for new array
+    code.add(PushI, originalArrayType.getHeaderSize());
+    code.add(Add);
+
+    // Get the address for the new array
+    code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+
+    // Get the address of the first element in new array
+    // And store it in newArrayMemoryPointer
+    code.add(Duplicate);
+    Macros.storeITo(code, newArrayMemoryPointer);
+    code.add(Label, beginHeaderCopyLabel);
+
+    // add type identifier of array
+    code.add(Label, typeLabel);
+    code.add(Duplicate);
+    code.add(PushI, originalArrayType.getTypeIdentifier());
+    code.add(Exchange);
+    Macros.writeIOffset(code, 0);
+
+    // add status of array
+    code.add(Label, statusLabel);
+    code.add(Duplicate);
+    code.add(PushI, originalArrayType.getStatus());
+    code.add(Exchange);
+    Macros.writeIOffset(code, 4);
+
+    // add subtype size of array
+    code.add(Label, subTypeSizeLabel);
+    code.add(Duplicate);
+    code.add(PushI, targetArraySubTypeSize);
+    code.add(Exchange);
+    Macros.writeIOffset(code, 8);
+
+    // add length of array
+    code.add(Label, lengthLabel);
+    code.add(Duplicate);
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(LoadI);
+    code.append(pushArrayLength());
+    code.add(Exchange);
+    Macros.writeIOffset(code, 12);
+
+    code.add(Label, endHeaderCopyLabel);
+
+    // move originArrayMemoryPointer to first address of element
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, originalArrayType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to address of first element to store
+    code.add(PushD, newArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, targetArrayType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    code.add(Label, beginElementCopyLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementCopyLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, newArrayMemoryPointer);
+    code.add(LoadI);
+
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(LoadI);
+
+    if (originalArraySubTypeSize == 1) {
+      code.add(LoadC);
+    } else if (originalArraySubTypeSize == 4) {
+      code.add(LoadI);
+    } else if (originalArraySubTypeSize == 8) {
+      code.add(LoadF);
+    }
+
+    code.append(pushElementToFrameStack(originalArrayType.getSubType()));
+    code.append(lambda);
+    code.add(CallV);
+    code.append(popElementFromFrameToASMStack(targetArrayType));
+
+    if (targetArraySubTypeSize == 1) {
+      code.add(StoreC);
+    } else if (targetArraySubTypeSize == 4) {
+      code.add(StoreI);
+    } else if (targetArraySubTypeSize == 8) {
+      code.add(StoreF);
+    }
+
+    // move originArrayMemoryPointer to next address of element
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, originalArraySubTypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to next address of new element to store
+    code.add(PushD, newArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, targetArraySubTypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementCopyLabel);
+    code.add(Label, endElementCopyLabel);
+    code.add(Label, endLabel);
+
+    return code;
+  }
+
+  // Assume we already have [bool] which has the same length as originalArray
+  // The address of boolean array is currently on the stack
+  public static ASMCodeFragment arrayReduceWithLambda(ArrayType originalArrayType,
+      ArrayType targetArrayType, ASMCodeFragment originalArray, ASMCodeFragment lambda,
+      Labeller labeller, String counter, String lengthCounter, String originArrayMemoryPointer,
+      String originBooleanArrayPointer, String newArrayMemoryPointer) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+
+    String beginLabel = labeller.newLabel("array-reduce-begin");
+    String endLabel = labeller.newLabel("array-reduce-end");
+    
+    String countTrueElementBeginLabel = labeller.newLabel("count-true-begin");
+    String countTrueElementJumpLabel = labeller.newLabel("count-true-jump");
+    String countTrueElementEndLabel = labeller.newLabel("count-true-end");
+
+
+    code.add(Label, beginLabel);
+    
+    // store address of the boolean array in originBooleanArrayPointer
+    code.add(Duplicate);
+    Macros.storeITo(code, originBooleanArrayPointer);
+    
+    // Get the length of originalArray and store in he counter
+    code.append(pushArrayLength());
+    Macros.storeITo(code, counter);
+    
+    // Initialize the number of true element as 0
+    code.add(PushI, 0);
+    Macros.storeITo(code, lengthCounter);
+    
+    // move originArrayMemoryPointer to first address of element
+    code.add(PushD, originBooleanArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 16);
+    code.add(Add);
+    code.add(StoreI);
+    
+    // Start of loop to find the number of true element
+    code.add(Label, countTrueElementBeginLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, countTrueElementEndLabel);
+    
+    // Get the element, 
+    // then add 1 to the lengthCounter
+    code.add(PushD, originBooleanArrayPointer);
+    code.add(LoadI);
+    code.add(LoadI);
+    code.add(JumpFalse, countTrueElementJumpLabel);
+    
+    // element is true
+    code.add(PushD, lengthCounter);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    Macros.storeITo(code, lengthCounter);
+    
+    code.add(Label, countTrueElementJumpLabel);
+    
+    // move originArrayMemoryPointer to next address of element
+    // subelement is boolean, thus subtype size is 1
+    code.add(PushD, originBooleanArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(StoreI);
+    
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, countTrueElementBeginLabel);
+    code.add(Label, countTrueElementEndLabel);
+
+    code.add(PushD, lengthCounter);
+    code.add(LoadI);
+    code.add(Label, endLabel);
+    
+    return code;
+  }
+
 
   public static ASMCodeFragment arrayCreation(ArrayType arrayType, ASMCodeFragment lengthOfArray,
       Labeller labeller, String reg1) {
@@ -125,7 +371,6 @@ public class ArrayHelper {
 
     int subTypeSize = arrayType.getSubType().getSize();
 
-    code.add(Duplicate);
     // Location of original array start
     code.add(Label, beginLabel);
     code.append(originalArray);
@@ -305,7 +550,7 @@ public class ArrayHelper {
     code.add(Label, endLabel);
     return code;
   }
-  
+
   // Sys: Address of the array is on the stack before running
   public static ASMCodeFragment arrayPrint(ArrayType type, String reg1) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
@@ -483,17 +728,96 @@ public class ArrayHelper {
     Macros.readIOffset(code, 8);
     return code;
   }
-  
+
   public static ASMCodeFragment backupRegister(String reg) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     code.add(PushD, reg);
     code.add(LoadI);
     return code;
   }
-  
+
   public static ASMCodeFragment restoreRegister(String reg) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
     Macros.storeITo(code, reg);
     return code;
+  }
+
+  public static ASMCodeFragment pushElementToFrameStack(Type type) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+
+    // Need a push before function
+    // Pre-decrement style (get new address)
+    decrementStackPointer(type.getSize());
+
+    // Store the element into the address
+    Macros.loadIFrom(code, RunTime.STACK_POINTER);
+    code.add(Exchange);
+    code.add(opcodeForStore(type));
+    return code;
+  }
+
+  public static ASMCodeFragment decrementStackPointer(int size) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+    Macros.loadIFrom(code, RunTime.STACK_POINTER);
+    code.add(PushI, size);
+    code.add(Subtract);
+    Macros.storeITo(code, RunTime.STACK_POINTER);
+    return code;
+  }
+
+  public static ASMCodeFragment incrementStackPointer(int size) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+    Macros.loadIFrom(code, RunTime.STACK_POINTER);
+    code.add(PushI, size);
+    code.add(Add);
+    Macros.storeITo(code, RunTime.STACK_POINTER);
+    return code;
+  }
+
+  public static ASMOpcode opcodeForStore(Type type) {
+    if (type == PrimitiveType.INTEGER)
+      return StoreI;
+    if (type == PrimitiveType.BOOLEAN)
+      return StoreC;
+    if (type == PrimitiveType.FLOATING)
+      return StoreF;
+    if (type == PrimitiveType.CHARACTER)
+      return StoreC;
+    if (type == PrimitiveType.STRING)
+      return StoreI;
+    if (type == PrimitiveType.RATIONAL)
+      return StoreI;
+    if (type.isReferenceType())
+      return StoreI;
+    assert false : "Type " + type + " unimplemented in opcodeForStore()";
+    return null;
+  }
+
+  // pop element from frame stack and increment SP
+  public static ASMCodeFragment popElementFromFrameToASMStack(Type type) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    Macros.loadIFrom(code, RunTime.STACK_POINTER);
+    code.add(opcodeForLoad(type));
+    incrementStackPointer(type.getSize());
+    return code;
+  }
+
+  public static ASMOpcode opcodeForLoad(Type type) {
+    if (type == PrimitiveType.INTEGER)
+      return LoadI;
+    if (type == PrimitiveType.BOOLEAN)
+      return LoadC;
+    if (type == PrimitiveType.FLOATING)
+      return LoadF;
+    if (type == PrimitiveType.CHARACTER)
+      return LoadC;
+    if (type == PrimitiveType.STRING)
+      return LoadI;
+    if (type == PrimitiveType.RATIONAL)
+      return LoadI;
+    if (type.isReferenceType())
+      return LoadI;
+    assert false : "Type " + type + " unimplemented in opcodeForLoad()";
+    return null;
   }
 }

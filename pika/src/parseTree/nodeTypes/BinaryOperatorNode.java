@@ -9,7 +9,7 @@ import tokens.Token;
 public class BinaryOperatorNode extends ParseNode {
 	public final static String RATIONAL_MULTIPLY = "ration_multiply";
 	public final static String RATIONAL_DIVIDE   = "ration_divide";
-	public final static String RATIONAL_ADD     = "ration_add";
+	public final static String RATIONAL_ADD      = "ration_add";
 	public final static String RATIONAL_SUBSTRCT = "ration_substract";
 
 	public final static String RATIONAL_LESSER = "ration_lesser";
@@ -19,6 +19,11 @@ public class BinaryOperatorNode extends ParseNode {
 	public final static String RATIONAL_GREATER = "ration_greater";
 	public final static String RATIONAL_GREATEROREQUAL = "ration_greater_or_equal";
 	public final static String CONCATENATION = "concatenation";
+	
+	public final static String MAP = "map";
+    public final static String REDUCE = "reduce";
+    public final static String FOLD = "fold";
+
 
 
 	public final static String ARRAY_COMPARISON = "array_comparison";

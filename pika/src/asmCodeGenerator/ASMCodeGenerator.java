@@ -643,7 +643,7 @@ public class ASMCodeGenerator {
       newVoidCode(node);
       code.add(Jump, node.getTargetLabelForContinue());
     }
-    
+
     // WhileStatement
     public void visitEnter(ForStatementNode node) {
       Labeller labeller = new Labeller("-for-statement-");
@@ -666,11 +666,11 @@ public class ASMCodeGenerator {
       ASMCodeFragment codeOfForBody = removeVoidCode(blockStatement);
       Type sequenceType = sequence.getType();
       String beginLabel = labeller.newLabel("begin");
-      String endLabel= labeller.newLabel("end");
+      String endLabel = labeller.newLabel("end");
 
       // begin label
       code.add(Label, beginLabel);
-      
+
       // Backup values of registers for restoring later
       code.append(LoopHelper.backupRegister(regIdentifier));
       code.append(LoopHelper.backupRegister(regSequence));
@@ -678,37 +678,37 @@ public class ASMCodeGenerator {
 
       if (node.getToken().isLextant(Keyword.INDEX)) {
         if (sequenceType == PrimitiveType.STRING) {
-          code.append(LoopHelper.generateStringIndexLoopCode(labeller, codeOfIdentifier, regIdentifier,
-              codeOfSequence, regSequence, codeOfForBody, regLooper));
+          code.append(LoopHelper.generateStringIndexLoopCode(labeller, codeOfIdentifier,
+              regIdentifier, codeOfSequence, regSequence, codeOfForBody, regLooper));
         } else if (sequenceType instanceof ArrayType) {
-          code.append(LoopHelper.generateArrayIndexLoopCode(labeller, codeOfIdentifier, regIdentifier,
-              codeOfSequence, regSequence, codeOfForBody, regLooper));
+          code.append(LoopHelper.generateArrayIndexLoopCode(labeller, codeOfIdentifier,
+              regIdentifier, codeOfSequence, regSequence, codeOfForBody, regLooper));
         }
       } else if (node.getToken().isLextant(Keyword.ELEM)) {
         if (sequenceType == PrimitiveType.STRING) {
-          code.append(LoopHelper.generateStringElementLoopCode(labeller, codeOfIdentifier, regIdentifier,
-              codeOfSequence, regSequence, codeOfForBody, regLooper));
-        } else if (sequenceType instanceof ArrayType) {
-          code.append(LoopHelper.generateArrayElementLoopCode(labeller, sequenceType, codeOfIdentifier,
+          code.append(LoopHelper.generateStringElementLoopCode(labeller, codeOfIdentifier,
               regIdentifier, codeOfSequence, regSequence, codeOfForBody, regLooper));
+        } else if (sequenceType instanceof ArrayType) {
+          code.append(
+              LoopHelper.generateArrayElementLoopCode(labeller, sequenceType, codeOfIdentifier,
+                  regIdentifier, codeOfSequence, regSequence, codeOfForBody, regLooper));
         }
       }
-      
+
       code.append(LoopHelper.restoreRegister(regLooper));
       code.append(LoopHelper.restoreRegister(regSequence));
       code.append(LoopHelper.restoreRegister(regIdentifier));
-      
+
       // end label
       code.add(Label, endLabel);
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Expressions
-
-    /*
-     * Expression -> BinaryExpression -> UnaryExpression -> TypeCastingExpression ->
-     * ArrayIndexingExpression
-     */
+    // Expression ->
+    // BinaryExpression
+    // UnaryExpression
+    // TypeCastingExpression
+    // ArrayIndexingExpression
 
     ///////////////////////////////////////////////////////////////////////////
     // expressions
@@ -718,17 +718,25 @@ public class ASMCodeGenerator {
       // Comparison Operator
       if (operator == Punctuator.LESSER || operator == Punctuator.LESSEROREQUAL
           || operator == Punctuator.NOTEQUAL || operator == Punctuator.EQUAL
-          || operator == Punctuator.GREATER || operator == Punctuator.GREATEROREQUAL)
+          || operator == Punctuator.GREATER || operator == Punctuator.GREATEROREQUAL) {
         visitComparisonOperatorNode(node);
+      }
 
       // Boolean Operator
-      else if (operator == Punctuator.AND || operator == Punctuator.OR)
+      else if (operator == Punctuator.AND || operator == Punctuator.OR) {
         visitBooleanOperatorNode(node);
+      }
 
       // Rational Operator
       else if (operator == Punctuator.OVER || operator == Punctuator.EXPRESSOVER
-          || operator == Punctuator.RATIONALIZE)
+          || operator == Punctuator.RATIONALIZE) {
         visitRationalOperatorNode(node);
+      }
+
+      // Array Operator
+      else if (operator == Keyword.MAP || operator == Keyword.REDUCE) {
+        visitArrayOperatorNode(node);
+      }
 
       // Arithmetic Operator
       else {
@@ -868,6 +876,29 @@ public class ASMCodeGenerator {
       } else if (operator == Punctuator.RATIONALIZE) {
         code.append(RationalHelper.performRationalizePuntuator(arg1, arg2, type, GCDCalculation,
             reg1ForFunction, reg2ForFunction, reg1, reg2, reg3, reg4));
+      }
+    }
+
+    private void visitArrayOperatorNode(BinaryOperatorNode node) {
+      newValueCode(node);
+      ParseNode array = node.child(0);
+      ParseNode lambda = node.child(1);
+      ArrayType originalArrayType = (ArrayType)(array.getType());
+      ArrayType targetArrayType = (ArrayType)(node.getType());
+      ASMCodeFragment originalArrayCode = removeValueCode(array);
+      ASMCodeFragment lambdaCode = removeValueCode(lambda);
+      Lextant operator = node.getOperator();
+
+      if (operator == Keyword.MAP) {
+        Labeller labeller = new Labeller("array-map-operator");
+        code.append(ArrayHelper.arrayMapWithLambda(originalArrayType, targetArrayType, originalArrayCode, lambdaCode,
+            labeller, regCounter, reg1, reg2));
+      } else if (operator == Keyword.REDUCE) {
+        Labeller labeller = new Labeller("array-reduce-operator");
+        code.append(ArrayHelper.arrayMapWithLambda(originalArrayType, new ArrayType(PrimitiveType.BOOLEAN), originalArrayCode, lambdaCode,
+            labeller, regCounter, reg1, reg2));
+        code.append(ArrayHelper.arrayReduceWithLambda(originalArrayType, targetArrayType, originalArrayCode, lambdaCode,
+            labeller, regCounter, reg1, reg2, reg3, reg4));
       }
     }
 

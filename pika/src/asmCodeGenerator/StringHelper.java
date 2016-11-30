@@ -24,9 +24,11 @@ public class StringHelper {
     String endLabel = labeller.newLabel("string-creation-end");
 
     code.add(Label, beginLabel);
-    code.add(Label, getLengthLabel);
+
+    code.append(backupRegister(reg1));
 
     // Length of array cannot be negative
+    code.add(Label, getLengthLabel);
     code.append(length);
     code.add(Duplicate);
     code.add(Duplicate);
@@ -68,6 +70,9 @@ public class StringHelper {
     code.add(LoadI);
     code.add(Exchange);
     Macros.writeIOffset(code, 8);
+
+    code.add(Exchange);
+    code.append(restoreRegister(reg1));
 
     code.add(Label, endLabel);
     return code;

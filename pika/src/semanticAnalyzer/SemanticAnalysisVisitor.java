@@ -388,7 +388,14 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     if ((left.getType() instanceof ArrayType && right.getType() instanceof ArrayType
         && (operator == Punctuator.EQUAL || operator == Punctuator.NOTEQUAL))) {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_COMPARISON, childTypes);
-    } else {
+    } 
+    else if (operator == Keyword.MAP) {
+      setTypeAndCheckSignature(node, BinaryOperatorNode.MAP, childTypes);
+    }
+    else if (operator == Keyword.REDUCE) {
+      setTypeAndCheckSignature(node, BinaryOperatorNode.REDUCE, childTypes);
+    }
+    else {
       // Check if the operands of operation obey the rule in the signature
       // And set type as the result type of signature
       setTypeAndCheckSignature(node, operator, childTypes);

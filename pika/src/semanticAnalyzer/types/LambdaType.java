@@ -86,7 +86,12 @@ public class LambdaType implements Type {
   }
 
   @Override
-  public void resetTypeVariable() {}
+  public void resetTypeVariable() {
+    for (Type type : this.typeList) {
+      type.resetTypeVariable();
+    }
+    this.resultType.resetTypeVariable();
+  }
 
   @Override
   public Type getTypeWithoutVariable() {

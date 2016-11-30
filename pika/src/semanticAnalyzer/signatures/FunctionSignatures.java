@@ -156,6 +156,12 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 
   static {
     TypeVariable typeVariable = new TypeVariable();
+    TypeVariable typeVariableU = new TypeVariable();
+    List<Type> parameter = new ArrayList<Type>();
+    parameter.add(typeVariable);
+    LambdaType lambdaTypeForMap = new LambdaType(parameter, typeVariableU);
+    LambdaType lambdaTypeForReduce = new LambdaType(parameter, PrimitiveType.BOOLEAN);
+
 
     /////////////////////////////////////////////////////////////////////////////////
     // Arithmetic Operator (all promotable)
@@ -164,12 +170,12 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
             PrimitiveType.INTEGER),
         new FunctionSignature(ASMOpcode.FAdd, true, PrimitiveType.FLOATING, PrimitiveType.FLOATING,
             PrimitiveType.FLOATING),
-        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.STRING, PrimitiveType.STRING,
-            PrimitiveType.STRING),
-        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.STRING, PrimitiveType.CHARACTER,
-            PrimitiveType.STRING),
-        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.CHARACTER, PrimitiveType.STRING,
-            PrimitiveType.STRING),
+        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.STRING,
+            PrimitiveType.STRING, PrimitiveType.STRING),
+        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.STRING,
+            PrimitiveType.CHARACTER, PrimitiveType.STRING),
+        new FunctionSignature(BinaryOperatorNode.CONCATENATION, true, PrimitiveType.CHARACTER,
+            PrimitiveType.STRING, PrimitiveType.STRING),
         new FunctionSignature(BinaryOperatorNode.RATIONAL_ADD, true, PrimitiveType.RATIONAL,
             PrimitiveType.RATIONAL, PrimitiveType.RATIONAL));
 
@@ -335,18 +341,18 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
 
     new FunctionSignatures(UnaryOperatorNode.ARRAY_REVERSE,
         new FunctionSignature(1, false, PrimitiveType.STRING, PrimitiveType.STRING));
-    
+
     new FunctionSignatures(UnaryOperatorNode.ARRAY_CLONE,
         new FunctionSignature(1, false, new ArrayType(typeVariable), new ArrayType(typeVariable)));
 
     new FunctionSignatures(ArrayIndexingNode.ARRAY_INDEXING,
         new FunctionSignature(1, true, new ArrayType(typeVariable), PrimitiveType.INTEGER,
             typeVariable),
-        
+
         // s[i] -> char
         new FunctionSignature(1, true, PrimitiveType.STRING, PrimitiveType.INTEGER,
             PrimitiveType.CHARACTER),
-        
+
         // s[i,j] -> string
         new FunctionSignature(1, true, PrimitiveType.STRING, PrimitiveType.INTEGER,
             PrimitiveType.INTEGER, PrimitiveType.STRING));
@@ -371,5 +377,12 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,
         new FunctionSignature(0, false, new ArrayType(typeVariable), PrimitiveType.INTEGER),
         new FunctionSignature(0, false, PrimitiveType.STRING, PrimitiveType.INTEGER));
+
+    new FunctionSignatures(BinaryOperatorNode.MAP, new FunctionSignature(0, false,
+        new ArrayType(typeVariable), lambdaTypeForMap, new ArrayType(typeVariableU)));
+    
+    new FunctionSignatures(BinaryOperatorNode.REDUCE, new FunctionSignature(0, false,
+        new ArrayType(typeVariable), lambdaTypeForReduce, new ArrayType(typeVariable)));
+
   }
 }
