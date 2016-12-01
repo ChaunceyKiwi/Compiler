@@ -895,8 +895,6 @@ public class ASMCodeGenerator {
             labeller, regCounter, reg1, reg2));
       } else if (operator == Keyword.REDUCE) {
         Labeller labeller = new Labeller("array-reduce-operator");
-        code.append(ArrayHelper.arrayMapWithLambda(originalArrayType, new ArrayType(PrimitiveType.BOOLEAN), originalArrayCode, lambdaCode,
-            labeller, regCounter, reg1, reg2));
         code.append(ArrayHelper.arrayReduceWithLambda(originalArrayType, targetArrayType, originalArrayCode, lambdaCode,
             labeller, regCounter, reg1, reg2, reg3, reg4));
       }
