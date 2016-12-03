@@ -903,13 +903,14 @@ public class ASMCodeGenerator {
         if (node.nChildren() == 2) {
           code.append(ArrayHelper.arrayFoldWithLambda(originalArrayType, originalArrayCode,
               lambdaCode, labeller, regCounter, reg1));
-        }else if (node.nChildren() == 3) {
+        } else if (node.nChildren() == 3) {
           // If it's a fold with base, then second child is not lambda but base
           // Give lambda to base and set value for real lambda
           ASMCodeFragment baseCode = lambdaCode;
           lambda = node.child(2);
           lambdaCode = removeValueCode(lambda);
-          code.append(ArrayHelper.arrayFoldWithLambdaAndBase(originalArrayType, originalArrayCode, baseCode, lambdaCode, labeller, regCounter, reg1));
+          code.append(ArrayHelper.arrayFoldWithLambdaAndBase(originalArrayType, originalArrayCode,
+              baseCode, lambdaCode, labeller, regCounter, reg1));
         }
       }
     }
@@ -1013,23 +1014,25 @@ public class ASMCodeGenerator {
         Type originalType = node.child(0).getType();
         if (originalType instanceof ArrayType) {
           Labeller labeller = new Labeller("-array-reversal-");
-          code.append(ArrayHelper.arrayReversal((ArrayType)originalType, labeller, arg1, reg1, reg2, reg3, reg4));
+          code.append(ArrayHelper.arrayReversal((ArrayType) originalType, labeller, arg1, reg1,
+              reg2, reg3, reg4));
         } else if (originalType == PrimitiveType.STRING) {
           Labeller labeller = new Labeller("-string-reversal-");
-          code.append(StringHelper.stringReversal(arg1, labeller,reg1, reg2, reg3, reg4));
+          code.append(StringHelper.stringReversal(arg1, labeller, reg1, reg2, reg3, reg4));
         }
       }
-      
+
       else if (operator == Keyword.ZIP) {
         Labeller labeller = new Labeller("-zip-operator-");
         ASMCodeFragment arrayACode = arg1;
         ASMCodeFragment arrayBCode = removeValueCode(node.child(1));
         ASMCodeFragment lambdaCode = removeValueCode(node.child(2));
-        ArrayType arrayAType = (ArrayType)(node.child(0).getType());
-        ArrayType arrayBType = (ArrayType)(node.child(1).getType());
-        ArrayType targetArrayType = (ArrayType)(node.getType());
+        ArrayType arrayAType = (ArrayType) (node.child(0).getType());
+        ArrayType arrayBType = (ArrayType) (node.child(1).getType());
+        ArrayType targetArrayType = (ArrayType) (node.getType());
 
-        code.append(ArrayHelper.arrayZipWithLambda(arrayAType, arrayBType, targetArrayType, arrayACode, arrayBCode, lambdaCode, labeller, regCounter, reg1, reg2, reg3));
+        code.append(ArrayHelper.arrayZipWithLambda(arrayAType, arrayBType, targetArrayType,
+            arrayACode, arrayBCode, lambdaCode, labeller, regCounter, reg1, reg2, reg3));
       }
 
       addPromotionCodeIfNeeded(node);

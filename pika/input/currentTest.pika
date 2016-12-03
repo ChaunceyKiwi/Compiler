@@ -1,5 +1,4 @@
 exec {
-  var n1 := [1, 3, 5, 7, 9, 11].
-  var n2 := reverse n1.
-  print n2.
+    var y := reverse ["abcdefg" + ^h^, ^h^ + "abcdefg"].
+    print y,_n_.
 }

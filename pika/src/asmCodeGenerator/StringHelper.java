@@ -13,7 +13,6 @@ import semanticAnalyzer.types.PrimitiveType;
 public class StringHelper {
   public static ASMCodeFragment stringCreation(ASMCodeFragment length, Labeller labeller,
       String reg1) {
-
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     String beginLabel = labeller.newLabel("string-creation-begin");
     String getLengthLabel = labeller.newLabel("string-creation-get-length");
@@ -80,7 +79,6 @@ public class StringHelper {
 
   public static ASMCodeFragment stringInitialization(List<ASMCodeFragment> arrayElement,
       Labeller labeller) {
-
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
     int headerSize = 12;
     String beginLabel = labeller.newLabel("string-initialization-begin");
@@ -318,8 +316,8 @@ public class StringHelper {
     return code;
   }
 
-  public static ASMCodeFragment stringReversal(ASMCodeFragment arg1, Labeller labeller, String originalStringPointer,
-      String lenPointer, String newStringPointer, String counter) {
+  public static ASMCodeFragment stringReversal(ASMCodeFragment arg1, Labeller labeller,
+      String originalStringPointer, String lenPointer, String newStringPointer, String counter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
     String beginLabel = labeller.newLabel("-begin-");
