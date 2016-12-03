@@ -12,8 +12,10 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 public class ArrayHelper {
   public static ASMCodeFragment arrayZipWithLambda(ArrayType arrayAType, ArrayType arrayBType,
       ArrayType targetArrayType, ASMCodeFragment arrayACode, ASMCodeFragment arrayBCode,
-      ASMCodeFragment lambda, Labeller labeller, String counter, String arrayAPointer,
+      ASMCodeFragment lambda, String counter, String arrayAPointer,
       String arrayBPointer, String newArrayPointer) {
+    Labeller labeller = new Labeller("-array-zip-with-lambda-");
+
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
     String beginLabel = labeller.newLabel("array-zip-begin");
@@ -189,11 +191,12 @@ public class ArrayHelper {
 
   public static ASMCodeFragment arrayFoldWithLambdaAndBase(ArrayType originalArrayType,
       ASMCodeFragment originalArray, ASMCodeFragment base, ASMCodeFragment lambda,
-      Labeller labeller, String counter, String originArrayMemoryPointer) {
+       String counter, String originArrayMemoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
-    String beginLabel = labeller.newLabel("array-fold-begin");
-    String endLabel = labeller.newLabel("array-fold-end");
+    Labeller labeller = new Labeller("-array-fold-with-lambda-");
+    String beginLabel = labeller.newLabel("-begin-");
+    String endLabel = labeller.newLabel("-end-");
     String beginElementFoldLabel = labeller.newLabel("array-element-fold-begin");
     String endElementFoldLabel = labeller.newLabel("array-element-fold-end");
     String sizeLabel = labeller.newLabel("array-map-size");
@@ -273,10 +276,11 @@ public class ArrayHelper {
   }
 
   public static ASMCodeFragment arrayFoldWithLambda(ArrayType originalArrayType,
-      ASMCodeFragment originalArray, ASMCodeFragment lambda, Labeller labeller, String counter,
+      ASMCodeFragment originalArray, ASMCodeFragment lambda, String counter,
       String originArrayMemoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-
+    
+    Labeller labeller = new Labeller("-array-fold-with-lambda-");
     String beginLabel = labeller.newLabel("array-fold-begin");
     String endLabel = labeller.newLabel("array-fold-end");
     String beginElementFoldLabel = labeller.newLabel("array-element-fold-begin");
@@ -385,9 +389,11 @@ public class ArrayHelper {
 
   public static ASMCodeFragment arrayMapWithLambda(ArrayType originalArrayType,
       ArrayType targetArrayType, ASMCodeFragment originalArray, ASMCodeFragment lambda,
-      Labeller labeller, String counter, String originArrayMemoryPointer,
+      String counter, String originArrayMemoryPointer,
       String newArrayMemoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+
+    Labeller labeller = new Labeller("-array-map-with-lambda-");
 
     String beginLabel = labeller.newLabel("array-map-begin");
     String endLabel = labeller.newLabel("array-map-end");
@@ -551,12 +557,14 @@ public class ArrayHelper {
 
   public static ASMCodeFragment arrayReduceWithLambda(ArrayType originalArrayType,
       ArrayType targetArrayType, ASMCodeFragment originalArray, ASMCodeFragment lambda,
-      Labeller labeller, String counter, String lengthCounter, String originArrayMemoryPointer,
+       String counter, String lengthCounter, String originArrayMemoryPointer,
       String originBooleanArrayPointer, String newArrayMemoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
-    String beginLabel = labeller.newLabel("array-reduce-begin");
-    String endLabel = labeller.newLabel("array-reduce-end");
+    Labeller labeller = new Labeller("-array-reduce-with-lambda-");
+
+    String beginLabel = labeller.newLabel("-begin");
+    String endLabel = labeller.newLabel("-end");
 
     String beginHeaderCopyLabel = labeller.newLabel("array-header-map-begin");
     String endHeaderCopyLabel = labeller.newLabel("array-header-map-end");
@@ -784,7 +792,7 @@ public class ArrayHelper {
     // Create string with length as len(m)
     // Store the address of new string in newStringPointer
     code.append(backupRegister(counter));
-    code.append(arrayCreation(targetArrayType, length, labeller, counter));
+    code.append(arrayCreation(targetArrayType, length, counter));
     code.add(Exchange);
     code.append(restoreRegister(counter));
     code.add(Duplicate);
@@ -892,21 +900,28 @@ public class ArrayHelper {
 
 
   public static ASMCodeFragment arrayCreation(ArrayType arrayType, ASMCodeFragment lengthOfArray,
-      Labeller labeller, String reg1) {
+       String reg1) {
+
+    Labeller labeller = new Labeller("-array-creation-");
 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-    String beginLabel = labeller.newLabel("array-creation-begin");
-    String getLengthLabel = labeller.newLabel("array-creation-get-length");
-    String sizeLabel = labeller.newLabel("array-creation-size");
-    String typeLabel = labeller.newLabel("array-creation-type");
-    String statusLabel = labeller.newLabel("array-creation-status");
-    String subTypeSize = labeller.newLabel("array-creation-subtype-size");
-    String lengthLabel = labeller.newLabel("array-creation-length");
-    String endLabel = labeller.newLabel("array-creation-end");
+    String beginLabel = labeller.newLabel("-begin");
+    String endLabel = labeller.newLabel("-end");
+    String getLengthLabel = labeller.newLabel("-get-length");
+    String sizeLabel = labeller.newLabel("set-size");
+    String typeLabel = labeller.newLabel("set-type");
+    String statusLabel = labeller.newLabel("set-status");
+    String subTypeSize = labeller.newLabel("set-subtype-size");
+    String lengthLabel = labeller.newLabel("set-length");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
 
     code.add(Label, beginLabel);
-
+    code.add(Label, backupRegisterBeginLabel);
     code.append(backupRegister(reg1));
+    code.add(Label, backupRegisterEndLabel);
 
     // Length of array cannot be negative
     code.add(Label, getLengthLabel);
@@ -957,24 +972,38 @@ public class ArrayHelper {
 
     // restore and finally leave address of new
     // array on the ASM stack
+    code.add(Label, restoreRegisterBeginLabel);
     code.add(Exchange);
     code.append(restoreRegister(reg1));
+    code.add(Label, restoreRegisterEndLabel);
 
     code.add(Label, endLabel);
     return code;
   }
 
-  public static ASMCodeFragment arrayReversal(ArrayType arrayType, Labeller labeller,
-      ASMCodeFragment arg1, String originalArrayPointer, String lenPointer, String newArrayPointer,
-      String counter) {
+  public static ASMCodeFragment arrayReversal(ArrayType arrayType, ASMCodeFragment arg1,
+      String originalArrayPointer, String lenPointer, String newArrayPointer, String counter) {
+    Labeller labeller = new Labeller("-array-reversal-");
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     String beginLabel = labeller.newLabel("-begin-");
     String endLabel = labeller.newLabel("-end-");
     String beginElementCopyLabel = labeller.newLabel("array-element-copy-begin");
     String endElementCopyLabel = labeller.newLabel("array-element-copy-end");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
     int subTypeSize = arrayType.getSubType().getSize();
 
     code.add(Label, beginLabel);
+
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(originalArrayPointer));
+    code.append(backupRegister(lenPointer));
+    code.append(backupRegister(newArrayPointer));
+    code.append(backupRegister(counter));
+    code.add(Label, backupRegisterEndLabel);
 
     // store the address of array in register
     code.append(arg1);
@@ -991,10 +1020,7 @@ public class ArrayHelper {
     ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
     length.add(PushD, lenPointer);
     length.add(LoadI);
-    code.append(backupRegister(counter));
-    code.append(arrayCreation(arrayType, length, labeller, counter));
-    code.add(Exchange);
-    code.append(restoreRegister(counter));
+    code.append(arrayCreation(arrayType, length, counter));
     code.add(Duplicate);
     Macros.storeITo(code, newArrayPointer);
 
@@ -1061,14 +1087,27 @@ public class ArrayHelper {
     code.add(Jump, beginElementCopyLabel);
     code.add(Label, endElementCopyLabel);
 
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(counter));
+    code.add(Exchange);
+    code.append(restoreRegister(newArrayPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(lenPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(originalArrayPointer));
+    code.add(Label, restoreRegisterEndLabel);
+
     code.add(Label, endLabel);
     return code;
   }
 
   public static ASMCodeFragment arrayInitialization(ArrayType arrayType,
-      List<ASMCodeFragment> arrayElement, ASMOpcode op, Labeller labeller) {
+      List<ASMCodeFragment> arrayElement, ASMOpcode op) {
 
-    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+    Labeller labeller = new Labeller("-array-initialization-");
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     int subTypeSize = arrayType.getSubType().getSize();
     int headerSize = arrayType.getHeaderSize();
     String beginLabel = labeller.newLabel("array-initialization-begin");
@@ -1091,13 +1130,13 @@ public class ArrayHelper {
   // need one register as counter
   // and another two as pointers
   public static ASMCodeFragment arrayClone(ArrayType arrayType, ASMCodeFragment originalArray,
-      Labeller labeller, String counter, String originArrayMemoryPointer,
-      String newArrayMemoryPointer) {
+      String counter, String originArrayMemoryPointer, String newArrayMemoryPointer) {
 
+    Labeller labeller = new Labeller("-array-clone-");
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
-    String beginLabel = labeller.newLabel("array-copy-begin");
-    String endLabel = labeller.newLabel("array-copy-end");
+    String beginLabel = labeller.newLabel("-begin-");
+    String endLabel = labeller.newLabel("-end-");
 
     String beginHeaderCopyLabel = labeller.newLabel("array-header-copy-begin");
     String endHeaderCopyLabel = labeller.newLabel("array-header-copy-end");
@@ -1245,9 +1284,9 @@ public class ArrayHelper {
   }
 
   public static ASMCodeFragment arrayElementAtIndex(ArrayType arrayType,
-      ASMCodeFragment arrayAddress, ASMCodeFragment index, Labeller labeller,
-      String memoryPointer) {
+      ASMCodeFragment arrayAddress, ASMCodeFragment index, String memoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    Labeller labeller = new Labeller("-array-element-index-");
     String beginLabel = labeller.newLabel("array-index-begin");
     String beginFetchingLabel = labeller.newLabel("array-index-fetching-begin");
     String endFetchingLabel = labeller.newLabel("array-index-fetching-end");
@@ -1298,15 +1337,25 @@ public class ArrayHelper {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
 
     Type subType = type.getSubType();
-
     int subTypeSize = type.getSubType().getSize();
     Labeller labeller = new Labeller("-print-array-");
     String beginLabel = labeller.newLabel("-begin-");
     String endLabel = labeller.newLabel("-end-");
     String loopBeginLabel = labeller.newLabel("-loop-begin-");
     String loopEndLabel = labeller.newLabel("-loop-end-");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
 
     code.add(Label, beginLabel);
+
+    // Need exchange to put address of array on the top
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(reg1));
+    code.add(Exchange);
+    code.add(Label, backupRegisterEndLabel);
+
     // get the address of the array
     code.add(Duplicate);
 
@@ -1342,20 +1391,11 @@ public class ArrayHelper {
     }
 
     if (subType.isReferenceType() && !(subType instanceof LambdaType)) {
-      code.append(backupRegister(reg1));
-      code.add(Exchange);
       code.append(arrayPrint((ArrayType) subType, reg1));
-      code.append(restoreRegister(reg1));
     } else if (subType == PrimitiveType.RATIONAL) {
-      code.append(backupRegister(reg1));
-      code.add(Exchange);
       code.append(RationalHelper.appendPrintCodeForRational(subType, reg1));
-      code.append(restoreRegister(reg1));
     } else if (subType == PrimitiveType.STRING) {
-      code.append(backupRegister(reg1));
-      code.add(Exchange);
       code.append(StringHelper.stringPrint(reg1));
-      code.append(restoreRegister(reg1));
     } else {
       if (subType == PrimitiveType.STRING) {
         code.add(PushI, 12);
@@ -1395,6 +1435,10 @@ public class ArrayHelper {
     code.add(Pop);
     code.add(PushD, RunTime.CLOSE_SQUARE_BRACKET_PRINT_FORMAT);
     code.add(Printf);
+
+    code.add(Label, restoreRegisterBeginLabel);
+    code.append(restoreRegister(reg1));
+    code.add(Label, restoreRegisterEndLabel);
     code.add(Label, endLabel);
 
     return code;
@@ -1439,10 +1483,7 @@ public class ArrayHelper {
     code.add(LoadI);
 
     if (subType.isReferenceType()) {
-      code.append(backupRegister(regCounter));
-      code.add(Exchange);
       code.append(arrayRelease((ArrayType) subType, regCounter));
-      code.append(restoreRegister(regCounter));
     } else {
       code.add(Pop);
     }

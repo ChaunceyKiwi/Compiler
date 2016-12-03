@@ -11,8 +11,10 @@ import asmCodeGenerator.runtime.RunTime;
 import semanticAnalyzer.types.PrimitiveType;
 
 public class StringHelper {
-  public static ASMCodeFragment stringCreation(ASMCodeFragment length, Labeller labeller,
+  public static ASMCodeFragment stringCreation(ASMCodeFragment length,
       String reg1) {
+    
+    Labeller labeller = new Labeller("-string-creation");
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     String beginLabel = labeller.newLabel("string-creation-begin");
     String getLengthLabel = labeller.newLabel("string-creation-get-length");
@@ -21,11 +23,17 @@ public class StringHelper {
     String statusLabel = labeller.newLabel("string-creation-status");
     String lengthLabel = labeller.newLabel("string-creation-length");
     String endLabel = labeller.newLabel("string-creation-end");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
 
     code.add(Label, beginLabel);
-
+    
+    code.add(Label, backupRegisterBeginLabel);
     code.append(backupRegister(reg1));
-
+    code.add(Label, backupRegisterEndLabel);
+    
     // Length of array cannot be negative
     code.add(Label, getLengthLabel);
     code.append(length);
@@ -69,16 +77,18 @@ public class StringHelper {
     code.add(LoadI);
     code.add(Exchange);
     Macros.writeIOffset(code, 8);
-
+    
+    code.add(Label, restoreRegisterBeginLabel);
     code.add(Exchange);
     code.append(restoreRegister(reg1));
+    code.add(Label, restoreRegisterEndLabel);
 
     code.add(Label, endLabel);
     return code;
   }
 
-  public static ASMCodeFragment stringInitialization(List<ASMCodeFragment> arrayElement,
-      Labeller labeller) {
+  public static ASMCodeFragment stringInitialization(List<ASMCodeFragment> arrayElement) {
+    Labeller labeller = new Labeller("-string-initialization");
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
     int headerSize = 12;
     String beginLabel = labeller.newLabel("string-initialization-begin");
@@ -110,6 +120,8 @@ public class StringHelper {
     String endElementCopyLabel = labeller.newLabel("string-element-copy-end");
 
     code.add(Label, beginLabel);
+    
+    
 
     // store the address of array in register
     code.append(arg1);
@@ -130,10 +142,7 @@ public class StringHelper {
 
     // Create string with length as len(m) + 1
     // Store the address of new string in newStringPointer
-    code.append(backupRegister(counter));
-    code.append(stringCreation(length, labeller, counter));
-    code.add(Exchange);
-    code.append(restoreRegister(counter));
+    code.append(stringCreation(length, counter));
     code.add(Duplicate);
     Macros.storeITo(code, newStringPointer);
 
@@ -235,10 +244,7 @@ public class StringHelper {
 
     // Create string with length as len(m) + 1
     // Store the address of new string in newStringPointer
-    code.append(backupRegister(counter));
-    code.append(stringCreation(length, labeller, counter));
-    code.add(Exchange);
-    code.append(restoreRegister(counter));
+    code.append(stringCreation(length, counter));
     code.add(Duplicate);
     Macros.storeITo(code, newStringPointer);
 
@@ -316,16 +322,30 @@ public class StringHelper {
     return code;
   }
 
-  public static ASMCodeFragment stringReversal(ASMCodeFragment arg1, Labeller labeller,
+  public static ASMCodeFragment stringReversal(ASMCodeFragment arg1,
       String originalStringPointer, String lenPointer, String newStringPointer, String counter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
+    Labeller labeller = new Labeller("-string-reversal-");
     String beginLabel = labeller.newLabel("-begin-");
     String endLabel = labeller.newLabel("-end-");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
+
     String beginElementCopyLabel = labeller.newLabel("string-element-copy-begin");
     String endElementCopyLabel = labeller.newLabel("string-element-copy-end");
 
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(originalStringPointer));
+    code.append(backupRegister(lenPointer));
+    code.append(backupRegister(newStringPointer));
+    code.append(backupRegister(counter)); 
+    code.add(Label, backupRegisterEndLabel);
 
     // store the address of array in register
     code.append(arg1);
@@ -344,10 +364,7 @@ public class StringHelper {
 
     // Create string with length as len(m) + 1
     // Store the address of new string in newStringPointer
-    code.append(backupRegister(counter));
-    code.append(stringCreation(length, labeller, counter));
-    code.add(Exchange);
-    code.append(restoreRegister(counter));
+    code.append(stringCreation(length, counter));
     code.add(Duplicate);
     Macros.storeITo(code, newStringPointer);
 
@@ -411,7 +428,19 @@ public class StringHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginElementCopyLabel);
     code.add(Label, endElementCopyLabel);
-
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(counter));
+    code.add(Exchange);
+    code.append(restoreRegister(newStringPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(lenPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(originalStringPointer)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
     return code;
   }
@@ -457,10 +486,8 @@ public class StringHelper {
 
     // Create string with length as len(m) + len(n)
     // Store the address of new string in newStringPointer
-    code.append(backupRegister(counter));
-    code.append(stringCreation(length, labeller, counter));
+    code.append(stringCreation(length, counter));
     code.add(Exchange);
-    code.append(restoreRegister(counter));
     code.add(Duplicate);
     Macros.storeITo(code, newStringPointer);
 
@@ -575,10 +602,11 @@ public class StringHelper {
   }
 
   public static ASMCodeFragment subStringInRange(ASMCodeFragment stringAddress,
-      ASMCodeFragment indexStart, ASMCodeFragment indexEnd, Labeller labeller, String counter,
+      ASMCodeFragment indexStart, ASMCodeFragment indexEnd, String counter,
       String originStringMemoryPointer, String newStringMemoryPointer, String indexStartPointer,
       String indexEndPointer) {
-
+    
+    Labeller labeller = new Labeller("-substring-in-range-");
     String beginLabel = labeller.newLabel("string-range-copy-begin");
     String endLabel = labeller.newLabel("string-range-copy-end");
     String beginElementCopyLabel = labeller.newLabel("string-element-copy-begin");
@@ -622,11 +650,7 @@ public class StringHelper {
     length.add(LoadI);
     length.add(Subtract);
 
-    code.append(backupRegister(counter));
-    code.append(stringCreation(length, labeller, counter));
-    code.add(Exchange);
-    code.append(restoreRegister(counter));
-
+    code.append(stringCreation(length, counter));
 
     code.add(Duplicate);
 
@@ -701,8 +725,9 @@ public class StringHelper {
   }
 
   public static ASMCodeFragment stringElementAtIndex(ASMCodeFragment stringAddress,
-      ASMCodeFragment index, Labeller labeller, String memoryPointer) {
+      ASMCodeFragment index, String memoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    Labeller labeller = new Labeller("-string-element-at-index");
     String beginLabel = labeller.newLabel("string-index-begin");
     String beginFetchingLabel = labeller.newLabel("string-index-fetching-begin");
     String endFetchingLabel = labeller.newLabel("string-index-fetching-end");
@@ -765,8 +790,19 @@ public class StringHelper {
     String endLabel = labeller.newLabel("-end-");
     String loopBeginLabel = labeller.newLabel("-loop-begin-");
     String loopEndLabel = labeller.newLabel("-loop-end-");
-
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
+    
     code.add(Label, beginLabel);
+    
+    // Need exchange to put address of array on the top
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(regCounter));
+    code.add(Exchange);
+    code.add(Label, backupRegisterEndLabel);
+    
     // get the address of the string
     code.add(Duplicate);
 
@@ -808,8 +844,12 @@ public class StringHelper {
     code.add(Jump, loopBeginLabel);
     code.add(Label, loopEndLabel);
     code.add(Pop);
-    code.add(Label, endLabel);
-
+    
+    code.add(Label, restoreRegisterBeginLabel);
+    code.append(restoreRegister(regCounter));
+    code.add(Label, restoreRegisterEndLabel);
+    
+    code.add(Label, endLabel);    
     return code;
   }
 

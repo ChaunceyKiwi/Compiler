@@ -12,7 +12,7 @@ public class PromotionHelper {
   // Following promotion are allowed
   // Char -> Int, Char -> Float, Char -> Rat
   // Int -> Float , Int -> Rat
-  
+
   public static ASMCodeFragment codePromoteTypeAToTypeB(Type typeA, Type typeB) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
@@ -33,8 +33,8 @@ public class PromotionHelper {
 
       arg2.add(PushI, 1);
       code.append(RationalHelper.performOverPuntuator(arg1, arg2, ASMCodeGenerator.GCDCalculation,
-          ASMCodeGenerator.reg1ForFunction, ASMCodeGenerator.reg2ForFunction, ASMCodeGenerator.reg1,
-          ASMCodeGenerator.reg2));
+          ASMCodeGenerator.reg1, ASMCodeGenerator.reg2, ASMCodeGenerator.reg3,
+          ASMCodeGenerator.reg4));
       return code;
     }
 
@@ -51,8 +51,8 @@ public class PromotionHelper {
 
       arg2.add(PushI, 1);
       code.append(RationalHelper.performOverPuntuator(arg1, arg2, ASMCodeGenerator.GCDCalculation,
-          ASMCodeGenerator.reg1ForFunction, ASMCodeGenerator.reg2ForFunction, ASMCodeGenerator.reg1,
-          ASMCodeGenerator.reg2));
+          ASMCodeGenerator.reg1, ASMCodeGenerator.reg2, ASMCodeGenerator.reg3,
+          ASMCodeGenerator.reg4));
       return code;
     }
 
@@ -166,8 +166,8 @@ public class PromotionHelper {
       arg2.add(PushI, 1);
 
       code.append(RationalHelper.performOverPuntuator(value, arg2, ASMCodeGenerator.GCDCalculation,
-          ASMCodeGenerator.reg1ForFunction, ASMCodeGenerator.reg2ForFunction, ASMCodeGenerator.reg1,
-          ASMCodeGenerator.reg2));
+          ASMCodeGenerator.reg1, ASMCodeGenerator.reg2, ASMCodeGenerator.reg3,
+          ASMCodeGenerator.reg4));
       return code;
     }
 
@@ -177,8 +177,8 @@ public class PromotionHelper {
       arg2.add(PushI, 1);
 
       code.append(RationalHelper.performOverPuntuator(value, arg2, ASMCodeGenerator.GCDCalculation,
-          ASMCodeGenerator.reg1ForFunction, ASMCodeGenerator.reg2ForFunction, ASMCodeGenerator.reg1,
-          ASMCodeGenerator.reg2));
+          ASMCodeGenerator.reg1, ASMCodeGenerator.reg2, ASMCodeGenerator.reg3,
+          ASMCodeGenerator.reg4));
       return code;
     }
 
@@ -188,9 +188,9 @@ public class PromotionHelper {
       arg2.add(PushI, 223092870); // magic number
 
       code.append(RationalHelper.performRationalizePuntuator(value, arg2, PrimitiveType.FLOATING,
-          ASMCodeGenerator.GCDCalculation, ASMCodeGenerator.reg1ForFunction,
-          ASMCodeGenerator.reg2ForFunction, ASMCodeGenerator.reg1, ASMCodeGenerator.reg2,
-          ASMCodeGenerator.reg3, ASMCodeGenerator.reg4));
+          ASMCodeGenerator.GCDCalculation, ASMCodeGenerator.reg1, ASMCodeGenerator.reg2,
+          ASMCodeGenerator.reg3, ASMCodeGenerator.reg4, ASMCodeGenerator.reg5,
+          ASMCodeGenerator.reg6));
       return code;
     }
 

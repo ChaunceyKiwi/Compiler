@@ -28,17 +28,12 @@ public class ASMCodeGenerator {
   ParseNode root;
   static String functionPrefix = "$function-";
   static String functionBodyExit = "-function-body-exit";
-  static String reg1ForFunction = "reg1-func";
-  static String reg2ForFunction = "reg2-func";
-  static String reg1 = "reg1-system";
-  static String reg2 = "reg2-system";
-  static String reg3 = "reg3-system";
-  static String reg4 = "reg4-system";
-  static String reg5 = "reg5-system";
-  static String regCounter = "reg-counter";
-  static String regLooper = "reg-looper";
-  static String regSequence = "reg-sequence";
-  static String regIdentifier = "reg-identifier";
+  static String reg1 = "register1";
+  static String reg2 = "register2";
+  static String reg3 = "register3";
+  static String reg4 = "register4";
+  static String reg5 = "register5";
+  static String reg6 = "register6";
   static String GCDCalculation = "GCDCalculation";
 
   public static ASMCodeFragment generate(ParseNode syntaxTree) {
@@ -59,7 +54,7 @@ public class ASMCodeGenerator {
     code.append(globalVariableBlockASM());
     code.append(programASM());
     code.append(MemoryManager.codeForAfterApplication());
-    code.append(FunctionStorage.GCDCalculation(GCDCalculation, reg1ForFunction, reg2ForFunction));
+    code.append(FunctionStorage.GCDCalculation(GCDCalculation, reg1, reg2));
     return code;
   }
 
@@ -81,17 +76,12 @@ public class ASMCodeGenerator {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
     code.add(DLabel, RunTime.GLOBAL_MEMORY_BLOCK);
     code.add(DataZ, globalBlockSize);
-    createRegister(code, reg1ForFunction);
-    createRegister(code, reg2ForFunction);
     createRegister(code, reg1);
     createRegister(code, reg2);
     createRegister(code, reg3);
     createRegister(code, reg4);
     createRegister(code, reg5);
-    createRegister(code, regCounter);
-    createRegister(code, regLooper);
-    createRegister(code, regSequence);
-    createRegister(code, regIdentifier);
+    createRegister(code, reg6);
     return code;
   }
 
@@ -667,6 +657,10 @@ public class ASMCodeGenerator {
       Type sequenceType = sequence.getType();
       String beginLabel = labeller.newLabel("begin");
       String endLabel = labeller.newLabel("end");
+      
+      String regIdentifier = reg1;
+      String regSequence = reg2;
+      String regLooper = reg3;
 
       // begin label
       code.add(Label, beginLabel);
@@ -752,7 +746,7 @@ public class ASMCodeGenerator {
 
       if (node.child(0).getType() == PrimitiveType.RATIONAL) {
         code.append(RationalHelper.rationalComparison(arg1, arg2, GCDCalculation, reg1, reg2,
-            reg1ForFunction, reg2ForFunction, operator));
+            reg3, reg4, operator));
       } else {
         Labeller labeller = new Labeller("compare");
         String startLabel = labeller.newLabel("arg1");
@@ -869,13 +863,13 @@ public class ASMCodeGenerator {
       Type type = node.child(0).getType();
 
       if (operator == Punctuator.OVER) {
-        code.append(RationalHelper.performOverPuntuator(arg1, arg2, GCDCalculation, reg1ForFunction,
-            reg2ForFunction, reg1, reg2));
+        code.append(RationalHelper.performOverPuntuator(arg1, arg2, GCDCalculation, reg1,
+            reg2, reg3, reg4));
       } else if (operator == Punctuator.EXPRESSOVER) {
-        code.append(RationalHelper.performExpressOverPunctuator(arg1, arg2, type, reg1ForFunction));
+        code.append(RationalHelper.performExpressOverPunctuator(arg1, arg2, type, reg1));
       } else if (operator == Punctuator.RATIONALIZE) {
         code.append(RationalHelper.performRationalizePuntuator(arg1, arg2, type, GCDCalculation,
-            reg1ForFunction, reg2ForFunction, reg1, reg2, reg3, reg4));
+            reg1, reg2, reg3, reg4, reg5, reg6));
       }
     }
 
@@ -889,20 +883,17 @@ public class ASMCodeGenerator {
       Lextant operator = node.getOperator();
 
       if (operator == Keyword.MAP) {
-        Labeller labeller = new Labeller("array-map-operator");
         ArrayType targetArrayType = (ArrayType) (node.getType());
         code.append(ArrayHelper.arrayMapWithLambda(originalArrayType, targetArrayType,
-            originalArrayCode, lambdaCode, labeller, regCounter, reg1, reg2));
+            originalArrayCode, lambdaCode, reg1, reg2, reg3));
       } else if (operator == Keyword.REDUCE) {
-        Labeller labeller = new Labeller("array-reduce-operator");
         ArrayType targetArrayType = (ArrayType) (node.getType());
         code.append(ArrayHelper.arrayReduceWithLambda(originalArrayType, targetArrayType,
-            originalArrayCode, lambdaCode, labeller, regCounter, reg1, reg2, reg3, reg4));
+            originalArrayCode, lambdaCode, reg1, reg2, reg3, reg4, reg5));
       } else if (operator == Keyword.FOLD) {
-        Labeller labeller = new Labeller("array-fold-operator");
         if (node.nChildren() == 2) {
           code.append(ArrayHelper.arrayFoldWithLambda(originalArrayType, originalArrayCode,
-              lambdaCode, labeller, regCounter, reg1));
+              lambdaCode, reg1, reg2));
         } else if (node.nChildren() == 3) {
           // If it's a fold with base, then second child is not lambda but base
           // Give lambda to base and set value for real lambda
@@ -910,7 +901,7 @@ public class ASMCodeGenerator {
           lambda = node.child(2);
           lambdaCode = removeValueCode(lambda);
           code.append(ArrayHelper.arrayFoldWithLambdaAndBase(originalArrayType, originalArrayCode,
-              baseCode, lambdaCode, labeller, regCounter, reg1));
+              baseCode, lambdaCode, reg1, reg2));
         }
       }
     }
@@ -937,29 +928,29 @@ public class ASMCodeGenerator {
         if (isRationalOperation((String) operation)) {
           if (operation == BinaryOperatorNode.RATIONAL_ADD) {
             code.append(RationalHelper.rationalAdd(arg1, arg2, GCDCalculation, reg1, reg2,
-                reg1ForFunction, reg2ForFunction));
+                reg3, reg4));
           } else if (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT) {
             code.append(RationalHelper.rationalSubtract(arg1, arg2, GCDCalculation, reg1, reg2,
-                reg1ForFunction, reg2ForFunction));
+                reg3, reg4));
           } else if (operation == BinaryOperatorNode.RATIONAL_MULTIPLY) {
             code.append(RationalHelper.rationalMultiply(arg1, arg2, GCDCalculation, reg1, reg2,
-                reg1ForFunction, reg2ForFunction));
+                reg3, reg4));
           } else if (operation == BinaryOperatorNode.RATIONAL_DIVIDE) {
             code.append(RationalHelper.rationalDivide(arg1, arg2, GCDCalculation, reg1, reg2,
-                reg1ForFunction, reg2ForFunction));
+                reg3, reg4));
           }
         } else if (operation == BinaryOperatorNode.CONCATENATION) {
           Type type1 = node.child(0).getType();
           Type type2 = node.child(1).getType();
           if (type1 == PrimitiveType.STRING && type2 == PrimitiveType.STRING) {
             code.append(StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5,
-                regCounter));
+                reg6));
           } else if (type1 == PrimitiveType.STRING && type2 == PrimitiveType.CHARACTER) {
             code.append(
-                StringHelper.stringCharConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
+                StringHelper.stringCharConcatenation(arg1, arg2, reg1, reg2, reg3, reg4));
           } else if (type1 == PrimitiveType.CHARACTER && type2 == PrimitiveType.STRING) {
             code.append(
-                StringHelper.charStringConcatenation(arg1, arg2, reg1, reg2, reg3, regCounter));
+                StringHelper.charStringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4));
           }
         }
       }
@@ -1005,25 +996,21 @@ public class ASMCodeGenerator {
       }
 
       else if (operator == Keyword.COPY) {
-        Labeller labeller = new Labeller("-copy-operator-");
         ArrayType arrayType = (ArrayType) node.getType();
-        code.append(ArrayHelper.arrayClone(arrayType, arg1, labeller, reg1, reg2, reg3));
+        code.append(ArrayHelper.arrayClone(arrayType, arg1, reg1, reg2, reg3));
       }
 
       else if (operator == Keyword.REVERSE) {
         Type originalType = node.child(0).getType();
         if (originalType instanceof ArrayType) {
-          Labeller labeller = new Labeller("-array-reversal-");
-          code.append(ArrayHelper.arrayReversal((ArrayType) originalType, labeller, arg1, reg1,
+          code.append(ArrayHelper.arrayReversal((ArrayType) originalType, arg1, reg1,
               reg2, reg3, reg4));
         } else if (originalType == PrimitiveType.STRING) {
-          Labeller labeller = new Labeller("-string-reversal-");
-          code.append(StringHelper.stringReversal(arg1, labeller, reg1, reg2, reg3, reg4));
+          code.append(StringHelper.stringReversal(arg1, reg1, reg2, reg3, reg4));
         }
       }
 
       else if (operator == Keyword.ZIP) {
-        Labeller labeller = new Labeller("-zip-operator-");
         ASMCodeFragment arrayACode = arg1;
         ASMCodeFragment arrayBCode = removeValueCode(node.child(1));
         ASMCodeFragment lambdaCode = removeValueCode(node.child(2));
@@ -1032,7 +1019,7 @@ public class ASMCodeGenerator {
         ArrayType targetArrayType = (ArrayType) (node.getType());
 
         code.append(ArrayHelper.arrayZipWithLambda(arrayAType, arrayBType, targetArrayType,
-            arrayACode, arrayBCode, lambdaCode, labeller, regCounter, reg1, reg2, reg3));
+            arrayACode, arrayBCode, lambdaCode, reg1, reg2, reg3, reg4));
       }
 
       addPromotionCodeIfNeeded(node);
@@ -1062,32 +1049,29 @@ public class ASMCodeGenerator {
 
       if (identifierType instanceof ArrayType) {
         newAddressCode(node);
-        Labeller labeller = new Labeller("-array-indexing-");
         ArrayType arrayType = (ArrayType) identifierType;
         ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
         ASMCodeFragment index = removeValueCode(node.child(1));
         code.append(
-            ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, labeller, reg1));
+            ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, reg1));
       } else if (identifierType == PrimitiveType.STRING) {
         // string[i] -> character
         if (node.nChildren() == 2) {
           newAddressCode(node);
-          Labeller labeller = new Labeller("-string-indexing-");
           ASMCodeFragment stringAddress = removeValueCode(node.child(0));
           ASMCodeFragment index = removeValueCode(node.child(1));
-          code.append(StringHelper.stringElementAtIndex(stringAddress, index, labeller, reg1));
+          code.append(StringHelper.stringElementAtIndex(stringAddress, index, reg1));
         }
 
         // string[i,j] -> subString
         else if (node.nChildren() == 3) {
           newValueCode(node);
-          Labeller labeller = new Labeller("-string-range-");
           ASMCodeFragment stringAddress = removeValueCode(node.child(0));
           ASMCodeFragment indexStart = removeValueCode(node.child(1));
           ASMCodeFragment indexEnd = removeValueCode(node.child(2));
 
-          code.append(StringHelper.subStringInRange(stringAddress, indexStart, indexEnd, labeller,
-              regCounter, reg1, reg2, reg3, reg4));
+          code.append(StringHelper.subStringInRange(stringAddress, indexStart, indexEnd,
+              reg1, reg2, reg3, reg4, reg5));
         }
       }
     }
@@ -1100,17 +1084,15 @@ public class ASMCodeGenerator {
 
     public void visitLeave(NewArrayTypeLengthNode node) {
       newValueCode(node);
-      Labeller labeller = new Labeller("empty-array-creation");
       ArrayType arrayType = (ArrayType) (node.getType());
       ASMCodeFragment lengthOfArray = removeValueCode(node.child(1));
-      code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
+      code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, reg1));
     }
 
     public void visitLeave(ExpressionListNode node) {
       // Create array only when ExpressionList is an element of array
       if (!(node.getParent() instanceof FunctionInvocationNode)) {
         newValueCode(node);
-        Labeller labeller = new Labeller("-expr-list-");
         ArrayType arrayType = (ArrayType) (node.getType());
         List<ASMCodeFragment> arrayElement = new ArrayList<>();
 
@@ -1120,9 +1102,9 @@ public class ASMCodeGenerator {
         for (int i = 0; i < node.nChildren(); i++) {
           arrayElement.add(removeValueCode(node.child(i)));
         }
-        code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, labeller, reg1));
+        code.append(ArrayHelper.arrayCreation(arrayType, lengthOfArray, reg1));
         code.append(ArrayHelper.arrayInitialization(arrayType, arrayElement,
-            opcodeForStore(arrayType.getSubType()), labeller));
+            opcodeForStore(arrayType.getSubType())));
       }
     }
 
@@ -1210,7 +1192,6 @@ public class ASMCodeGenerator {
     public void visit(StringConstantNode node) {
       newValueCode(node);
       String value = node.getValue();
-      Labeller labeller = new Labeller("-string-creation-");
 
       List<ASMCodeFragment> stringElement = new ArrayList<ASMCodeFragment>();
 
@@ -1223,8 +1204,8 @@ public class ASMCodeGenerator {
       ASMCodeFragment lengthOfString = new ASMCodeFragment(GENERATES_VALUE);
       lengthOfString.add(PushI, value.length());
 
-      code.append(StringHelper.stringCreation(lengthOfString, labeller, reg1));
-      code.append(StringHelper.stringInitialization(stringElement, labeller));
+      code.append(StringHelper.stringCreation(lengthOfString, reg1));
+      code.append(StringHelper.stringInitialization(stringElement));
     }
 
     public void visit(NewlineNode node) {

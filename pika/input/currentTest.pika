@@ -1,4 +1,6 @@
 exec {
-    var y := reverse ["abcdefg" + ^h^, ^h^ + "abcdefg"].
+  for index i of [1,2,3,4,5,6,7] {
+    var y := reverse ["abcdefg" + ^h^, ^h^ + "abcdefg", "djeid"+"ferf"].
     print y,_n_.
+  }
 }
