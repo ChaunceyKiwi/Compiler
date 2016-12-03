@@ -20,24 +20,33 @@ public class ArrayHelper {
 
     String beginLabel = labeller.newLabel("array-zip-begin");
     String endLabel = labeller.newLabel("array-zip-end");
-
     String beginHeaderCreationLabel = labeller.newLabel("array-header-creation-begin");
     String endHeaderCreationLabel = labeller.newLabel("array-header-creation-end");
-
     String beginElementZipLabel = labeller.newLabel("array-element-zip-begin");
     String endElementZipLabel = labeller.newLabel("array-element-zip-end");
-
     String sizeLabel = labeller.newLabel("array-zip-size");
     String typeLabel = labeller.newLabel("array-zip-type");
     String statusLabel = labeller.newLabel("array-zip-status");
     String subTypeSizeLabel = labeller.newLabel("array-zip-subtype-size");
     String lengthLabel = labeller.newLabel("array-zip-length");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
 
     int arrayASubtypeSize = arrayAType.getSubType().getSize();
     int arrayBSubtypeSize = arrayBType.getSubType().getSize();
     int targetArraySubtypeSize = targetArrayType.getSubType().getSize();
 
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(counter));
+    code.append(backupRegister(arrayAPointer));
+    code.append(backupRegister(arrayBPointer));
+    code.append(backupRegister(newArrayPointer)); 
+    code.add(Label, backupRegisterEndLabel);
 
     // Get the address of arrayB
     // Store it in the arrayBPointer
@@ -183,6 +192,18 @@ public class ArrayHelper {
     code.add(Jump, beginElementZipLabel);
     code.add(Label, endElementZipLabel);
 
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(newArrayPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(arrayBPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(arrayAPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(counter)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
 
     return code;
@@ -200,10 +221,21 @@ public class ArrayHelper {
     String beginElementFoldLabel = labeller.newLabel("array-element-fold-begin");
     String endElementFoldLabel = labeller.newLabel("array-element-fold-end");
     String sizeLabel = labeller.newLabel("array-map-size");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
     int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
 
     // Location of original array start
     code.add(Label, beginLabel);
+
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(counter));
+    code.append(backupRegister(originArrayMemoryPointer));
+    code.add(Label, backupRegisterEndLabel);
+    
     code.append(originalArray);
 
     // Get the address of original array
@@ -231,7 +263,7 @@ public class ArrayHelper {
     // return base address directly
     code.add(PushD, counter);
     code.add(LoadI);
-    code.add(JumpFalse, endLabel);
+    code.add(JumpFalse, endElementFoldLabel);
 
     // Every time enter the loop, there is one element on the ASMStack
     code.add(Label, beginElementFoldLabel);
@@ -270,6 +302,15 @@ public class ArrayHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginElementFoldLabel);
     code.add(Label, endElementFoldLabel);
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(originArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(counter)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
 
     return code;
@@ -286,10 +327,21 @@ public class ArrayHelper {
     String beginElementFoldLabel = labeller.newLabel("array-element-fold-begin");
     String endElementFoldLabel = labeller.newLabel("array-element-fold-end");
     String sizeLabel = labeller.newLabel("array-map-size");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
     int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
 
     // Location of original array start
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(counter));
+    code.append(backupRegister(originArrayMemoryPointer));
+    code.add(Label, backupRegisterEndLabel);
+    
     code.append(originalArray);
 
     // Get the address of original array
@@ -297,20 +349,19 @@ public class ArrayHelper {
     code.add(Duplicate);
     Macros.storeITo(code, originArrayMemoryPointer);
 
-    // Set (arrayLength - 2) as counter
+    // Set (arrayLength - 1) as counter
     code.add(Label, sizeLabel);
     code.append(pushArrayLength());
-    code.add(PushI, -2);
+    code.add(PushI, -1);
     code.add(Add);
     Macros.storeITo(code, counter);
 
-    // If length is 0 (-2 in counter), issue error
+    // If length is 0 (-1 in counter), issue error
     code.add(PushD, counter);
     code.add(LoadI);
-    code.add(PushI, 2);
+    code.add(PushI, 1);
     code.add(Add);
     code.add(JumpFalse, RunTime.FOLD_OPERATOR_ARRAY_ZERO_LENGTH);
-
 
     // move originArrayMemoryPointer to first address of element
     code.add(PushD, originArrayMemoryPointer);
@@ -337,13 +388,11 @@ public class ArrayHelper {
     code.add(Add);
     code.add(StoreI);
 
-    // If the length is 1 (-1 in counter)
+    // If the length is 1 (0 in counter)
     // return first element directly
     code.add(PushD, counter);
     code.add(LoadI);
-    code.add(PushI, 1);
-    code.add(Add);
-    code.add(JumpFalse, endLabel);
+    code.add(JumpFalse, endElementFoldLabel);
 
     // Every time enter the loop, there is one element on the ASMStack
     code.add(Label, beginElementFoldLabel);
@@ -382,6 +431,15 @@ public class ArrayHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginElementFoldLabel);
     code.add(Label, endElementFoldLabel);
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(originArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(counter)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
 
     return code;
@@ -397,24 +455,34 @@ public class ArrayHelper {
 
     String beginLabel = labeller.newLabel("array-map-begin");
     String endLabel = labeller.newLabel("array-map-end");
-
     String beginHeaderCopyLabel = labeller.newLabel("array-header-map-begin");
     String endHeaderCopyLabel = labeller.newLabel("array-header-map-end");
-
     String beginElementCopyLabel = labeller.newLabel("array-element-map-begin");
     String endElementCopyLabel = labeller.newLabel("array-element-map-end");
-
     String sizeLabel = labeller.newLabel("array-map-size");
     String typeLabel = labeller.newLabel("array-map-type");
     String statusLabel = labeller.newLabel("array-map-status");
     String subTypeSizeLabel = labeller.newLabel("array-map-subtype-size");
     String lengthLabel = labeller.newLabel("array-map-length");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
+    
 
     int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
     int targetArraySubTypeSize = targetArrayType.getSubType().getSize();
 
     // Location of original array start
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(counter));
+    code.append(backupRegister(originArrayMemoryPointer));
+    code.append(backupRegister(newArrayMemoryPointer)); 
+    code.add(Label, backupRegisterEndLabel);
+    
     code.append(originalArray);
 
     // Get the address of original array
@@ -550,6 +618,17 @@ public class ArrayHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginElementCopyLabel);
     code.add(Label, endElementCopyLabel);
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(newArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(originArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(counter)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
 
     return code;
@@ -565,23 +644,33 @@ public class ArrayHelper {
 
     String beginLabel = labeller.newLabel("-begin");
     String endLabel = labeller.newLabel("-end");
-
     String beginHeaderCopyLabel = labeller.newLabel("array-header-map-begin");
     String endHeaderCopyLabel = labeller.newLabel("array-header-map-end");
-
     String beginElementCopyLabel = labeller.newLabel("array-element-map-begin");
     String endElementCopyLabel = labeller.newLabel("array-element-map-end");
-
     String sizeLabel = labeller.newLabel("array-map-size");
     String typeLabel = labeller.newLabel("array-map-type");
     String statusLabel = labeller.newLabel("array-map-status");
     String subTypeSizeLabel = labeller.newLabel("array-map-subtype-size");
     String lengthLabel = labeller.newLabel("array-map-length");
-
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
+    
     int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
     int targetArraySubTypeSize = targetArrayType.getSubType().getSize();
 
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(counter));
+    code.append(backupRegister(lengthCounter));
+    code.append(backupRegister(originArrayMemoryPointer));
+    code.append(backupRegister(originBooleanArrayPointer)); 
+    code.append(backupRegister(newArrayMemoryPointer)); 
+    code.add(Label, backupRegisterEndLabel);
 
     // Get the address of original array
     // Store it in the originArrayMemoryPointer
@@ -892,9 +981,22 @@ public class ArrayHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginReduceElementCopyLabel);
     code.add(Label, endReduceElementCopyLabel);
-
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(newArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(originBooleanArrayPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(originArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(lengthCounter)); 
+    code.add(Exchange);
+    code.append(restoreRegister(counter)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
-
     return code;
   }
 
@@ -1140,20 +1242,30 @@ public class ArrayHelper {
 
     String beginHeaderCopyLabel = labeller.newLabel("array-header-copy-begin");
     String endHeaderCopyLabel = labeller.newLabel("array-header-copy-end");
-
     String beginElementCopyLabel = labeller.newLabel("array-element-copy-begin");
     String endElementCopyLabel = labeller.newLabel("array-element-copy-end");
-
     String sizeLabel = labeller.newLabel("array-copy-size");
     String typeLabel = labeller.newLabel("array-copy-type");
     String statusLabel = labeller.newLabel("array-copy-status");
     String subTypeSizeLabel = labeller.newLabel("array-copy-subtype-size");
     String lengthLabel = labeller.newLabel("array-copy-length");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
 
     int subTypeSize = arrayType.getSubType().getSize();
 
     // Location of original array start
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(counter));
+    code.append(backupRegister(originArrayMemoryPointer));
+    code.append(backupRegister(newArrayMemoryPointer)); 
+    code.add(Label, backupRegisterEndLabel);
+    
     code.append(originalArray);
 
     // Get the address of original array
@@ -1278,6 +1390,17 @@ public class ArrayHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginElementCopyLabel);
     code.add(Label, endElementCopyLabel);
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(newArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(originArrayMemoryPointer));
+    code.add(Exchange);
+    code.append(restoreRegister(counter)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
 
     return code;
@@ -1291,8 +1414,18 @@ public class ArrayHelper {
     String beginFetchingLabel = labeller.newLabel("array-index-fetching-begin");
     String endFetchingLabel = labeller.newLabel("array-index-fetching-end");
     String endLabel = labeller.newLabel("array-index-end");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
 
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(memoryPointer));
+    code.add(Label, backupRegisterEndLabel);
+    
     code.append(arrayAddress);
     code.add(Duplicate);
 
@@ -1328,6 +1461,13 @@ public class ArrayHelper {
     code.add(Add);
 
     code.add(Label, endFetchingLabel);
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.add(Exchange);
+    code.append(restoreRegister(memoryPointer)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
     return code;
   }
@@ -1446,7 +1586,6 @@ public class ArrayHelper {
 
   public static ASMCodeFragment arrayRelease(ArrayType arrayType, String regCounter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-    code.add(Duplicate);
 
     Type subType = arrayType.getSubType();
     int subTypeSize = arrayType.getSubType().getSize();
@@ -1455,9 +1594,21 @@ public class ArrayHelper {
     String endLabel = labeller.newLabel("-end-");
     String loopBeginLabel = labeller.newLabel("-loop-begin-");
     String loopEndLabel = labeller.newLabel("-loop-end-");
+    String backupRegisterBeginLabel = labeller.newLabel("backup-reg-begin");
+    String backupRegisterEndLabel = labeller.newLabel("backup-reg-end");
+    String restoreRegisterBeginLabel = labeller.newLabel("restore-reg-begin");
+    String restoreRegisterEndLabel = labeller.newLabel("restore-reg-end");
 
     code.add(Label, beginLabel);
+    
+    // Backup register
+    code.add(Label, backupRegisterBeginLabel);
+    code.append(backupRegister(regCounter));
+    code.add(Exchange);
+    code.add(Label, backupRegisterEndLabel);
+    
     // get the address of the array
+    code.add(Duplicate);
     code.add(Duplicate);
 
     // store the length of array as the loop counter
@@ -1468,12 +1619,11 @@ public class ArrayHelper {
     code.add(PushI, ArrayType.header_size);
     code.add(Add);
 
+    // Counter counts from length to 0
+    // If counter is 0, then exit loop
     code.add(Label, loopBeginLabel);
     code.add(PushD, regCounter);
     code.add(LoadI);
-
-    // Counter counts from length to 0
-    // If counter is 0, then exit loop
     code.add(JumpFalse, loopEndLabel);
 
     code.add(Duplicate);
@@ -1495,6 +1645,12 @@ public class ArrayHelper {
     code.add(Label, loopEndLabel);
     code.add(Pop);
     code.add(Call, MemoryManager.MEM_MANAGER_DEALLOCATE);
+    
+    // Restore register
+    code.add(Label, restoreRegisterBeginLabel);
+    code.append(restoreRegister(regCounter)); 
+    code.add(Label, restoreRegisterEndLabel);
+    
     code.add(Label, endLabel);
 
     return code;
