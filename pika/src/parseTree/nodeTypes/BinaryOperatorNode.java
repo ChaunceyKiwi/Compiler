@@ -20,10 +20,9 @@ public class BinaryOperatorNode extends ParseNode {
 	public final static String RATIONAL_GREATEROREQUAL = "ration_greater_or_equal";
 	public final static String CONCATENATION = "concatenation";
 	
-	public final static String MAP = "map";
-    public final static String REDUCE = "reduce";
-    public final static String FOLD = "fold";
-
+	public final static String ARRAY_MAP = "array_map";
+    public final static String ARRAY_REDUCE = "array_reduce";
+    public final static String ARRAY_FOLD = "array_fold";
 
 
 	public final static String ARRAY_COMPARISON = "array_comparison";

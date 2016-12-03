@@ -505,8 +505,8 @@
         Multiply                               
         Label        -compare-3-sub            
         Subtract                               
-        JumpFalse    -compare-3-true           
-        Jump         -compare-3-false          
+        JumpFalse    -compare-3-false          
+        Jump         -compare-3-true           
         Label        -compare-3-true           
         PushI        1                         
         Jump         -compare-3-join           
@@ -647,6 +647,13 @@
         LoadI                                  
         PushD        $stack-pointer            
         LoadI                                  
+        PushI        4                         
+        Subtract                               
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
+        PushD        $stack-pointer            
+        LoadI                                  
         Exchange                               
         StoreI                                 
         PushD        $global-memory-block      
@@ -657,6 +664,13 @@
         PushD        $stack-pointer            
         LoadI                                  
         LoadC                                  
+        PushD        $stack-pointer            
+        LoadI                                  
+        PushI        1                         
+        Add                                    
+        PushD        $stack-pointer            
+        Exchange                               
+        StoreI                                 
         StoreC                                 
         PushD        reg2-system               
         Duplicate                              

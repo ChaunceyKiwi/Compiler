@@ -734,7 +734,7 @@ public class ASMCodeGenerator {
       }
 
       // Array Operator
-      else if (operator == Keyword.MAP || operator == Keyword.REDUCE) {
+      else if (operator == Keyword.MAP || operator == Keyword.REDUCE || operator == Keyword.FOLD) {
         visitArrayOperatorNode(node);
       }
 
@@ -884,19 +884,23 @@ public class ASMCodeGenerator {
       ParseNode array = node.child(0);
       ParseNode lambda = node.child(1);
       ArrayType originalArrayType = (ArrayType)(array.getType());
-      ArrayType targetArrayType = (ArrayType)(node.getType());
       ASMCodeFragment originalArrayCode = removeValueCode(array);
       ASMCodeFragment lambdaCode = removeValueCode(lambda);
       Lextant operator = node.getOperator();
 
       if (operator == Keyword.MAP) {
         Labeller labeller = new Labeller("array-map-operator");
+        ArrayType targetArrayType = (ArrayType)(node.getType());
         code.append(ArrayHelper.arrayMapWithLambda(originalArrayType, targetArrayType, originalArrayCode, lambdaCode,
             labeller, regCounter, reg1, reg2));
       } else if (operator == Keyword.REDUCE) {
         Labeller labeller = new Labeller("array-reduce-operator");
+        ArrayType targetArrayType = (ArrayType)(node.getType());
         code.append(ArrayHelper.arrayReduceWithLambda(originalArrayType, targetArrayType, originalArrayCode, lambdaCode,
             labeller, regCounter, reg1, reg2, reg3, reg4));
+      } else if (operator == Keyword.FOLD) {
+        Labeller labeller = new Labeller("array-fold-operator");
+        code.append(ArrayHelper.arrayFoldWithLambda(originalArrayType, originalArrayCode, lambdaCode, labeller, regCounter, reg1));
       }
     }
 

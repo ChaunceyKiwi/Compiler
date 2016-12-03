@@ -10,6 +10,101 @@ import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
 public class ArrayHelper {
+  public static ASMCodeFragment arrayFoldWithLambda(ArrayType originalArrayType,
+      ASMCodeFragment originalArray, ASMCodeFragment lambda, Labeller labeller, String counter,
+      String originArrayMemoryPointer) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+
+    String beginLabel = labeller.newLabel("array-fold-begin");
+    String endLabel = labeller.newLabel("array-fold-end");
+    String beginElementFoldLabel = labeller.newLabel("array-element-fold-begin");
+    String endElementFoldLabel = labeller.newLabel("array-element-fold-end");
+    String sizeLabel = labeller.newLabel("array-map-size");
+    int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
+
+    // Location of original array start
+    code.add(Label, beginLabel);
+    code.append(originalArray);
+
+    // Get the address of original array
+    // Store it in the originArrayMemoryPointer
+    code.add(Duplicate);
+    Macros.storeITo(code, originArrayMemoryPointer);
+
+    // Set (arrayLength - 2) as counter
+    code.add(Label, sizeLabel);
+    code.append(pushArrayLength());
+    code.add(PushI, -2);
+    code.add(Add);
+    Macros.storeITo(code, counter);
+
+    // move originArrayMemoryPointer to first address of element
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, originalArrayType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    // Push first elements into ASM stack as base
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(LoadI);
+    if (originalArraySubTypeSize == 1) {
+      code.add(LoadC);
+    } else if (originalArraySubTypeSize == 4) {
+      code.add(LoadI);
+    } else if (originalArraySubTypeSize == 8) {
+      code.add(LoadF);
+    }
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, originalArraySubTypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Every time enter the loop, there is one element on the ASMStack
+    code.add(Label, beginElementFoldLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementFoldLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(LoadI);
+    if (originalArraySubTypeSize == 1) {
+      code.add(LoadC);
+    } else if (originalArraySubTypeSize == 4) {
+      code.add(LoadI);
+    } else if (originalArraySubTypeSize == 8) {
+      code.add(LoadF);
+    }
+
+    code.add(Exchange);
+    code.append(pushElementToFrameStack(originalArrayType.getSubType()));
+    code.append(pushElementToFrameStack(originalArrayType.getSubType()));
+    code.append(lambda);
+    code.add(CallV);
+    code.append(popElementFromFrameToASMStack(originalArrayType.getSubType()));
+
+    // move originArrayMemoryPointer to next address of element
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, originalArraySubTypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementFoldLabel);
+    code.add(Label, endElementFoldLabel);
+    code.add(Label, endLabel);
+
+    return code;
+  }
+
   public static ASMCodeFragment arrayMapWithLambda(ArrayType originalArrayType,
       ArrayType targetArrayType, ASMCodeFragment originalArray, ASMCodeFragment lambda,
       Labeller labeller, String counter, String originArrayMemoryPointer,
@@ -183,10 +278,10 @@ public class ArrayHelper {
       Labeller labeller, String counter, String lengthCounter, String originArrayMemoryPointer,
       String originBooleanArrayPointer, String newArrayMemoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-    
+
     String beginLabel = labeller.newLabel("array-reduce-begin");
     String endLabel = labeller.newLabel("array-reduce-end");
-    
+
     String beginHeaderCopyLabel = labeller.newLabel("array-header-map-begin");
     String endHeaderCopyLabel = labeller.newLabel("array-header-map-end");
 
@@ -198,10 +293,10 @@ public class ArrayHelper {
     String statusLabel = labeller.newLabel("array-map-status");
     String subTypeSizeLabel = labeller.newLabel("array-map-subtype-size");
     String lengthLabel = labeller.newLabel("array-map-length");
-    
+
     int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
     int targetArraySubTypeSize = targetArrayType.getSubType().getSize();
-    
+
     code.add(Label, beginLabel);
 
     // Get the address of original array
@@ -334,31 +429,31 @@ public class ArrayHelper {
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginElementCopyLabel);
     code.add(Label, endElementCopyLabel);
-    
+
     code.add(Exchange);
     code.append(restoreRegister(originArrayMemoryPointer));
-    
+
     String countTrueElementBeginLabel = labeller.newLabel("count-true-begin");
     String countTrueElementJumpLabel = labeller.newLabel("count-true-jump");
     String countTrueElementEndLabel = labeller.newLabel("count-true-end");
-    
+
     String beginReduceElementCopyLabel = labeller.newLabel("reduce-element-copy-begin");
     String jumpElementCopyLabel = labeller.newLabel("reduce-element-copy-jump");
     String endReduceElementCopyLabel = labeller.newLabel("reduce-element-copy-end");
-    
+
     // store address of the boolean array in originBooleanArrayPointer
     code.add(Duplicate);
     code.add(Duplicate);
     Macros.storeITo(code, originBooleanArrayPointer);
-    
+
     // Get the length of originalBooleanArray and store in he counter
     code.append(pushArrayLength());
     Macros.storeITo(code, counter);
-    
+
     // Initialize the number of true element as 0
     code.add(PushI, 0);
     Macros.storeITo(code, lengthCounter);
-    
+
     // move originBooleanArrayMemoryPointer to first address of element
     code.add(PushD, originBooleanArrayPointer);
     code.add(Duplicate);
@@ -366,29 +461,29 @@ public class ArrayHelper {
     code.add(PushI, 16);
     code.add(Add);
     code.add(StoreI);
-    
+
     // Start of loop to find the number of true element
     code.add(Label, countTrueElementBeginLabel);
     code.add(PushD, counter);
     code.add(LoadI);
     code.add(JumpFalse, countTrueElementEndLabel);
-    
-    // Get the boolean element, 
+
+    // Get the boolean element,
     // then add 1 to the lengthCounter
     code.add(PushD, originBooleanArrayPointer);
     code.add(LoadI);
     code.add(LoadC);
     code.add(JumpFalse, countTrueElementJumpLabel);
-    
+
     // element is true
     code.add(PushD, lengthCounter);
     code.add(LoadI);
     code.add(PushI, 1);
     code.add(Add);
     Macros.storeITo(code, lengthCounter);
-    
+
     code.add(Label, countTrueElementJumpLabel);
-    
+
     // move originBooleanArrayMemoryPointer to next address of element
     // subelement is boolean, thus subtype size is 1
     code.add(PushD, originBooleanArrayPointer);
@@ -397,14 +492,14 @@ public class ArrayHelper {
     code.add(PushI, 1);
     code.add(Add);
     code.add(StoreI);
-    
+
     Macros.decrementInteger(code, counter);
     code.add(Jump, countTrueElementBeginLabel);
     code.add(Label, countTrueElementEndLabel);
-    
+
     // move original boolean back to start of boolean array
     code.append(restoreRegister(originBooleanArrayPointer));
-    
+
     // create an empty string to store values
     ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
     length.add(PushD, lengthCounter);
@@ -418,13 +513,13 @@ public class ArrayHelper {
     code.append(restoreRegister(counter));
     code.add(Duplicate);
     Macros.storeITo(code, newArrayMemoryPointer);
-    
+
     // Get the length of originalBooleanArray and store in he counter
     code.add(PushD, originBooleanArrayPointer);
     code.add(LoadI);
     code.append(pushArrayLength());
     Macros.storeITo(code, counter);
-    
+
     // move originArrayMemoryPointer to first address of element
     code.add(PushD, originArrayMemoryPointer);
     code.add(Duplicate);
@@ -432,7 +527,7 @@ public class ArrayHelper {
     code.add(PushI, originalArrayType.getHeaderSize());
     code.add(Add);
     code.add(StoreI);
-    
+
     // move originBooleanArrayMemoryPointer to first address of element
     code.add(PushD, originBooleanArrayPointer);
     code.add(Duplicate);
@@ -448,24 +543,24 @@ public class ArrayHelper {
     code.add(PushI, originalArrayType.getHeaderSize());
     code.add(Add);
     code.add(StoreI);
-    
+
     code.add(Label, beginReduceElementCopyLabel);
     code.add(PushD, counter);
     code.add(LoadI);
     code.add(JumpFalse, endReduceElementCopyLabel);
-    
+
     // Load newArrayMemoryPointer and originArrayMemoryPointer
     // The address they point to is exactly the target address
     code.add(PushD, originBooleanArrayPointer);
     code.add(LoadI);
     code.add(LoadC);
     code.add(JumpFalse, jumpElementCopyLabel);
-    
+
     code.add(PushD, newArrayMemoryPointer);
     code.add(LoadI);
     code.add(PushD, originArrayMemoryPointer);
     code.add(LoadI);
-    
+
     if (originalArraySubTypeSize == 1) {
       code.add(LoadC);
     } else if (originalArraySubTypeSize == 4) {
@@ -481,7 +576,7 @@ public class ArrayHelper {
     } else if (targetArraySubTypeSize == 8) {
       code.add(StoreF);
     }
-    
+
     // move newArrayMemoryPointer to next address of new element to store
     code.add(PushD, newArrayMemoryPointer);
     code.add(Duplicate);
@@ -489,9 +584,9 @@ public class ArrayHelper {
     code.add(PushI, targetArraySubTypeSize);
     code.add(Add);
     code.add(StoreI);
-    
+
     code.add(Label, jumpElementCopyLabel);
-    
+
     // move originArrayMemoryPointer to next address of element
     code.add(PushD, originArrayMemoryPointer);
     code.add(Duplicate);
@@ -499,7 +594,7 @@ public class ArrayHelper {
     code.add(PushI, originalArraySubTypeSize);
     code.add(Add);
     code.add(StoreI);
-    
+
     // move originBooleanArrayMemoryPointer to next address of element
     // subelement is boolean, thus subtype size is 1
     code.add(PushD, originBooleanArrayPointer);
@@ -508,14 +603,14 @@ public class ArrayHelper {
     code.add(PushI, 1);
     code.add(Add);
     code.add(StoreI);
-    
+
     // Decrement the counter by 1
     Macros.decrementInteger(code, counter);
     code.add(Jump, beginReduceElementCopyLabel);
     code.add(Label, endReduceElementCopyLabel);
-    
+
     code.add(Label, endLabel);
-    
+
     return code;
   }
 
@@ -1010,7 +1105,7 @@ public class ArrayHelper {
 
     // Need a push before function
     // Pre-decrement style (get new address)
-    decrementStackPointer(type.getSize());
+    code.append(decrementStackPointer(type.getSize()));
 
     // Store the element into the address
     Macros.loadIFrom(code, RunTime.STACK_POINTER);
@@ -1061,7 +1156,7 @@ public class ArrayHelper {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
     Macros.loadIFrom(code, RunTime.STACK_POINTER);
     code.add(opcodeForLoad(type));
-    incrementStackPointer(type.getSize());
+    code.append(incrementStackPointer(type.getSize()));
     return code;
   }
 

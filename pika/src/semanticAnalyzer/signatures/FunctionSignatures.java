@@ -161,7 +161,11 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     parameter.add(typeVariable);
     LambdaType lambdaTypeForMap = new LambdaType(parameter, typeVariableU);
     LambdaType lambdaTypeForReduce = new LambdaType(parameter, PrimitiveType.BOOLEAN);
-
+    
+    List<Type> parameterForFold = new ArrayList<Type>();
+    parameterForFold.add(typeVariable);
+    parameterForFold.add(typeVariable);
+    LambdaType lambdaTypeForFold = new LambdaType(parameterForFold, typeVariable);
 
     /////////////////////////////////////////////////////////////////////////////////
     // Arithmetic Operator (all promotable)
@@ -378,11 +382,13 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
         new FunctionSignature(0, false, new ArrayType(typeVariable), PrimitiveType.INTEGER),
         new FunctionSignature(0, false, PrimitiveType.STRING, PrimitiveType.INTEGER));
 
-    new FunctionSignatures(BinaryOperatorNode.MAP, new FunctionSignature(0, false,
+    new FunctionSignatures(BinaryOperatorNode.ARRAY_MAP, new FunctionSignature(0, false,
         new ArrayType(typeVariable), lambdaTypeForMap, new ArrayType(typeVariableU)));
     
-    new FunctionSignatures(BinaryOperatorNode.REDUCE, new FunctionSignature(0, false,
+    new FunctionSignatures(BinaryOperatorNode.ARRAY_REDUCE, new FunctionSignature(0, false,
         new ArrayType(typeVariable), lambdaTypeForReduce, new ArrayType(typeVariable)));
 
+    new FunctionSignatures(BinaryOperatorNode.ARRAY_FOLD, new FunctionSignature(0, false,
+        new ArrayType(typeVariable), lambdaTypeForFold, typeVariable));
   }
 }

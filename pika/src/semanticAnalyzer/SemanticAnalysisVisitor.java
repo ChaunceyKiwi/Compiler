@@ -378,7 +378,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   // BinaryExpression
   @Override
   public void visitLeave(BinaryOperatorNode node) {
-    assert node.nChildren() == 2;
+    assert node.nChildren() == 2 || node.nChildren() == 3;
     ParseNode left = node.child(0);
     ParseNode right = node.child(1);
     List<Type> childTypes = Arrays.asList(left.getType(), right.getType());
@@ -390,10 +390,13 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_COMPARISON, childTypes);
     } 
     else if (operator == Keyword.MAP) {
-      setTypeAndCheckSignature(node, BinaryOperatorNode.MAP, childTypes);
+      setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_MAP, childTypes);
     }
     else if (operator == Keyword.REDUCE) {
-      setTypeAndCheckSignature(node, BinaryOperatorNode.REDUCE, childTypes);
+      setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_REDUCE, childTypes);
+    }
+    else if(operator == Keyword.FOLD) {
+      setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_FOLD, childTypes);
     }
     else {
       // Check if the operands of operation obey the rule in the signature
