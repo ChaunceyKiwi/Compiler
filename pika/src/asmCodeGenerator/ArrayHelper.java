@@ -31,11 +31,9 @@ public class ArrayHelper {
     code.add(Duplicate);
     Macros.storeITo(code, originArrayMemoryPointer);
 
-    // Set (arrayLength - 2) as counter
+    // Set arrayLength as counter
     code.add(Label, sizeLabel);
     code.append(pushArrayLength());
-    code.add(PushI, -2);
-    code.add(Add);
     Macros.storeITo(code, counter);
 
     // move originArrayMemoryPointer to first address of element
@@ -48,6 +46,12 @@ public class ArrayHelper {
 
     // Push code for base into ASM stack
     code.append(base);
+    
+    // If array length is 0 
+    // return base address directly
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endLabel);
 
     // Every time enter the loop, there is one element on the ASMStack
     code.add(Label, beginElementFoldLabel);
@@ -118,6 +122,14 @@ public class ArrayHelper {
     code.add(PushI, -2);
     code.add(Add);
     Macros.storeITo(code, counter);
+    
+    // If length is 0 (-2 in counter), issue error
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(PushI, 2);
+    code.add(Add);
+    code.add(JumpFalse, RunTime.FOLD_OPERATOR_ARRAY_ZERO_LENGTH);
+    
 
     // move originArrayMemoryPointer to first address of element
     code.add(PushD, originArrayMemoryPointer);
@@ -143,6 +155,14 @@ public class ArrayHelper {
     code.add(PushI, originalArraySubTypeSize);
     code.add(Add);
     code.add(StoreI);
+    
+    // If the length is 1 (-1 in counter)
+    // return first element directly
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(PushI, 1);
+    code.add(Add);
+    code.add(JumpFalse, endLabel);
 
     // Every time enter the loop, there is one element on the ASMStack
     code.add(Label, beginElementFoldLabel);
