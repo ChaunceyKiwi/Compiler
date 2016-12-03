@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.List;
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 import asmCodeGenerator.codeStorage.ASMOpcode;
-import asmCodeGenerator.FunctionStorage;
 import asmCodeGenerator.ArrayHelper;
 import asmCodeGenerator.RationalHelper;
 import asmCodeGenerator.runtime.MemoryManager;
@@ -26,6 +25,7 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 // do not call the code generator if any errors have occurred during analysis.
 public class ASMCodeGenerator {
   ParseNode root;
+  static String GCDCalculation = "GCDCalculation";
   static String functionPrefix = "$function-";
   static String functionBodyExit = "-function-body-exit";
   static String reg1 = "register1";
@@ -34,7 +34,6 @@ public class ASMCodeGenerator {
   static String reg4 = "register4";
   static String reg5 = "register5";
   static String reg6 = "register6";
-  static String GCDCalculation = "GCDCalculation";
 
   public static ASMCodeFragment generate(ParseNode syntaxTree) {
     ASMCodeGenerator codeGenerator = new ASMCodeGenerator(syntaxTree);
@@ -54,7 +53,7 @@ public class ASMCodeGenerator {
     code.append(globalVariableBlockASM());
     code.append(programASM());
     code.append(MemoryManager.codeForAfterApplication());
-    code.append(FunctionStorage.GCDCalculation(GCDCalculation, reg1, reg2));
+    code.append(RationalHelper.GCDCalculation(GCDCalculation, reg1, reg2, reg3));
     return code;
   }
 
