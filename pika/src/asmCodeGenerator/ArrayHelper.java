@@ -10,9 +10,186 @@ import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
 public class ArrayHelper {
+  public static ASMCodeFragment arrayZipWithLambda(ArrayType arrayAType, ArrayType arrayBType,
+      ArrayType targetArrayType, ASMCodeFragment arrayACode, ASMCodeFragment arrayBCode,
+      ASMCodeFragment lambda, Labeller labeller, String counter, String arrayAPointer,
+      String arrayBPointer, String newArrayPointer) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+
+    String beginLabel = labeller.newLabel("array-zip-begin");
+    String endLabel = labeller.newLabel("array-zip-end");
+
+    String beginHeaderCreationLabel = labeller.newLabel("array-header-creation-begin");
+    String endHeaderCreationLabel = labeller.newLabel("array-header-creation-end");
+
+    String beginElementZipLabel = labeller.newLabel("array-element-zip-begin");
+    String endElementZipLabel = labeller.newLabel("array-element-zip-end");
+    
+    String sizeLabel = labeller.newLabel("array-zip-size");
+    String typeLabel = labeller.newLabel("array-zip-type");
+    String statusLabel = labeller.newLabel("array-zip-status");
+    String subTypeSizeLabel = labeller.newLabel("array-zip-subtype-size");
+    String lengthLabel = labeller.newLabel("array-zip-length");
+
+    int arrayASubtypeSize = arrayAType.getSubType().getSize();
+    int arrayBSubtypeSize = arrayBType.getSubType().getSize();
+    int targetArraySubtypeSize = targetArrayType.getSubType().getSize();
+
+    code.add(Label, beginLabel);
+    
+    // Get the address of arrayB
+    // Store it in the arrayBPointer
+    code.append(arrayBCode);
+    Macros.storeITo(code, arrayBPointer);
+    
+    // Get the address of arrayA
+    // Store it in the arrayAPointer
+    code.append(arrayACode);
+    code.add(Duplicate);
+    Macros.storeITo(code, arrayAPointer);
+
+    // Get the length of array and set as counter
+    code.add(Label, sizeLabel);
+    code.append(pushArrayLength());
+    code.add(Duplicate);
+    Macros.storeITo(code, counter);
+
+    // length * size + headSize = whole size for new array
+    code.add(PushI, targetArraySubtypeSize);
+    code.add(Multiply);
+    code.add(PushI, arrayAType.getHeaderSize());
+    code.add(Add);
+    
+    // Get the address for the new array
+    code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
+
+    // Get the address of the first element in new array
+    // And store it in newArrayMemoryPointer
+    code.add(Duplicate);
+    Macros.storeITo(code, newArrayPointer);
+   
+    code.add(Label, beginHeaderCreationLabel);
+
+    // add type identifier of array
+    code.add(Label, typeLabel);
+    code.add(Duplicate);
+    code.add(PushI, arrayAType.getTypeIdentifier());
+    code.add(Exchange);
+    Macros.writeIOffset(code, 0);
+
+    // add status of array
+    code.add(Label, statusLabel);
+    code.add(Duplicate);
+    code.add(PushI, arrayAType.getStatus());
+    code.add(Exchange);
+    Macros.writeIOffset(code, 4);
+
+    // add subtype size of array
+    code.add(Label, subTypeSizeLabel);
+    code.add(Duplicate);
+    code.add(PushI, targetArraySubtypeSize);
+    code.add(Exchange);
+    Macros.writeIOffset(code, 8);
+
+    // add length of array
+    code.add(Label, lengthLabel);
+    code.add(Duplicate);
+    code.add(PushD, arrayAPointer);
+    code.add(LoadI);
+    code.append(pushArrayLength());
+    code.add(Exchange);
+    Macros.writeIOffset(code, 12);
+
+    code.add(Label, endHeaderCreationLabel);
+
+    // move arrayAPointer to first address of element in arrayA
+    code.add(PushD, arrayAPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, arrayAType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    // move arrayBPointer to first address of element in arrayB
+    code.add(PushD, arrayBPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, arrayBType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to address of first element to store
+    code.add(PushD, newArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, arrayAType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    code.add(Label, beginElementZipLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementZipLabel);
+    
+    // The address of new array to store value
+    code.add(PushD, newArrayPointer);
+    code.add(LoadI);
+    
+    // Load arrayAPointer and arrayBPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, arrayAPointer);
+    code.add(LoadI);
+    code.add(opcodeForLoad(arrayAType.getSubType()));
+    code.add(PushD, arrayBPointer);
+    code.add(LoadI);
+    code.add(opcodeForLoad(arrayBType.getSubType()));
+    
+    code.add(Exchange);
+    code.append(pushElementToFrameStack(arrayAType.getSubType()));
+    code.append(pushElementToFrameStack(arrayBType.getSubType()));
+    code.append(lambda);
+    code.add(CallV);
+    code.append(popElementFromFrameToASMStack(targetArrayType.getSubType()));
+    code.add(opcodeForStore(targetArrayType.getSubType()));
+
+    // move newArrayPointer to next address of element to store
+    code.add(PushD, newArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, targetArraySubtypeSize);
+    code.add(Add);
+    code.add(StoreI);
+    
+    // move arrayAPointer to next address of element
+    code.add(PushD, arrayAPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, arrayASubtypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move arrayBPointer to next address of element
+    code.add(PushD, arrayBPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, arrayBSubtypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementZipLabel);
+    code.add(Label, endElementZipLabel);
+
+    code.add(Label, endLabel);
+
+    return code;
+  }
+
+
   public static ASMCodeFragment arrayFoldWithLambdaAndBase(ArrayType originalArrayType,
-      ASMCodeFragment originalArray, ASMCodeFragment base,ASMCodeFragment lambda, Labeller labeller, String counter,
-      String originArrayMemoryPointer) {
+      ASMCodeFragment originalArray, ASMCodeFragment base, ASMCodeFragment lambda,
+      Labeller labeller, String counter, String originArrayMemoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
     String beginLabel = labeller.newLabel("array-fold-begin");
@@ -46,8 +223,8 @@ public class ArrayHelper {
 
     // Push code for base into ASM stack
     code.append(base);
-    
-    // If array length is 0 
+
+    // If array length is 0
     // return base address directly
     code.add(PushD, counter);
     code.add(LoadI);
@@ -122,14 +299,14 @@ public class ArrayHelper {
     code.add(PushI, -2);
     code.add(Add);
     Macros.storeITo(code, counter);
-    
+
     // If length is 0 (-2 in counter), issue error
     code.add(PushD, counter);
     code.add(LoadI);
     code.add(PushI, 2);
     code.add(Add);
     code.add(JumpFalse, RunTime.FOLD_OPERATOR_ARRAY_ZERO_LENGTH);
-    
+
 
     // move originArrayMemoryPointer to first address of element
     code.add(PushD, originArrayMemoryPointer);
@@ -155,7 +332,7 @@ public class ArrayHelper {
     code.add(PushI, originalArraySubTypeSize);
     code.add(Add);
     code.add(StoreI);
-    
+
     // If the length is 1 (-1 in counter)
     // return first element directly
     code.add(PushD, counter);
@@ -372,8 +549,6 @@ public class ArrayHelper {
     return code;
   }
 
-  // Assume we already have [bool] which has the same length as originalArray
-  // The address of boolean array is currently on the stack
   public static ASMCodeFragment arrayReduceWithLambda(ArrayType originalArrayType,
       ArrayType targetArrayType, ASMCodeFragment originalArray, ASMCodeFragment lambda,
       Labeller labeller, String counter, String lengthCounter, String originArrayMemoryPointer,
@@ -730,9 +905,11 @@ public class ArrayHelper {
     String endLabel = labeller.newLabel("array-creation-end");
 
     code.add(Label, beginLabel);
-    code.add(Label, getLengthLabel);
-
+    
+    code.append(backupRegister(reg1));
+    
     // Length of array cannot be negative
+    code.add(Label, getLengthLabel);
     code.append(lengthOfArray);
     code.add(Duplicate);
     code.add(Duplicate);
@@ -777,6 +954,11 @@ public class ArrayHelper {
     code.add(LoadI);
     code.add(Exchange);
     Macros.writeIOffset(code, 12);
+    
+    // restore and finally leave address of new
+    // array on the ASM stack
+    code.add(Exchange);
+    code.append(restoreRegister(reg1));
 
     code.add(Label, endLabel);
     return code;

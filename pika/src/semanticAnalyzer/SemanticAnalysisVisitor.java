@@ -55,13 +55,13 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
         forStatementSequenceTypeError(node);
         return;
       }
-      
+
       if (node.getParent().getToken().isLextant(Keyword.INDEX)) {
         addBinding(identifier, PrimitiveType.INTEGER, false);
       } else if (sequenceType == PrimitiveType.STRING) {
         addBinding(identifier, PrimitiveType.CHARACTER, false);
       } else if (sequenceType instanceof ArrayType) {
-        addBinding(identifier, ((ArrayType)sequenceType).getSubType(), false);
+        addBinding(identifier, ((ArrayType) sequenceType).getSubType(), false);
       }
     }
   }
@@ -388,24 +388,21 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     if ((left.getType() instanceof ArrayType && right.getType() instanceof ArrayType
         && (operator == Punctuator.EQUAL || operator == Punctuator.NOTEQUAL))) {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_COMPARISON, childTypes);
-    } 
-    else if (operator == Keyword.MAP) {
+    } else if (operator == Keyword.MAP) {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_MAP, childTypes);
-    }
-    else if (operator == Keyword.REDUCE) {
+    } else if (operator == Keyword.REDUCE) {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_REDUCE, childTypes);
-    }
-    else if(operator == Keyword.FOLD) {
-      if(node.nChildren() == 2) {
+    } else if (operator == Keyword.FOLD) {
+      if (node.nChildren() == 2) {
         setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_FOLD, childTypes);
-      } else if(node.nChildren() == 3) {
+      } else if (node.nChildren() == 3) {
         ParseNode base = node.child(1);
         ParseNode rightForFold = node.child(2);
-        List<Type> childTypesForFold = Arrays.asList(left.getType(), base.getType(), rightForFold.getType());
+        List<Type> childTypesForFold =
+            Arrays.asList(left.getType(), base.getType(), rightForFold.getType());
         setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_FOLD, childTypesForFold);
       }
-    }
-    else {
+    } else {
       // Check if the operands of operation obey the rule in the signature
       // And set type as the result type of signature
       setTypeAndCheckSignature(node, operator, childTypes);
@@ -420,7 +417,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   // Unary Expression
   @Override
   public void visitLeave(UnaryOperatorNode node) {
-    assert node.nChildren() == 1;
+    assert node.nChildren() == 1 || node.nChildren() == 3;
     List<Type> childTypes = Arrays.asList(node.child(0).getType());
 
     Lextant operator = operatorFor(node);
@@ -434,7 +431,12 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       setTypeAndCheckSignature(node, UnaryOperatorNode.ARRAY_CLONE, childTypes);
     } else if (operator == Keyword.REVERSE) {
       setTypeAndCheckSignature(node, UnaryOperatorNode.ARRAY_REVERSE, childTypes);
+    } else if (operator == Keyword.ZIP) {
+      childTypes =
+          Arrays.asList(node.child(0).getType(), node.child(1).getType(), node.child(2).getType());
+      setTypeAndCheckSignature(node, UnaryOperatorNode.ARRAY_ZIP, childTypes);
     }
+
   }
 
   private Lextant operatorFor(UnaryOperatorNode node) {

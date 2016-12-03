@@ -157,6 +157,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
   static {
     TypeVariable typeVariable = new TypeVariable();
     TypeVariable typeVariableU = new TypeVariable();
+    TypeVariable typeVariableS = new TypeVariable();
     List<Type> parameter = new ArrayList<Type>();
     parameter.add(typeVariable);
     LambdaType lambdaTypeForMap = new LambdaType(parameter, typeVariableU);
@@ -171,6 +172,12 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     parameterForFoldWithBase.add(typeVariableU);
     parameterForFoldWithBase.add(typeVariable);
     LambdaType lambdaTypeForFoldWithBase = new LambdaType(parameterForFoldWithBase, typeVariable);
+
+    List<Type> parameterForZip = new ArrayList<Type>();
+    parameterForZip.add(typeVariableS);
+    parameterForZip.add(typeVariable);
+    LambdaType lambdaTypeForZip = new LambdaType(parameterForZip, typeVariableU);
+
 
     /////////////////////////////////////////////////////////////////////////////////
     // Arithmetic Operator (all promotable)
@@ -386,6 +393,10 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     new FunctionSignatures(UnaryOperatorNode.ARRAY_LENGTH,
         new FunctionSignature(0, false, new ArrayType(typeVariable), PrimitiveType.INTEGER),
         new FunctionSignature(0, false, PrimitiveType.STRING, PrimitiveType.INTEGER));
+
+    new FunctionSignatures(UnaryOperatorNode.ARRAY_ZIP,
+        new FunctionSignature(0, false, new ArrayType(typeVariableS), new ArrayType(typeVariable),
+            lambdaTypeForZip, new ArrayType(typeVariableU)));
 
     new FunctionSignatures(BinaryOperatorNode.ARRAY_MAP, new FunctionSignature(0, false,
         new ArrayType(typeVariable), lambdaTypeForMap, new ArrayType(typeVariableU)));

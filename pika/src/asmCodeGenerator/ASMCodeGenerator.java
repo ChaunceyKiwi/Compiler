@@ -153,7 +153,7 @@ public class ASMCodeGenerator {
       return getAndRemoveCode(tree);
     }
 
-    ASMCodeFragment removeValueCode(ParseNode node) {
+    public ASMCodeFragment removeValueCode(ParseNode node) {
       ASMCodeFragment frag = getAndRemoveCode(node);
       makeFragmentValueCode(frag, node);
       return frag;
@@ -1012,6 +1012,18 @@ public class ASMCodeGenerator {
       else if (operator == Keyword.REVERSE) {
         code.append(StringHelper.stringReversal(arg1, reg1, reg2, reg3, reg4));
       }
+      
+      else if (operator == Keyword.ZIP) {
+        Labeller labeller = new Labeller("-zip-operator-");
+        ASMCodeFragment arrayACode = arg1;
+        ASMCodeFragment arrayBCode = removeValueCode(node.child(1));
+        ASMCodeFragment lambdaCode = removeValueCode(node.child(2));
+        ArrayType arrayAType = (ArrayType)(node.child(0).getType());
+        ArrayType arrayBType = (ArrayType)(node.child(1).getType());
+        ArrayType targetArrayType = (ArrayType)(node.getType());
+
+        code.append(ArrayHelper.arrayZipWithLambda(arrayAType, arrayBType, targetArrayType, arrayACode, arrayBCode, lambdaCode, labeller, regCounter, reg1, reg2, reg3));
+      }
 
       addPromotionCodeIfNeeded(node);
     }
@@ -1022,6 +1034,7 @@ public class ASMCodeGenerator {
     // Int -> Bool, Char -> Bool
     // selfType -> selfType
     public void visitLeave(TypeCastingNode node) {
+      newValueCode(node);
       Type originalType = node.child(0).getType();
       Type targetType = node.child(1).getType();
       ASMCodeFragment value = removeValueCode(node.child(0));
