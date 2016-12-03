@@ -24,7 +24,7 @@ public class ArrayHelper {
 
     String beginElementZipLabel = labeller.newLabel("array-element-zip-begin");
     String endElementZipLabel = labeller.newLabel("array-element-zip-end");
-    
+
     String sizeLabel = labeller.newLabel("array-zip-size");
     String typeLabel = labeller.newLabel("array-zip-type");
     String statusLabel = labeller.newLabel("array-zip-status");
@@ -36,12 +36,12 @@ public class ArrayHelper {
     int targetArraySubtypeSize = targetArrayType.getSubType().getSize();
 
     code.add(Label, beginLabel);
-    
+
     // Get the address of arrayB
     // Store it in the arrayBPointer
     code.append(arrayBCode);
     Macros.storeITo(code, arrayBPointer);
-    
+
     // Get the address of arrayA
     // Store it in the arrayAPointer
     code.append(arrayACode);
@@ -59,7 +59,7 @@ public class ArrayHelper {
     code.add(Multiply);
     code.add(PushI, arrayAType.getHeaderSize());
     code.add(Add);
-    
+
     // Get the address for the new array
     code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
 
@@ -67,7 +67,7 @@ public class ArrayHelper {
     // And store it in newArrayMemoryPointer
     code.add(Duplicate);
     Macros.storeITo(code, newArrayPointer);
-   
+
     code.add(Label, beginHeaderCreationLabel);
 
     // add type identifier of array
@@ -130,11 +130,11 @@ public class ArrayHelper {
     code.add(PushD, counter);
     code.add(LoadI);
     code.add(JumpFalse, endElementZipLabel);
-    
+
     // The address of new array to store value
     code.add(PushD, newArrayPointer);
     code.add(LoadI);
-    
+
     // Load arrayAPointer and arrayBPointer
     // The address they point to is exactly the target address
     code.add(PushD, arrayAPointer);
@@ -143,7 +143,7 @@ public class ArrayHelper {
     code.add(PushD, arrayBPointer);
     code.add(LoadI);
     code.add(opcodeForLoad(arrayBType.getSubType()));
-    
+
     code.add(Exchange);
     code.append(pushElementToFrameStack(arrayAType.getSubType()));
     code.append(pushElementToFrameStack(arrayBType.getSubType()));
@@ -159,7 +159,7 @@ public class ArrayHelper {
     code.add(PushI, targetArraySubtypeSize);
     code.add(Add);
     code.add(StoreI);
-    
+
     // move arrayAPointer to next address of element
     code.add(PushD, arrayAPointer);
     code.add(Duplicate);
@@ -905,9 +905,9 @@ public class ArrayHelper {
     String endLabel = labeller.newLabel("array-creation-end");
 
     code.add(Label, beginLabel);
-    
+
     code.append(backupRegister(reg1));
-    
+
     // Length of array cannot be negative
     code.add(Label, getLengthLabel);
     code.append(lengthOfArray);
@@ -954,11 +954,112 @@ public class ArrayHelper {
     code.add(LoadI);
     code.add(Exchange);
     Macros.writeIOffset(code, 12);
-    
+
     // restore and finally leave address of new
     // array on the ASM stack
     code.add(Exchange);
     code.append(restoreRegister(reg1));
+
+    code.add(Label, endLabel);
+    return code;
+  }
+
+  public static ASMCodeFragment arrayReversal(ArrayType arrayType, Labeller labeller,
+      ASMCodeFragment arg1, String originalArrayPointer, String lenPointer, String newArrayPointer,
+      String counter) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+    String beginLabel = labeller.newLabel("-begin-");
+    String endLabel = labeller.newLabel("-end-");
+    String beginElementCopyLabel = labeller.newLabel("array-element-copy-begin");
+    String endElementCopyLabel = labeller.newLabel("array-element-copy-end");
+    int subTypeSize = arrayType.getSubType().getSize();
+
+    code.add(Label, beginLabel);
+
+    // store the address of array in register
+    code.append(arg1);
+    Macros.storeITo(code, originalArrayPointer);
+
+    // store the length of array in register
+    code.add(PushD, originalArrayPointer);
+    code.add(LoadI);
+    code.append(pushArrayLength());
+    Macros.storeITo(code, lenPointer);
+
+    // Create array with length as len(m)
+    // Store the address of new string in newStringPointer
+    ASMCodeFragment length = new ASMCodeFragment(GENERATES_VALUE);
+    length.add(PushD, lenPointer);
+    length.add(LoadI);
+    code.append(backupRegister(counter));
+    code.append(arrayCreation(arrayType, length, labeller, counter));
+    code.add(Exchange);
+    code.append(restoreRegister(counter));
+    code.add(Duplicate);
+    Macros.storeITo(code, newArrayPointer);
+
+    // move originArrayMemoryPointer to the address of last element
+    code.add(PushD, originalArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, arrayType.getHeaderSize());
+    code.add(Add);
+    code.add(PushD, lenPointer);
+    code.add(LoadI);
+    code.add(PushI, -1);
+    code.add(Add);
+    code.add(PushI, subTypeSize);
+    code.add(Multiply);
+    code.add(Add);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to address of first element to store
+    code.add(PushD, newArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, arrayType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    // Set counter's value as the length of string
+    code.add(PushD, lenPointer);
+    code.add(LoadI);
+    Macros.storeITo(code, counter);
+
+    code.add(Label, beginElementCopyLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementCopyLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, newArrayPointer);
+    code.add(LoadI);
+    code.add(PushD, originalArrayPointer);
+    code.add(LoadI);
+    code.add(opcodeForLoad(arrayType));
+    code.add(opcodeForStore(arrayType));
+
+    // move originArrayMemoryPointer to last address of element
+    code.add(PushD, originalArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, subTypeSize);
+    code.add(Subtract);
+    code.add(StoreI);
+
+    // move newArrayMemoryPointer to next address of new element to store
+    code.add(PushD, newArrayPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, subTypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementCopyLabel);
+    code.add(Label, endElementCopyLabel);
 
     code.add(Label, endLabel);
     return code;

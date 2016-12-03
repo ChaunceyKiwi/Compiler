@@ -1010,7 +1010,14 @@ public class ASMCodeGenerator {
       }
 
       else if (operator == Keyword.REVERSE) {
-        code.append(StringHelper.stringReversal(arg1, reg1, reg2, reg3, reg4));
+        Type originalType = node.child(0).getType();
+        if (originalType instanceof ArrayType) {
+          Labeller labeller = new Labeller("-array-reversal-");
+          code.append(ArrayHelper.arrayReversal((ArrayType)originalType, labeller, arg1, reg1, reg2, reg3, reg4));
+        } else if (originalType == PrimitiveType.STRING) {
+          Labeller labeller = new Labeller("-string-reversal-");
+          code.append(StringHelper.stringReversal(arg1, labeller,reg1, reg2, reg3, reg4));
+        }
       }
       
       else if (operator == Keyword.ZIP) {

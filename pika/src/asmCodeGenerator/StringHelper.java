@@ -318,10 +318,9 @@ public class StringHelper {
     return code;
   }
 
-  public static ASMCodeFragment stringReversal(ASMCodeFragment arg1, String originalStringPointer,
+  public static ASMCodeFragment stringReversal(ASMCodeFragment arg1, Labeller labeller, String originalStringPointer,
       String lenPointer, String newStringPointer, String counter) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-    Labeller labeller = new Labeller("-string-reversal-");
 
     String beginLabel = labeller.newLabel("-begin-");
     String endLabel = labeller.newLabel("-end-");
