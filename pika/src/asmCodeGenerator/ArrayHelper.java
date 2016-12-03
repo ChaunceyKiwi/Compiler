@@ -10,6 +10,87 @@ import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 
 public class ArrayHelper {
+  public static ASMCodeFragment arrayFoldWithLambdaAndBase(ArrayType originalArrayType,
+      ASMCodeFragment originalArray, ASMCodeFragment base,ASMCodeFragment lambda, Labeller labeller, String counter,
+      String originArrayMemoryPointer) {
+    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
+
+    String beginLabel = labeller.newLabel("array-fold-begin");
+    String endLabel = labeller.newLabel("array-fold-end");
+    String beginElementFoldLabel = labeller.newLabel("array-element-fold-begin");
+    String endElementFoldLabel = labeller.newLabel("array-element-fold-end");
+    String sizeLabel = labeller.newLabel("array-map-size");
+    int originalArraySubTypeSize = originalArrayType.getSubType().getSize();
+
+    // Location of original array start
+    code.add(Label, beginLabel);
+    code.append(originalArray);
+
+    // Get the address of original array
+    // Store it in the originArrayMemoryPointer
+    code.add(Duplicate);
+    Macros.storeITo(code, originArrayMemoryPointer);
+
+    // Set (arrayLength - 2) as counter
+    code.add(Label, sizeLabel);
+    code.append(pushArrayLength());
+    code.add(PushI, -2);
+    code.add(Add);
+    Macros.storeITo(code, counter);
+
+    // move originArrayMemoryPointer to first address of element
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, originalArrayType.getHeaderSize());
+    code.add(Add);
+    code.add(StoreI);
+
+    // Push code for base into ASM stack
+    code.append(base);
+
+    // Every time enter the loop, there is one element on the ASMStack
+    code.add(Label, beginElementFoldLabel);
+    code.add(PushD, counter);
+    code.add(LoadI);
+    code.add(JumpFalse, endElementFoldLabel);
+
+    // Load newArrayMemoryPointer and originArrayMemoryPointer
+    // The address they point to is exactly the target address
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(LoadI);
+    if (originalArraySubTypeSize == 1) {
+      code.add(LoadC);
+    } else if (originalArraySubTypeSize == 4) {
+      code.add(LoadI);
+    } else if (originalArraySubTypeSize == 8) {
+      code.add(LoadF);
+    }
+
+    code.add(Exchange);
+    code.append(pushElementToFrameStack(originalArrayType.getSubType()));
+    code.append(pushElementToFrameStack(originalArrayType.getSubType()));
+    code.append(lambda);
+    code.add(CallV);
+    code.append(popElementFromFrameToASMStack(originalArrayType.getSubType()));
+
+    // move originArrayMemoryPointer to next address of element
+    code.add(PushD, originArrayMemoryPointer);
+    code.add(Duplicate);
+    code.add(LoadI);
+    code.add(PushI, originalArraySubTypeSize);
+    code.add(Add);
+    code.add(StoreI);
+
+    // Decrement the counter by 1
+    Macros.decrementInteger(code, counter);
+    code.add(Jump, beginElementFoldLabel);
+    code.add(Label, endElementFoldLabel);
+    code.add(Label, endLabel);
+
+    return code;
+  }
+
   public static ASMCodeFragment arrayFoldWithLambda(ArrayType originalArrayType,
       ASMCodeFragment originalArray, ASMCodeFragment lambda, Labeller labeller, String counter,
       String originArrayMemoryPointer) {

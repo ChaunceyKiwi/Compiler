@@ -883,24 +883,34 @@ public class ASMCodeGenerator {
       newValueCode(node);
       ParseNode array = node.child(0);
       ParseNode lambda = node.child(1);
-      ArrayType originalArrayType = (ArrayType)(array.getType());
+      ArrayType originalArrayType = (ArrayType) (array.getType());
       ASMCodeFragment originalArrayCode = removeValueCode(array);
       ASMCodeFragment lambdaCode = removeValueCode(lambda);
       Lextant operator = node.getOperator();
 
       if (operator == Keyword.MAP) {
         Labeller labeller = new Labeller("array-map-operator");
-        ArrayType targetArrayType = (ArrayType)(node.getType());
-        code.append(ArrayHelper.arrayMapWithLambda(originalArrayType, targetArrayType, originalArrayCode, lambdaCode,
-            labeller, regCounter, reg1, reg2));
+        ArrayType targetArrayType = (ArrayType) (node.getType());
+        code.append(ArrayHelper.arrayMapWithLambda(originalArrayType, targetArrayType,
+            originalArrayCode, lambdaCode, labeller, regCounter, reg1, reg2));
       } else if (operator == Keyword.REDUCE) {
         Labeller labeller = new Labeller("array-reduce-operator");
-        ArrayType targetArrayType = (ArrayType)(node.getType());
-        code.append(ArrayHelper.arrayReduceWithLambda(originalArrayType, targetArrayType, originalArrayCode, lambdaCode,
-            labeller, regCounter, reg1, reg2, reg3, reg4));
+        ArrayType targetArrayType = (ArrayType) (node.getType());
+        code.append(ArrayHelper.arrayReduceWithLambda(originalArrayType, targetArrayType,
+            originalArrayCode, lambdaCode, labeller, regCounter, reg1, reg2, reg3, reg4));
       } else if (operator == Keyword.FOLD) {
         Labeller labeller = new Labeller("array-fold-operator");
-        code.append(ArrayHelper.arrayFoldWithLambda(originalArrayType, originalArrayCode, lambdaCode, labeller, regCounter, reg1));
+        if (node.nChildren() == 2) {
+          code.append(ArrayHelper.arrayFoldWithLambda(originalArrayType, originalArrayCode,
+              lambdaCode, labeller, regCounter, reg1));
+        }else if (node.nChildren() == 3) {
+          // If it's a fold with base, then second child is not lambda but base
+          // Give lambda to base and set value for real lambda
+          ASMCodeFragment baseCode = lambdaCode;
+          lambda = node.child(2);
+          lambdaCode = removeValueCode(lambda);
+          code.append(ArrayHelper.arrayFoldWithLambdaAndBase(originalArrayType, originalArrayCode, baseCode, lambdaCode, labeller, regCounter, reg1));
+        }
       }
     }
 

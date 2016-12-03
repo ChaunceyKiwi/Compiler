@@ -396,7 +396,14 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_REDUCE, childTypes);
     }
     else if(operator == Keyword.FOLD) {
-      setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_FOLD, childTypes);
+      if(node.nChildren() == 2) {
+        setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_FOLD, childTypes);
+      } else if(node.nChildren() == 3) {
+        ParseNode base = node.child(1);
+        ParseNode rightForFold = node.child(2);
+        List<Type> childTypesForFold = Arrays.asList(left.getType(), base.getType(), rightForFold.getType());
+        setTypeAndCheckSignature(node, BinaryOperatorNode.ARRAY_FOLD, childTypesForFold);
+      }
     }
     else {
       // Check if the operands of operation obey the rule in the signature
