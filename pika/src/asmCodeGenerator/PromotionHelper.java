@@ -13,50 +13,47 @@ public class PromotionHelper {
   // Char -> Int, Char -> Float, Char -> Rat
   // Int -> Float , Int -> Rat
 
-  public static ASMCodeFragment codePromoteTypeAToTypeB(Type typeA, Type typeB) {
-    ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
-
+  public static ASMCodeFragment codePromoteTypeAToTypeB(Type typeA, Type typeB, ASMCodeFragment value) {
     // Char -> Int
     if (typeA == PrimitiveType.CHARACTER && typeB == PrimitiveType.INTEGER) {
-      return code;
+      return value;
     }
 
     // Char -> Floating
     if (typeA == PrimitiveType.CHARACTER && typeB == PrimitiveType.FLOATING) {
-      code.add(ConvertF);
+      value.add(ConvertF);
+      return value;
     }
 
     // Char -> Rational
     if (typeA == PrimitiveType.CHARACTER && typeB == PrimitiveType.RATIONAL) {
-      ASMCodeFragment arg1 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
-      ASMCodeFragment arg2 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
-
+      ASMCodeFragment arg2 = new ASMCodeFragment(GENERATES_VALUE);
       arg2.add(PushI, 1);
-      code.append(RationalHelper.performOverPuntuator(arg1, arg2, ASMCodeGenerator.GCDCalculation,
+      
+      value = RationalHelper.performOverPuntuator(value, arg2, ASMCodeGenerator.GCDCalculation,
           ASMCodeGenerator.reg1, ASMCodeGenerator.reg2, ASMCodeGenerator.reg3,
-          ASMCodeGenerator.reg4));
-      return code;
+          ASMCodeGenerator.reg4);
+      return value;
     }
 
     // Int -> Float
     if (typeA == PrimitiveType.INTEGER && typeB == PrimitiveType.FLOATING) {
-      code.add(ConvertF);
-      return code;
+      value.add(ConvertF);
+      return value;
     }
 
     // Int -> Rat
     if (typeA == PrimitiveType.INTEGER && typeB == PrimitiveType.RATIONAL) {
-      ASMCodeFragment arg1 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
-      ASMCodeFragment arg2 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
-
+      ASMCodeFragment arg2 = new ASMCodeFragment(GENERATES_VALUE);
       arg2.add(PushI, 1);
-      code.append(RationalHelper.performOverPuntuator(arg1, arg2, ASMCodeGenerator.GCDCalculation,
+      value = RationalHelper.performOverPuntuator(value, arg2, ASMCodeGenerator.GCDCalculation,
           ASMCodeGenerator.reg1, ASMCodeGenerator.reg2, ASMCodeGenerator.reg3,
-          ASMCodeGenerator.reg4));
-      return code;
+          ASMCodeGenerator.reg4);
+      return value;
     }
-
-    return code;
+    
+    // If no promotion
+    return value;
   }
 
   ///////////////////////////////////////////////////////////////////////
@@ -162,7 +159,7 @@ public class PromotionHelper {
 
     // Char -> Rat
     if (typeA == PrimitiveType.CHARACTER && typeB == PrimitiveType.RATIONAL) {
-      ASMCodeFragment arg2 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
+      ASMCodeFragment arg2 = new ASMCodeFragment(GENERATES_VALUE);
       arg2.add(PushI, 1);
 
       code.append(RationalHelper.performOverPuntuator(value, arg2, ASMCodeGenerator.GCDCalculation,
@@ -173,7 +170,7 @@ public class PromotionHelper {
 
     // Int -> Rat
     if (typeA == PrimitiveType.INTEGER && typeB == PrimitiveType.RATIONAL) {
-      ASMCodeFragment arg2 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
+      ASMCodeFragment arg2 = new ASMCodeFragment(GENERATES_VALUE);
       arg2.add(PushI, 1);
 
       code.append(RationalHelper.performOverPuntuator(value, arg2, ASMCodeGenerator.GCDCalculation,
@@ -184,7 +181,7 @@ public class PromotionHelper {
 
     // Float -> Rat
     if (typeA == PrimitiveType.FLOATING && typeB == PrimitiveType.RATIONAL) {
-      ASMCodeFragment arg2 = new ASMCodeFragment(ASMCodeFragment.CodeType.GENERATES_VALUE);
+      ASMCodeFragment arg2 = new ASMCodeFragment(GENERATES_VALUE);
       arg2.add(PushI, 223092870); // magic number
 
       code.append(RationalHelper.performRationalizePuntuator(value, arg2, PrimitiveType.FLOATING,

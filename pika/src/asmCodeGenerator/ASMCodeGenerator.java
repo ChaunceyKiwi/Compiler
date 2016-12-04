@@ -145,7 +145,8 @@ public class ASMCodeGenerator {
     public ASMCodeFragment removeValueCode(ParseNode node) {
       ASMCodeFragment frag = getAndRemoveCode(node);
       makeFragmentValueCode(frag, node);
-      return frag;
+      ASMCodeFragment fragAfterPromotion = addPromotionCodeIfNeeded(node, frag);
+      return fragAfterPromotion;
     }
 
     private ASMCodeFragment removeAddressCode(ParseNode node) {
@@ -197,11 +198,6 @@ public class ASMCodeGenerator {
         code.add(LoadI);
       } else {
         assert false : "node " + node;
-      }
-
-      if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE
-          && originalType != currentType) {
-        code.append(PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType));
       }
 
       code.markAsValue();
@@ -444,19 +440,18 @@ public class ASMCodeGenerator {
         popElementFromFrameToASMStack(type);
       }
 
-      addPromotionCodeIfNeeded(node);
-
       code.add(Label, endLabel);
     }
 
-    private void addPromotionCodeIfNeeded(ParseNode node) {
+    private ASMCodeFragment addPromotionCodeIfNeeded(ParseNode node, ASMCodeFragment value) {
       Type originalType = node.getOriginalType();
       Type currentType = node.getType();
 
       if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE
           && originalType != currentType) {
-        code.append(PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType));
+          value = PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType, value);
       }
+      return value;
     }
 
     // pop element from frame stack and increment SP
@@ -953,7 +948,6 @@ public class ASMCodeGenerator {
           }
         }
       }
-      addPromotionCodeIfNeeded(node);
     }
 
     public boolean isRationalOperation(String operation) {
@@ -1020,8 +1014,6 @@ public class ASMCodeGenerator {
         code.append(ArrayHelper.arrayZipWithLambda(arrayAType, arrayBType, targetArrayType,
             arrayACode, arrayBCode, lambdaCode, reg1, reg2, reg3, reg4));
       }
-
-      addPromotionCodeIfNeeded(node);
     }
 
     // Following castings are allowed
@@ -1167,25 +1159,21 @@ public class ASMCodeGenerator {
     public void visit(BooleanConstantNode node) {
       newValueCode(node);
       code.add(PushI, node.getValue() ? 1 : 0);
-      addPromotionCodeIfNeeded(node);
-    }
+  }
 
     public void visit(IntegerConstantNode node) {
       newValueCode(node);
       code.add(PushI, node.getValue());
-      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(FloatingConstantNode node) {
       newValueCode(node);
       code.add(PushF, node.getValue());
-      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(CharConstantNode node) {
       newValueCode(node);
       code.add(PushI, node.getValue());
-      addPromotionCodeIfNeeded(node);
     }
 
     public void visit(StringConstantNode node) {
