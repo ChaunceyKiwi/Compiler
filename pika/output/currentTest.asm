@@ -378,7 +378,7 @@
         Jump         $$general-runtime-error   
         DLabel       $usable-memory-start      
         DLabel       $global-memory-block      
-        DataZ        0                         
+        DataZ        4                         
         DLabel       register1                 
         DataI        0                         
         DLabel       register2                 
@@ -392,225 +392,503 @@
         DLabel       register6                 
         DataI        0                         
         Label        $$main                    
-        Label        --rationalize--1-rational-creation-begin 
-        Label        --rationalize--1-backup-reg-begin 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% pop
+        Label        --array-creation--1--begin 
+        Label        --array-creation--1-backup-reg-begin 
         PushD        register1                 
         LoadI                                  
-        PushD        register2                 
-        LoadI                                  
-        PushD        register3                 
-        LoadI                                  
-        PushD        register4                 
-        LoadI                                  
-        PushD        register5                 
-        LoadI                                  
-        PushD        register6                 
-        LoadI                                  
-        Label        --rationalize--1-backup-reg-end 
-        PushF        4.33000                   
-        PushI        223092870                 
+        Label        --array-creation--1-backup-reg-end 
+        Label        --array-creation--1--get-length 
+        PushI        3                         
         Duplicate                              
         Duplicate                              
-        JumpFalse    $$rational-denominator-zero 
-        PushD        register6                 
-        Exchange                               
-        StoreI                                 
-        ConvertF                               
-        FMultiply                              
-        ConvertI                               
-        PushD        register5                 
-        Exchange                               
-        StoreI                                 
-        PushD        register1                 
-        PushD        register5                 
-        LoadI                                  
-        Duplicate                              
-        PushD        register3                 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpPos      --rationalize--1-get-abs-for-arg1 
-        Negate                                 
-        Label        --rationalize--1-get-abs-for-arg1 
-        StoreI                                 
-        PushD        register2                 
-        PushD        register6                 
-        LoadI                                  
-        Duplicate                              
-        PushD        register4                 
-        Exchange                               
-        StoreI                                 
-        Duplicate                              
-        JumpPos      --rationalize--1-get-abs-for-arg2 
-        Negate                                 
-        Label        --rationalize--1-get-abs-for-arg2 
-        StoreI                                 
-        PushD        register1                 
-        LoadI                                  
-        PushD        register2                 
-        LoadI                                  
-        PushD        register3                 
-        LoadI                                  
-        Call         GCDCalculation            
-        Exchange                               
-        PushD        register3                 
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        PushD        register2                 
-        Exchange                               
-        StoreI                                 
-        Exchange                               
         PushD        register1                 
         Exchange                               
         StoreI                                 
-        PushD        register1                 
-        Exchange                               
-        StoreI                                 
+        JumpNeg      $$array-size-negative     
+        Label        --array-creation--1-set-size 
         PushI        8                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
         Call         -mem-manager-allocate     
+        Label        --array-creation--1-set-type 
         Duplicate                              
-        PushD        register3                 
-        LoadI                                  
-        PushD        register1                 
-        LoadI                                  
-        Divide                                 
+        PushI        7                         
         Exchange                               
         PushI        0                         
         Add                                    
         Exchange                               
         StoreI                                 
+        Label        --array-creation--1-set-status 
         Duplicate                              
-        PushD        register4                 
-        LoadI                                  
-        PushD        register1                 
-        LoadI                                  
-        Divide                                 
-        Exchange                               
-        PushI        4                         
-        Add                                    
-        Exchange                               
-        StoreI                                 
-        Label        --rationalize--1-rational-creation-end 
-        Label        --rationalize--1-restore-reg-begin 
-        Exchange                               
-        PushD        register6                 
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        PushD        register5                 
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        PushD        register4                 
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        PushD        register3                 
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        PushD        register2                 
-        Exchange                               
-        StoreI                                 
-        Exchange                               
-        PushD        register1                 
-        Exchange                               
-        StoreI                                 
-        Label        --rationalize--1-restore-reg-end 
-        Label        --print-rational--2--begin- 
-        Label        --print-rational--2-backup-reg-begin 
-        PushD        register1                 
-        LoadI                                  
-        Exchange                               
-        Label        --print-rational--2-backup-reg-end 
-        PushD        register1                 
-        Exchange                               
-        StoreI                                 
-        PushD        register1                 
-        LoadI                                  
-        LoadI                                  
-        PushD        register1                 
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Divide                                 
-        Duplicate                              
-        Duplicate                              
-        JumpFalse    --print-rational--2-jumpLabel3 
-        PushD        $print-format-integer     
-        Printf                                 
-        Jump         --print-rational--2-joinLabel 
-        Label        --print-rational--2-jumpLabel3 
-        Pop                                    
-        PushD        register1                 
-        LoadI                                  
-        LoadI                                  
-        PushD        register1                 
-        LoadI                                  
-        PushI        4                         
-        Add                                    
-        LoadI                                  
-        Multiply                               
-        Duplicate                              
-        JumpTrue     --print-rational--2-numerator-zero 
-        Pop                                    
-        Pop                                    
         PushI        0                         
-        PushD        $print-format-integer     
-        Printf                                 
-        Jump         --print-rational--2--end- 
-        Label        --print-rational--2-numerator-zero 
-        JumpPos      --print-rational--2-joinLabel 
-        PushD        $print-format-minus-sign  
-        Printf                                 
-        Label        --print-rational--2-joinLabel 
-        PushD        register1                 
-        LoadI                                  
+        Exchange                               
         PushI        4                         
         Add                                    
-        LoadI                                  
-        Multiply                               
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--1-set-subtype-size 
+        Duplicate                              
+        PushI        8                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--1-set-length 
+        Duplicate                              
         PushD        register1                 
-        LoadI                                  
         LoadI                                  
         Exchange                               
-        Subtract                               
-        Duplicate                              
-        JumpFalse    --print-rational--2-avoidDuplicateLabel 
-        Duplicate                              
-        Label        --print-rational--2-avoidDuplicateLabel 
-        JumpFalse    --print-rational--2--end- 
-        PushD        register1                 
-        LoadI                                  
-        LoadI                                  
-        JumpPos      --print-rational--2-jumpLabel1 
-        Negate                                 
-        Label        --print-rational--2-jumpLabel1 
-        PushD        $print-format-and         
-        Printf                                 
-        PushD        $print-format-integer     
-        Printf                                 
-        PushD        $print-format-over        
-        Printf                                 
-        PushD        register1                 
-        LoadI                                  
-        PushI        4                         
+        PushI        12                        
         Add                                    
-        LoadI                                  
-        Duplicate                              
-        JumpPos      --print-rational--2-jumpLabel2 
-        Negate                                 
-        Label        --print-rational--2-jumpLabel2 
-        PushD        $print-format-integer     
-        Printf                                 
-        Label        --print-rational--2--end- 
-        Label        --print-rational--2-restore-reg-begin 
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--1-restore-reg-begin 
+        Exchange                               
         PushD        register1                 
         Exchange                               
         StoreI                                 
-        Label        --print-rational--2-restore-reg-end 
+        Label        --array-creation--1-restore-reg-end 
+        Label        --array-creation--1--end  
+        Label        --array-initialization--2-array-initialization-begin 
+        Duplicate                              
+        PushI        97                        
+        ConvertF                               
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreF                                 
+        Duplicate                              
+        PushF        42.1000                   
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreF                                 
+        Duplicate                              
+        PushI        98                        
+        ConvertF                               
+        Exchange                               
+        PushI        32                        
+        Add                                    
+        Exchange                               
+        StoreF                                 
+        Label        --array-initialization--2-array-initialization-end 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% pop
+        LoadI                                  
+        Label        --print-array--5--begin-  
+        Label        --print-array--5-backup-reg-begin 
+        PushD        register1                 
+        LoadI                                  
+        Exchange                               
+        Label        --print-array--5-backup-reg-end 
+        Duplicate                              
+        PushI        12                        
+        Add                                    
+        LoadI                                  
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        PushI        16                        
+        Add                                    
+        PushD        $print-format-open-square-bracket 
+        Printf                                 
+        Label        --print-array--5--loop-begin- 
+        PushD        register1                 
+        LoadI                                  
+        JumpFalse    --print-array--5--loop-end- 
+        Duplicate                              
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushI        -1                        
+        PushD        register1                 
+        LoadI                                  
+        Add                                    
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        PushD        register1                 
+        LoadI                                  
+        JumpFalse    --print-array--5--loop-end- 
+        PushD        $print-format-separator   
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Jump         --print-array--5--loop-begin- 
+        Label        --print-array--5--loop-end- 
+        Pop                                    
+        PushD        $print-format-close-square-bracket 
+        Printf                                 
+        Label        --print-array--5-restore-reg-begin 
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        Label        --print-array--5-restore-reg-end 
+        Label        --print-array--5--end-    
+        PushD        $print-format-space       
+        Printf                                 
+        Label        --string-creation-3-string-creation-begin 
+        Label        --string-creation-3-backup-reg-begin 
+        PushD        register1                 
+        LoadI                                  
+        Label        --string-creation-3-backup-reg-end 
+        Label        --string-creation-3-string-creation-get-length 
+        PushI        14                        
+        Duplicate                              
+        Duplicate                              
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        JumpNeg      $$array-size-negative     
+        Label        --string-creation-3-string-creation-size 
+        PushI        1                         
+        Multiply                               
+        PushI        12                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        --string-creation-3-string-creation-type 
+        Duplicate                              
+        PushI        6                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --string-creation-3-string-creation-status 
+        Duplicate                              
+        PushI        9                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --string-creation-3-string-creation-length 
+        Duplicate                              
+        PushD        register1                 
+        LoadI                                  
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --string-creation-3-restore-reg-begin 
+        Exchange                               
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        Label        --string-creation-3-restore-reg-end 
+        Label        --string-creation-3-string-creation-end 
+        Label        --string-initialization-4-string-initialization-begin 
+        Duplicate                              
+        PushI        91                        
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        57                        
+        Exchange                               
+        PushI        13                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        55                        
+        Exchange                               
+        PushI        14                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        44                        
+        Exchange                               
+        PushI        15                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        32                        
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        52                        
+        Exchange                               
+        PushI        17                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        50                        
+        Exchange                               
+        PushI        18                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        46                        
+        Exchange                               
+        PushI        19                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        49                        
+        Exchange                               
+        PushI        20                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        44                        
+        Exchange                               
+        PushI        21                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        32                        
+        Exchange                               
+        PushI        22                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        57                        
+        Exchange                               
+        PushI        23                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        56                        
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Duplicate                              
+        PushI        93                        
+        Exchange                               
+        PushI        25                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --string-initialization-4-string-initialization-end 
+        Label        --print-string--6--begin- 
+        Label        --print-string--6-backup-reg-begin 
+        PushD        register1                 
+        LoadI                                  
+        Exchange                               
+        Label        --print-string--6-backup-reg-end 
+        Duplicate                              
+        PushI        8                         
+        Add                                    
+        LoadI                                  
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        PushI        12                        
+        Add                                    
+        Label        --print-string--6--loop-begin- 
+        PushD        register1                 
+        LoadI                                  
+        JumpFalse    --print-string--6--loop-end- 
+        Duplicate                              
+        PushI        1                         
+        Add                                    
+        Exchange                               
+        LoadI                                  
+        PushD        register1                 
+        LoadI                                  
+        Exchange                               
+        PushD        $print-format-char        
+        Printf                                 
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        PushI        -1                        
+        PushD        register1                 
+        LoadI                                  
+        Add                                    
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        Jump         --print-string--6--loop-begin- 
+        Label        --print-string--6--loop-end- 
+        Pop                                    
+        Label        --print-string--6-restore-reg-begin 
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        Label        --print-string--6-restore-reg-end 
+        Label        --print-string--6--end-   
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% pop
+        Label        --array-creation--7--begin 
+        Label        --array-creation--7-backup-reg-begin 
+        PushD        register1                 
+        LoadI                                  
+        Label        --array-creation--7-backup-reg-end 
+        Label        --array-creation--7--get-length 
+        PushI        3                         
+        Duplicate                              
+        Duplicate                              
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        JumpNeg      $$array-size-negative     
+        Label        --array-creation--7-set-size 
+        PushI        8                         
+        Multiply                               
+        PushI        16                        
+        Add                                    
+        Call         -mem-manager-allocate     
+        Label        --array-creation--7-set-type 
+        Duplicate                              
+        PushI        7                         
+        Exchange                               
+        PushI        0                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--7-set-status 
+        Duplicate                              
+        PushI        0                         
+        Exchange                               
+        PushI        4                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--7-set-subtype-size 
+        Duplicate                              
+        PushI        8                         
+        Exchange                               
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--7-set-length 
+        Duplicate                              
+        PushD        register1                 
+        LoadI                                  
+        Exchange                               
+        PushI        12                        
+        Add                                    
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--7-restore-reg-begin 
+        Exchange                               
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        Label        --array-creation--7-restore-reg-end 
+        Label        --array-creation--7--end  
+        Label        --array-initialization--8-array-initialization-begin 
+        Duplicate                              
+        PushF        1.00000                   
+        Exchange                               
+        PushI        16                        
+        Add                                    
+        Exchange                               
+        StoreF                                 
+        Duplicate                              
+        PushF        2.10000                   
+        Exchange                               
+        PushI        24                        
+        Add                                    
+        Exchange                               
+        StoreF                                 
+        Duplicate                              
+        PushF        3.20000                   
+        Exchange                               
+        PushI        32                        
+        Add                                    
+        Exchange                               
+        StoreF                                 
+        Label        --array-initialization--8-array-initialization-end 
+        StoreI                                 
+        PushD        $global-memory-block      
+        PushI        0                         
+        Add                                    %% pop
+        LoadI                                  
+        Label        --print-array--9--begin-  
+        Label        --print-array--9-backup-reg-begin 
+        PushD        register1                 
+        LoadI                                  
+        Exchange                               
+        Label        --print-array--9-backup-reg-end 
+        Duplicate                              
+        PushI        12                        
+        Add                                    
+        LoadI                                  
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        PushI        16                        
+        Add                                    
+        PushD        $print-format-open-square-bracket 
+        Printf                                 
+        Label        --print-array--9--loop-begin- 
+        PushD        register1                 
+        LoadI                                  
+        JumpFalse    --print-array--9--loop-end- 
+        Duplicate                              
+        PushI        8                         
+        Add                                    
+        Exchange                               
+        LoadF                                  
+        PushD        $print-format-floating    
+        Printf                                 
+        PushI        -1                        
+        PushD        register1                 
+        LoadI                                  
+        Add                                    
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        PushD        register1                 
+        LoadI                                  
+        JumpFalse    --print-array--9--loop-end- 
+        PushD        $print-format-separator   
+        Printf                                 
+        PushD        $print-format-space       
+        Printf                                 
+        Jump         --print-array--9--loop-begin- 
+        Label        --print-array--9--loop-end- 
+        Pop                                    
+        PushD        $print-format-close-square-bracket 
+        Printf                                 
+        Label        --print-array--9-restore-reg-begin 
+        PushD        register1                 
+        Exchange                               
+        StoreI                                 
+        Label        --print-array--9-restore-reg-end 
+        Label        --print-array--9--end-    
+        PushD        $print-format-space       
+        Printf                                 
+        PushD        $print-format-newline     
+        Printf                                 
         Halt                                   
         Label        -mem-manager-make-tags    
         DLabel       $mmgr-tags-size           
@@ -1026,7 +1304,7 @@
         Return                                 
         DLabel       $heap-memory              
         Label        GCDCalculation            
-        Label        --GCD-Calculation--3--function-begin- 
+        Label        --GCD-Calculation--10--function-begin- 
         PushD        register3                 
         Exchange                               
         StoreI                                 
@@ -1035,22 +1313,22 @@
         PushD        register2                 
         LoadI                                  
         Multiply                               
-        JumpTrue     --GCD-Calculation--3--check-initial-zero 
+        JumpTrue     --GCD-Calculation--10--check-initial-zero 
         PushI        1                         
-        Jump         --GCD-Calculation--3--function-end- 
-        Label        --GCD-Calculation--3--check-initial-zero 
-        Label        --GCD-Calculation--3--loop-begin- 
+        Jump         --GCD-Calculation--10--function-end- 
+        Label        --GCD-Calculation--10--check-initial-zero 
+        Label        --GCD-Calculation--10--loop-begin- 
         PushD        register1                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--10--loop-end- 
         PushD        register2                 
         LoadI                                  
         Duplicate                              
-        JumpFalse    --GCD-Calculation--3--loop-end- 
+        JumpFalse    --GCD-Calculation--10--loop-end- 
         Subtract                               
-        JumpPos      --GCD-Calculation--3--positive-case- 
-        Label        --GCD-Calculation--3--not-positive-case- 
+        JumpPos      --GCD-Calculation--10--positive-case- 
+        Label        --GCD-Calculation--10--not-positive-case- 
         PushD        register2                 
         LoadI                                  
         PushD        register1                 
@@ -1059,8 +1337,8 @@
         PushD        register2                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--positive-case- 
+        Jump         --GCD-Calculation--10--join- 
+        Label        --GCD-Calculation--10--positive-case- 
         PushD        register1                 
         LoadI                                  
         PushD        register2                 
@@ -1069,12 +1347,12 @@
         PushD        register1                 
         Exchange                               
         StoreI                                 
-        Jump         --GCD-Calculation--3--join- 
-        Label        --GCD-Calculation--3--join- 
-        Jump         --GCD-Calculation--3--loop-begin- 
-        Label        --GCD-Calculation--3--loop-end- 
+        Jump         --GCD-Calculation--10--join- 
+        Label        --GCD-Calculation--10--join- 
+        Jump         --GCD-Calculation--10--loop-begin- 
+        Label        --GCD-Calculation--10--loop-end- 
         Add                                    
-        Label        --GCD-Calculation--3--function-end- 
+        Label        --GCD-Calculation--10--function-end- 
         PushD        register3                 
         LoadI                                  
         Return                                 

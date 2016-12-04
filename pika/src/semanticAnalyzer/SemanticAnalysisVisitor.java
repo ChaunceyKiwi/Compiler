@@ -532,9 +532,12 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
         Type type = promoteToTheSameType(types);
         if (type != PrimitiveType.NO_TYPE) {
           node.setType(new ArrayType(type, node.nChildren()));
-          if (!(type instanceof ArrayType)) {
+          if (type instanceof PrimitiveType) {
             for (int i = 0; i < numOfChildren; i++) {
-              node.child(i).setType(type);
+              if(type != node.child(i).getType()) {
+                node.child(i).setOriginalType();
+                node.child(i).setType(type);
+              }
             }
           }
         } else {
@@ -729,7 +732,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     Type[] parameterType = signature.getParameterType();
     for (int i = 0; i < parameterType.length; i++) {
       if (parameterType[i] instanceof PrimitiveType && childTypes.get(i) instanceof PrimitiveType) {
-        node.child(i).setOriginalType(node.child(i).getType());
+        node.child(i).setOriginalType();
         node.child(i).setType(parameterType[i]);
       }
     }

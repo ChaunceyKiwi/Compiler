@@ -53,8 +53,8 @@ public class ParseNode {
     this.type = type;
   }
 
-  public void setOriginalType(Type type) {
-    this.originalType = type;
+  public void setOriginalType() {
+    this.originalType = this.type;
   }
 
   public Type getType() {
