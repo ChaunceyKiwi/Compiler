@@ -80,31 +80,6 @@ public class BasicBlockManager {
     setLoopHeader();
   }
 
-  public void cleanEmptyBlock() {
-    List<BasicBlock> emptyBlockToRemove = new ArrayList<BasicBlock>();
-
-    for (BasicBlock basicBlock : blocks) {
-      if (basicBlock.getCodeChunk().instructions.size() == 0) {
-        emptyBlockToRemove.add(basicBlock);
-      }
-    }
-
-    for (BasicBlock basicBlock : emptyBlockToRemove) {
-      if (basicBlock.getCodeChunk().instructions.size() == 0) {
-        List<Tuple<BasicBlock, ASMOpcode>> inNeighbors = basicBlock.getInNeighbors();
-        Tuple<BasicBlock, ASMOpcode> outNeighbor = basicBlock.getOutNeighbors().get(0);
-        
-        outNeighbor.x.removeInNeighbor(basicBlock);
-        for (Tuple<BasicBlock, ASMOpcode> inNeighbor : inNeighbors) {
-          inNeighbor.x.replaceOutNeighbor(basicBlock, outNeighbor.x);
-          outNeighbor.x.addInNeighbors(inNeighbor.x, inNeighbor.y);
-        }
-       
-        blocks.remove(basicBlock);
-      }
-    }
-  }
-
   public void optimizeUntilConverge() {
     int size;
     do {
@@ -118,7 +93,6 @@ public class BasicBlockManager {
     blockMerge();
     cloningToSimplify();
     branchElimination();
-    cleanEmptyBlock();
     updateInnerNeighbors();
   }
 
