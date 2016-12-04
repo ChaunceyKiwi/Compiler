@@ -106,12 +106,12 @@ public class ParseNode {
   }
 
   // If ths symbol table for current parse node has such an identifier
-  public boolean containsBindingOf(String identifier) {
+  public boolean containsBindingOf(String identifier, Boolean outsideOfLambda) {
     if (!hasScope()) {
       return false;
     }
     SymbolTable symbolTable = scope.getSymbolTable();
-    return symbolTable.containsKey(identifier);
+    return symbolTable.containsKey(identifier, outsideOfLambda);
   }
 
   // Get the identifier from the sybol table for current parse node

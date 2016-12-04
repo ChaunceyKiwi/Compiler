@@ -91,7 +91,9 @@ public class ASMCodeGenerator {
 
   private ASMCodeFragment programASM() {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
+    code.add(Label, RunTime.MAIN_PROGRAM_LABEL);
     code.append(programCode());
+    code.add(Halt);
     return code;
   }
 
@@ -216,18 +218,8 @@ public class ASMCodeGenerator {
       newVoidCode(node);
 
       for (ParseNode child : node.getChildren()) {
-        // main function start
-        if (child instanceof BlockStatementNode) {
-          code.add(Label, RunTime.MAIN_PROGRAM_LABEL);
-        }
-
         ASMCodeFragment childCode = removeVoidCode(child);
         code.append(childCode);
-
-        // main function end
-        if (child instanceof BlockStatementNode) {
-          code.add(Halt);
-        }
       }
     }
 
@@ -449,7 +441,7 @@ public class ASMCodeGenerator {
 
       if (currentType != PrimitiveType.VOID && originalType != PrimitiveType.NO_TYPE
           && originalType != currentType) {
-          value = PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType, value);
+        value = PromotionHelper.codePromoteTypeAToTypeB(originalType, currentType, value);
       }
       return value;
     }
@@ -651,7 +643,7 @@ public class ASMCodeGenerator {
       Type sequenceType = sequence.getType();
       String beginLabel = labeller.newLabel("begin");
       String endLabel = labeller.newLabel("end");
-      
+
       String regIdentifier = reg1;
       String regSequence = reg2;
       String regLooper = reg3;
@@ -739,8 +731,8 @@ public class ASMCodeGenerator {
       newValueCode(node);
 
       if (node.child(0).getType() == PrimitiveType.RATIONAL) {
-        code.append(RationalHelper.rationalComparison(arg1, arg2, GCDCalculation, reg1, reg2,
-            reg3, reg4, operator));
+        code.append(RationalHelper.rationalComparison(arg1, arg2, GCDCalculation, reg1, reg2, reg3,
+            reg4, operator));
       } else {
         Labeller labeller = new Labeller("compare");
         String startLabel = labeller.newLabel("arg1");
@@ -857,8 +849,8 @@ public class ASMCodeGenerator {
       Type type = node.child(0).getType();
 
       if (operator == Punctuator.OVER) {
-        code.append(RationalHelper.performOverPuntuator(arg1, arg2, GCDCalculation, reg1,
-            reg2, reg3, reg4));
+        code.append(RationalHelper.performOverPuntuator(arg1, arg2, GCDCalculation, reg1, reg2,
+            reg3, reg4));
       } else if (operator == Punctuator.EXPRESSOVER) {
         code.append(RationalHelper.performExpressOverPunctuator(arg1, arg2, type, reg1));
       } else if (operator == Punctuator.RATIONALIZE) {
@@ -921,8 +913,8 @@ public class ASMCodeGenerator {
       } else if (operation instanceof String) {
         if (isRationalOperation((String) operation)) {
           if (operation == BinaryOperatorNode.RATIONAL_ADD) {
-            code.append(RationalHelper.rationalAdd(arg1, arg2, GCDCalculation, reg1, reg2,
-                reg3, reg4));
+            code.append(
+                RationalHelper.rationalAdd(arg1, arg2, GCDCalculation, reg1, reg2, reg3, reg4));
           } else if (operation == BinaryOperatorNode.RATIONAL_SUBSTRCT) {
             code.append(RationalHelper.rationalSubtract(arg1, arg2, GCDCalculation, reg1, reg2,
                 reg3, reg4));
@@ -930,21 +922,19 @@ public class ASMCodeGenerator {
             code.append(RationalHelper.rationalMultiply(arg1, arg2, GCDCalculation, reg1, reg2,
                 reg3, reg4));
           } else if (operation == BinaryOperatorNode.RATIONAL_DIVIDE) {
-            code.append(RationalHelper.rationalDivide(arg1, arg2, GCDCalculation, reg1, reg2,
-                reg3, reg4));
+            code.append(
+                RationalHelper.rationalDivide(arg1, arg2, GCDCalculation, reg1, reg2, reg3, reg4));
           }
         } else if (operation == BinaryOperatorNode.CONCATENATION) {
           Type type1 = node.child(0).getType();
           Type type2 = node.child(1).getType();
           if (type1 == PrimitiveType.STRING && type2 == PrimitiveType.STRING) {
-            code.append(StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5,
-                reg6));
+            code.append(
+                StringHelper.stringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4, reg5, reg6));
           } else if (type1 == PrimitiveType.STRING && type2 == PrimitiveType.CHARACTER) {
-            code.append(
-                StringHelper.stringCharConcatenation(arg1, arg2, reg1, reg2, reg3, reg4));
+            code.append(StringHelper.stringCharConcatenation(arg1, arg2, reg1, reg2, reg3, reg4));
           } else if (type1 == PrimitiveType.CHARACTER && type2 == PrimitiveType.STRING) {
-            code.append(
-                StringHelper.charStringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4));
+            code.append(StringHelper.charStringConcatenation(arg1, arg2, reg1, reg2, reg3, reg4));
           }
         }
       }
@@ -996,8 +986,8 @@ public class ASMCodeGenerator {
       else if (operator == Keyword.REVERSE) {
         Type originalType = node.child(0).getType();
         if (originalType instanceof ArrayType) {
-          code.append(ArrayHelper.arrayReversal((ArrayType) originalType, arg1, reg1,
-              reg2, reg3, reg4));
+          code.append(
+              ArrayHelper.arrayReversal((ArrayType) originalType, arg1, reg1, reg2, reg3, reg4));
         } else if (originalType == PrimitiveType.STRING) {
           code.append(StringHelper.stringReversal(arg1, reg1, reg2, reg3, reg4));
         }
@@ -1043,8 +1033,7 @@ public class ASMCodeGenerator {
         ArrayType arrayType = (ArrayType) identifierType;
         ASMCodeFragment arrayAddress = removeValueCode(node.child(0));
         ASMCodeFragment index = removeValueCode(node.child(1));
-        code.append(
-            ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, reg1));
+        code.append(ArrayHelper.arrayElementAtIndex(arrayType, arrayAddress, index, reg1));
       } else if (identifierType == PrimitiveType.STRING) {
         // string[i] -> character
         if (node.nChildren() == 2) {
@@ -1061,8 +1050,8 @@ public class ASMCodeGenerator {
           ASMCodeFragment indexStart = removeValueCode(node.child(1));
           ASMCodeFragment indexEnd = removeValueCode(node.child(2));
 
-          code.append(StringHelper.subStringInRange(stringAddress, indexStart, indexEnd,
-              reg1, reg2, reg3, reg4, reg5));
+          code.append(StringHelper.subStringInRange(stringAddress, indexStart, indexEnd, reg1, reg2,
+              reg3, reg4, reg5));
         }
       }
     }
@@ -1159,7 +1148,7 @@ public class ASMCodeGenerator {
     public void visit(BooleanConstantNode node) {
       newValueCode(node);
       code.add(PushI, node.getValue() ? 1 : 0);
-  }
+    }
 
     public void visit(IntegerConstantNode node) {
       newValueCode(node);

@@ -34,7 +34,7 @@ public class DeclarationNode extends ParseNode {
 	  this.staicToken = token;
 	}
 	
-	public Token getStaticToken(Token token) {
+	public Token getStaticToken() {
 	  return this.staicToken;
 	}
 	

@@ -57,11 +57,11 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       }
 
       if (node.getParent().getToken().isLextant(Keyword.INDEX)) {
-        addBinding(identifier, PrimitiveType.INTEGER, false);
+        addBinding(identifier, PrimitiveType.INTEGER, false, false);
       } else if (sequenceType == PrimitiveType.STRING) {
-        addBinding(identifier, PrimitiveType.CHARACTER, false);
+        addBinding(identifier, PrimitiveType.CHARACTER, false, false);
       } else if (sequenceType instanceof ArrayType) {
-        addBinding(identifier, ((ArrayType) sequenceType).getSubType(), false);
+        addBinding(identifier, ((ArrayType) sequenceType).getSubType(), false, false);
       }
     }
   }
@@ -115,7 +115,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       scope.getSymbolTable().errorIfAlreadyDefined(identifierNode.getToken());
 
       // Parameters of the function are declared const (immutable)
-      addBinding(identifierNode, type, false);
+      addBinding(identifierNode, type, false, false);
     }
   }
 
@@ -227,7 +227,18 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   public void visitLeave(DeclarationNode node) {
     IdentifierNode identifier = (IdentifierNode) node.child(0);
     ParseNode initializer = node.child(1);
+    // Variable is static if it is declared as stasic
+    // Or it is declared in the global definition
+    Boolean isStatic =
+        (node.getStaticToken() != null || node.getParent() instanceof GlobalDefinitionNode);
+
     Scope scope = identifier.getLocalScope();
+    // if (isStatic) {
+    // scope = identifier.getRootScope();
+    // } else {
+    // scope = identifier.getLocalScope();
+    // }
+
     Type declarationType = initializer.getType();
 
     if (declarationType == PrimitiveType.VOID) {
@@ -244,12 +255,8 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     // If identifier has not been declared in current scope,
     // binding it to current scope and its symbol table.
     // If the declaration is var then variable is mutable, const then unmutuable
-    if (node.getToken().isLextant(Keyword.VAR))
-      addBinding(identifier, declarationType, true);
-    else if (node.getToken().isLextant(Keyword.CONST))
-      addBinding(identifier, declarationType, false);
-    else
-      logError("Declaration type is neither var nor const");
+    Boolean isMutable = node.getToken().isLextant(Keyword.VAR);
+    addBinding(identifier, declarationType, isMutable, isStatic);
   }
 
   // assignmentStatement -> target := expression .
@@ -534,7 +541,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
           node.setType(new ArrayType(type, node.nChildren()));
           if (type instanceof PrimitiveType) {
             for (int i = 0; i < numOfChildren; i++) {
-              if(type != node.child(i).getType()) {
+              if (type != node.child(i).getType()) {
                 node.child(i).setOriginalType();
                 node.child(i).setType(type);
               }
@@ -670,7 +677,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     // If the identifier is not in the delcaration statement
     if (!isBeingDeclared(node)) {
       Binding binding = node.findVariableBinding();
-
       node.setType(binding.getType());
       node.setBinding(binding);
     }
@@ -684,10 +690,19 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
         || ((parent instanceof ForStatementNode) && (node == parent.child(0)));
   }
 
-  private void addBinding(IdentifierNode identifierNode, Type type, boolean ismutable) {
-    Scope scope = identifierNode.getLocalScope();
-    Binding binding = scope.createBinding(identifierNode, type, ismutable);
-    identifierNode.setBinding(binding);
+  private void addBinding(IdentifierNode identifierNode, Type type, boolean isMutable,
+      boolean isStatic) {
+    if (isStatic) {
+      Scope localScope = identifierNode.getLocalScope();
+      Scope globalScope = identifierNode.getRootScope();
+      Binding binding = globalScope.createBinding(identifierNode, type, isMutable, isStatic);
+      localScope.getSymbolTable().install(identifierNode.getToken().getLexeme(), binding);
+      identifierNode.setBinding(binding);
+    } else {
+      Scope scope = identifierNode.getLocalScope();
+      Binding binding = scope.createBinding(identifierNode, type, isMutable, isStatic);
+      identifierNode.setBinding(binding);
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////

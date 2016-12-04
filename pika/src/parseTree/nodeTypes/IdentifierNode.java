@@ -60,11 +60,16 @@ public class IdentifierNode extends ParseNode {
   // variable is declared and return the binding
   public Binding findVariableBinding() {
     String identifier = token.getLexeme();
-
+    boolean outsideOfLambda = false;
+    
     for (ParseNode current : pathToRoot()) {
-      if (current.containsBindingOf(identifier)) {
+      // If outside of lambda, only look for global or static variable
+      if (current.containsBindingOf(identifier, outsideOfLambda)) {
         declarationScope = current.getScope();
         return current.bindingOf(identifier);
+      }
+      if (current instanceof LambdaNode) {
+        outsideOfLambda = true;
       }
     }
     useBeforeDefineError();
