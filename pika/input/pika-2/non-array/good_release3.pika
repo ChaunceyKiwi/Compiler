@@ -7,15 +7,15 @@ exec {
 		var collect_index := 0.
 	
 		while (collect_index < length collect) {
-			var elem := new [int](1000).
+			var element := new [int](1000).
 		
-			var elem_index := 0.
-			while (elem_index < length elem) {
-				elem[elem_index] := collect_index * elem_index. 
-				elem_index := elem_index + 1.
+			var element_index := 0.
+			while (element_index < length element) {
+				element[element_index] := collect_index * element_index. 
+				element_index := element_index + 1.
 			}
-			collect[collect_index] := elem.
-#			print elem, _n_.
+			collect[collect_index] := element.
+#			print element, _n_.
 			collect_index := collect_index + 1.
 		}
 	
