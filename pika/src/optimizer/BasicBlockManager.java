@@ -39,6 +39,14 @@ public class BasicBlockManager {
     this.startBlocks = new ArrayList<BasicBlock>();
   }
 
+  public Set<String> getPushDSet() {
+    Set<String> pushDSet = new HashSet<String>();
+    for (BasicBlock basicBlock : blocks) {
+      pushDSet.addAll(basicBlock.getPushDLabel());
+    }
+    return pushDSet;
+  }
+
   public void addStartBlock(BasicBlock block) {
     this.startBlocks.add(block);
     block.setEntryBlock(block);
@@ -707,17 +715,33 @@ public class BasicBlockManager {
     boolean previousIsJump = false;
     int previousState = 0; // -1 as end, 1 as start, 0 as none, 2 as both
     int currentState = 0; // -1 as end, 1 as start, 0 as none, 2 as both
+    boolean isLastInstr = false;
 
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         currentState = 0;
 
+        if ((i == fragment.chunks.size() - 1)
+            && (j == fragment.chunks.get(i).instructions.size() - 1)) {
+          isLastInstr = true;
+        }
+
         if (blockStartSet.contains(lineNumCount)) {
           currentState = 1;
+
+          // If it's the last instruction and it's a start,
+          // then set it as a one-line-block
+          if (isLastInstr) {
+            blockSet.add(
+                new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, blockIndex++));
+          }
+
+          // If find two continuous starts, set first one as one-line-block
           if (previousState == 1 || previousState == 2) {
             blockSet.add(new Triplet<Integer, Integer, Integer>(lineNumCount - 1, lineNumCount - 1,
                 blockIndex++));
           }
+          
           if (!previousIsJump && lineNumCount > 1) {
             linkSet.add(new Triplet<Integer, Integer, ASMOpcode>(lineNumCount - 1, lineNumCount,
                 ASMOpcode.Jump));
@@ -730,10 +754,14 @@ public class BasicBlockManager {
           } else {
             currentState = -1;
           }
+          
+          // If find two continuous ends, set latter one as one-line-block
           if (previousState == 2 || previousState == -1) {
             blockSet.add(
                 new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, blockIndex++));
           }
+          
+          // If find an end, and there is a begin aviliable, and make a blockSet
           end = lineNumCount;
           if (blockStartSet.contains(begin)) {
             blockSet.add(new Triplet<Integer, Integer, Integer>(begin, end, blockIndex++));

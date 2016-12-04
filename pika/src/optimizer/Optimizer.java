@@ -9,15 +9,15 @@ public class Optimizer {
   private ASMCodeFragment fragment;
   
   public static ASMCodeFragment optimize(ASMCodeFragment fragment) {
-    CodeModifier codeModifier = new CodeModifier();
-    BasicBlockManager basicBlockManager = new BasicBlockManager(); 
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
-    ASMCodeChunk header;
+    BasicHeaderManager basicHeaderManager = new BasicHeaderManager(); 
+    BasicBlockManager basicBlockManager = new BasicBlockManager(); 
     
-    header = codeModifier.separateOutDataDirectives(fragment);
+    ASMCodeFragment header = basicHeaderManager.separateOutDataDirectives(fragment);
     basicBlockManager.generateBasicBlocks(fragment);
+    basicHeaderManager.generateBasicHeaders(header, basicBlockManager.getPushDSet());
     
-    code.chunks.add(header);
+    code.append(basicHeaderManager.printAllChunksInBasicHeaders());
     code.append(basicBlockManager.printAllChunksInBasicBlocks());
     return code;
   }

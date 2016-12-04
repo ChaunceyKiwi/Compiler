@@ -19,7 +19,6 @@ public class BasicBlock {
   private Set<BasicBlock> dominitors;
   private boolean isLoopHeader;
 
-
   public BasicBlock(ASMCodeChunk code, int blockIndex) {
     this.codeChunk = code;
     this.isTrimmed = false;
@@ -42,11 +41,21 @@ public class BasicBlock {
     this.dominitors = new HashSet<BasicBlock>();
     this.blockIndex = basicBlock.getBlockIndex();
   }
-  
+
   public void setAsLoopHeader() {
     this.isLoopHeader = true;
   }
   
+  public Set<String> getPushDLabel() {
+    Set<String> pushDSet = new HashSet<String>();
+    for (ASMInstruction instr : this.codeChunk.instructions) {
+      if (instr.getOpcode() == ASMOpcode.PushD) {
+        pushDSet.add(instr.getArgument().toString());
+      }
+    }
+    return pushDSet;
+  }
+
   public String getPrefix() {
     if (this.isLoopHeader) {
       return "basicBlockHeader-";
@@ -54,28 +63,28 @@ public class BasicBlock {
       return "basicBlock-";
     }
   }
-  
+
   public boolean isLoopHeader() {
     return this.isLoopHeader;
   }
-  
+
   public BasicBlock getEntryBlock() {
     return this.entryBlock;
   }
-  
+
   public void setEntryBlock(BasicBlock basicBlock) {
     this.entryBlock = basicBlock;
   }
-  
+
   public boolean isDominatedBy(BasicBlock basicBlock) {
-    for(BasicBlock dominitor : this.dominitors) {
-      if(dominitor == basicBlock) {
+    for (BasicBlock dominitor : this.dominitors) {
+      if (dominitor == basicBlock) {
         return true;
       }
     }
     return false;
   }
-  
+
   public void addDominitors(BasicBlock basicBlock) {
     this.dominitors.add(basicBlock);
   }
@@ -89,9 +98,9 @@ public class BasicBlock {
   }
 
   public ASMInstruction getLastInstruction() {
-    if(codeChunk.instructions.size() > 0)
+    if (codeChunk.instructions.size() > 0)
       return codeChunk.instructions.get(codeChunk.instructions.size() - 1);
-    else 
+    else
       return null;
   }
 
