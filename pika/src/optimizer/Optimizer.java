@@ -1,8 +1,6 @@
 package optimizer;
 
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.GENERATES_VOID;
-
-import asmCodeGenerator.codeStorage.ASMCodeChunk;
 import asmCodeGenerator.codeStorage.ASMCodeFragment;
 
 public class Optimizer {

@@ -80,6 +80,31 @@ public class BasicBlockManager {
     setLoopHeader();
   }
 
+  public void cleanEmptyBlock() {
+    List<BasicBlock> emptyBlockToRemove = new ArrayList<BasicBlock>();
+
+    for (BasicBlock basicBlock : blocks) {
+      if (basicBlock.getCodeChunk().instructions.size() == 0) {
+        emptyBlockToRemove.add(basicBlock);
+      }
+    }
+
+    for (BasicBlock basicBlock : emptyBlockToRemove) {
+      if (basicBlock.getCodeChunk().instructions.size() == 0) {
+        List<Tuple<BasicBlock, ASMOpcode>> inNeighbors = basicBlock.getInNeighbors();
+        Tuple<BasicBlock, ASMOpcode> outNeighbor = basicBlock.getOutNeighbors().get(0);
+        
+        outNeighbor.x.removeInNeighbor(basicBlock);
+        for (Tuple<BasicBlock, ASMOpcode> inNeighbor : inNeighbors) {
+          inNeighbor.x.replaceOutNeighbor(basicBlock, outNeighbor.x);
+          outNeighbor.x.addInNeighbors(inNeighbor.x, inNeighbor.y);
+        }
+       
+        blocks.remove(basicBlock);
+      }
+    }
+  }
+
   public void optimizeUntilConverge() {
     int size;
     do {
@@ -93,6 +118,7 @@ public class BasicBlockManager {
     blockMerge();
     cloningToSimplify();
     branchElimination();
+    cleanEmptyBlock();
     updateInnerNeighbors();
   }
 
@@ -720,7 +746,12 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         currentState = 0;
-
+        
+        if(lineNumCount == 438) {
+          lineNumCount = lineNumCount + 1 - 1;
+        }
+        
+        // Set flag if last instruction
         if ((i == fragment.chunks.size() - 1)
             && (j == fragment.chunks.get(i).instructions.size() - 1)) {
           isLastInstr = true;
@@ -728,24 +759,29 @@ public class BasicBlockManager {
 
         if (blockStartSet.contains(lineNumCount)) {
           currentState = 1;
-
-          // If it's the last instruction and it's a start,
-          // then set it as a one-line-block
-          if (isLastInstr) {
-            blockSet.add(
-                new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, blockIndex++));
-          }
-
-          // If find two continuous starts, set first one as one-line-block
-          if (previousState == 1 || previousState == 2) {
-            blockSet.add(new Triplet<Integer, Integer, Integer>(lineNumCount - 1, lineNumCount - 1,
-                blockIndex++));
-          }
           
           if (!previousIsJump && lineNumCount > 1) {
             linkSet.add(new Triplet<Integer, Integer, ASMOpcode>(lineNumCount - 1, lineNumCount,
                 ASMOpcode.Jump));
           }
+          
+          // If it's the last instruction and it's a start,
+          // then set it as a one-line-block
+          if (isLastInstr) {
+            boolean result = addToBlockSet(blockSet, lineNumCount, lineNumCount, blockIndex);
+            if (result) {
+              blockIndex++;
+            } 
+          }
+
+          // If find two continuous starts, set first one as one-line-block
+          if (previousState == 1 || previousState == 2) {
+            boolean result = addToBlockSet(blockSet, lineNumCount - 1, lineNumCount - 1, blockIndex);
+            if (result) {
+              blockIndex++;
+            }    
+          }
+
           begin = lineNumCount;
         }
         if (blockEndSet.contains(lineNumCount)) {
@@ -754,19 +790,24 @@ public class BasicBlockManager {
           } else {
             currentState = -1;
           }
-          
+
           // If find two continuous ends, set latter one as one-line-block
           if (previousState == 2 || previousState == -1) {
-            blockSet.add(
-                new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, blockIndex++));
+            boolean result = addToBlockSet(blockSet, lineNumCount, lineNumCount, blockIndex);
+            if (result) {
+              blockIndex++;
+            }            
           }
-          
+
           // If find an end, and there is a begin aviliable, and make a blockSet
           end = lineNumCount;
           if (blockStartSet.contains(begin)) {
-            blockSet.add(new Triplet<Integer, Integer, Integer>(begin, end, blockIndex++));
-            begin++;
-            end++;
+            boolean result = addToBlockSet(blockSet, begin, end, blockIndex);
+            if (result) {
+              blockIndex++;
+              begin++;
+              end++;
+            }
           }
         }
         previousIsJump = isInJumpSet(lineNumCount);
@@ -774,6 +815,17 @@ public class BasicBlockManager {
         previousState = currentState;
       }
     }
+  }
+  
+  // only be used for buildBlockSet()
+  public boolean addToBlockSet(Set<Triplet<Integer, Integer, Integer>> set, int arg0, int arg1, int arg2) {
+    for (Triplet<Integer, Integer, Integer> item : set) {
+      if(item.x == arg0 && item.y == arg1) {
+        return false;
+      }
+    }
+    set.add(new Triplet<Integer, Integer, Integer>(arg0, arg1, arg2));
+    return true;
   }
 
   private boolean isInJumpSet(int lineNumber) {

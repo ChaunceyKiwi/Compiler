@@ -19,7 +19,6 @@ public class BasicHeaderManager {
   private Set<Integer> headerStartSet;
   private Set<Integer> headerEndSet;
   private Set<Triplet<Integer, Integer, Integer>> headerSet;
-  private int sizeInHeaders;
   private Set<Triplet<Integer, Integer, BasicHeader>> headerRange;
 
   public BasicHeaderManager() {
@@ -28,7 +27,6 @@ public class BasicHeaderManager {
     this.headerStartSet = new HashSet<Integer>();
     this.headerEndSet = new HashSet<Integer>();
     this.headerSet = new HashSet<Triplet<Integer, Integer, Integer>>();
-    this.sizeInHeaders = 0;
     this.headerRange = new HashSet<Triplet<Integer, Integer, BasicHeader>>();
     this.labelDStringSet = new HashSet<String>();
   }
@@ -68,7 +66,6 @@ public class BasicHeaderManager {
   
   public void add(BasicHeader header) {
     this.headers.add(header);
-    this.sizeInHeaders++;
   }
   
   private void sortHeaders() {
@@ -93,7 +90,7 @@ public class BasicHeaderManager {
         labelDStringSet.add(getDLabelOfHeader);
       }
     }
-     assert pushDSet.size() == labelDStringSet.size();
+     //pushDSet.removeAll(labelDStringSet);
   }
   
   private void buildHeaderSet(ASMCodeFragment fragment) {

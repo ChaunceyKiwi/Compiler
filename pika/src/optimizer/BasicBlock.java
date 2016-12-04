@@ -112,6 +112,34 @@ public class BasicBlock {
     this.blockIndex = index;
   }
 
+  public void removeOutNeighbor(BasicBlock basicBlock) {
+    for (Tuple<BasicBlock, ASMOpcode> outNeighbor : this.outNeighbors) {
+      if (outNeighbor.x.getBlockIndex() == basicBlock.getBlockIndex()) {
+        this.outNeighbors.remove(outNeighbor);
+        return;
+      }
+    }
+  }
+  
+  public void removeInNeighbor(BasicBlock basicBlock) {
+    for (Tuple<BasicBlock, ASMOpcode> inNeighbor : this.inNeighbors) {
+      if (inNeighbor.x.getBlockIndex() == basicBlock.getBlockIndex()) {
+        this.inNeighbors.remove(inNeighbor);
+        return;
+      }
+    }
+  }
+  
+  public void replaceOutNeighbor(BasicBlock oldBlock, BasicBlock newBlock) {
+    for (Tuple<BasicBlock, ASMOpcode> outNeighbor : this.outNeighbors) {
+      if (outNeighbor.x.getBlockIndex() == oldBlock.getBlockIndex()) {
+        addOutNeighbors(newBlock, outNeighbor.y);
+        this.outNeighbors.remove(outNeighbor);
+        return;
+      }
+    }
+  }
+  
   public boolean isInNeighbor(BasicBlock basicBlock) {
     for (Tuple<BasicBlock, ASMOpcode> inNeighbor : this.inNeighbors) {
       if (inNeighbor.x.getBlockIndex() == basicBlock.getBlockIndex()) {

@@ -133,7 +133,7 @@
         DLabel       $mmgr-remove-next         
         DataZ        4                         
         DLabel       $heap-memory              
-        Label        basicBlock-1              
+        Label     `   basicBlock-1              
         PushD        $heap-memory              
         Duplicate                              
         PushD        $heap-start-ptr           
