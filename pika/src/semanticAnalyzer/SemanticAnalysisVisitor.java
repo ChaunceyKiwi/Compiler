@@ -43,7 +43,7 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     if (node.getParent() instanceof ForStatementNode) {
       IdentifierNode identifier = (IdentifierNode) (node.getParent().child(0));
       ParseNode sequence = node.getParent().child(1);
-      Scope scope = identifier.getLocalScope();
+      Scope scope = node.getScope();
       Type sequenceType = sequence.getType();
 
       // If identifier has already been declared in current scope, report error.
@@ -57,11 +57,11 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       }
 
       if (node.getParent().getToken().isLextant(Keyword.INDEX)) {
-        addBinding(identifier, PrimitiveType.INTEGER, false, false);
+        addBinding(identifier, PrimitiveType.INTEGER, false, false, scope);
       } else if (sequenceType == PrimitiveType.STRING) {
-        addBinding(identifier, PrimitiveType.CHARACTER, false, false);
+        addBinding(identifier, PrimitiveType.CHARACTER, false, false, scope);
       } else if (sequenceType instanceof ArrayType) {
-        addBinding(identifier, ((ArrayType) sequenceType).getSubType(), false, false);
+        addBinding(identifier, ((ArrayType) sequenceType).getSubType(), false, false, scope);
       }
     }
   }
@@ -702,6 +702,21 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
       identifierNode.setBinding(binding);
     } else {
       Scope scope = identifierNode.getLocalScope();
+      Binding binding = scope.createBinding(identifierNode, type, isMutable, isStatic);
+      identifierNode.setBinding(binding);
+    }
+  }
+  
+   // Add binding to the scope given
+  private void addBinding(IdentifierNode identifierNode, Type type, boolean isMutable,
+      boolean isStatic, Scope scope) {
+    if (isStatic) {
+      Scope localScope = identifierNode.getLocalScope();
+      Scope globalScope = identifierNode.getRootScope();
+      Binding binding = globalScope.createBinding(identifierNode, type, isMutable, isStatic);
+      localScope.getSymbolTable().install(identifierNode.getToken().getLexeme(), binding);
+      identifierNode.setBinding(binding);
+    } else {
       Binding binding = scope.createBinding(identifierNode, type, isMutable, isStatic);
       identifierNode.setBinding(binding);
     }
