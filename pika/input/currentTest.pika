@@ -1,16 +1,3 @@
-var a:= 1.
-var b:= 2.
-var cool := 33.
-
 exec {
-  var c:= 3.
-
-  var test := <> -> void {
-    print a;b;cool;_n_.
-  }.
-
-  call test().
-
-  cool := 69.
-  call test().
+  print [3.777|int].
 }

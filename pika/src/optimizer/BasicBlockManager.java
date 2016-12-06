@@ -581,7 +581,7 @@ public class BasicBlockManager {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.Label) {
           labelSet
-              .add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+              .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
         }
         lineNumCount++;
       }
@@ -601,7 +601,12 @@ public class BasicBlockManager {
         if (instruction.getOpcode() == ASMOpcode.Jump || instruction.getOpcode() == ASMOpcode.Halt
             || instruction.getOpcode() == ASMOpcode.Return
             || instruction.getOpcode() == ASMOpcode.PopPC) {
-          jumpSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+          if (instruction.getArgument() != null) {
+            jumpSet.add(
+                new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
+          } else {
+            new Tuple<String, Integer>(null, lineNumCount);
+          }
           blockEndSet.add(lineNumCount);
           blockStartSet.add(lineNumCount + 1);
         }
@@ -618,7 +623,7 @@ public class BasicBlockManager {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (isBranchInstruction(instruction)) {
           branchSet.add(new Triplet<ASMOpcode, String, Integer>(instruction.getOpcode(),
-              (String) instruction.getArgument(), lineNumCount));
+              instruction.getArgument().toString(), lineNumCount));
           previousIsBranch = true;
         } else {
           if (previousIsBranch && instruction.getOpcode() != ASMOpcode.Jump) {
@@ -638,7 +643,8 @@ public class BasicBlockManager {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.PushD) {
-          callSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+          callSet
+              .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
         }
         lineNumCount++;
       }
@@ -651,7 +657,8 @@ public class BasicBlockManager {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.Call) {
-          callSet.add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+          callSet
+              .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
           blockEndSet.add(lineNumCount);
           blockStartSet.add(lineNumCount + 1);
         }
@@ -720,11 +727,11 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         currentState = 0;
-        
-        if(lineNumCount == 438) {
+
+        if (lineNumCount == 438) {
           lineNumCount = lineNumCount + 1 - 1;
         }
-        
+
         // Set flag if last instruction
         if ((i == fragment.chunks.size() - 1)
             && (j == fragment.chunks.get(i).instructions.size() - 1)) {
@@ -733,27 +740,28 @@ public class BasicBlockManager {
 
         if (blockStartSet.contains(lineNumCount)) {
           currentState = 1;
-          
+
           if (!previousIsJump && lineNumCount > 1) {
             linkSet.add(new Triplet<Integer, Integer, ASMOpcode>(lineNumCount - 1, lineNumCount,
                 ASMOpcode.Jump));
           }
-          
+
           // If it's the last instruction and it's a start,
           // then set it as a one-line-block
           if (isLastInstr) {
             boolean result = addToBlockSet(blockSet, lineNumCount, lineNumCount, blockIndex);
             if (result) {
               blockIndex++;
-            } 
+            }
           }
 
           // If find two continuous starts, set first one as one-line-block
           if (previousState == 1 || previousState == 2) {
-            boolean result = addToBlockSet(blockSet, lineNumCount - 1, lineNumCount - 1, blockIndex);
+            boolean result =
+                addToBlockSet(blockSet, lineNumCount - 1, lineNumCount - 1, blockIndex);
             if (result) {
               blockIndex++;
-            }    
+            }
           }
 
           begin = lineNumCount;
@@ -770,7 +778,7 @@ public class BasicBlockManager {
             boolean result = addToBlockSet(blockSet, lineNumCount, lineNumCount, blockIndex);
             if (result) {
               blockIndex++;
-            }            
+            }
           }
 
           // If find an end, and there is a begin aviliable, and make a blockSet
@@ -790,11 +798,12 @@ public class BasicBlockManager {
       }
     }
   }
-  
+
   // only be used for buildBlockSet()
-  public boolean addToBlockSet(Set<Triplet<Integer, Integer, Integer>> set, int arg0, int arg1, int arg2) {
+  public boolean addToBlockSet(Set<Triplet<Integer, Integer, Integer>> set, int arg0, int arg1,
+      int arg2) {
     for (Triplet<Integer, Integer, Integer> item : set) {
-      if(item.x == arg0 && item.y == arg1) {
+      if (item.x == arg0 && item.y == arg1) {
         return false;
       }
     }

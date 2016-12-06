@@ -194,7 +194,7 @@ public class BasicHeaderManager {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.DLabel) {
           labelDSet
-              .add(new Tuple<String, Integer>((String) instruction.getArgument(), lineNumCount));
+              .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
         }
         lineNumCount++;
       }
