@@ -1,3 +1,16 @@
+# Global variable are visible throughout the global scope, even before declarad
+
+var a := 1.
+
+func funcA <int para1>->void {
+  print a, _n_.
+  print b;c,_n_.
+}
+
+var b := 2.
+var c := 3.
+
 exec {
-  print 3 + 4.
+  var my_lambda := <int para1>->void {print para1.}.
+  print my_lambda(3).
 }

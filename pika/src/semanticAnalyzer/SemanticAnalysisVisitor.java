@@ -222,6 +222,18 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   /* forStatement */
 
   ///////////////////////////////////////////////////////////////////////////
+  // PrintStatement
+  @Override
+  public void visitLeave(PrintStatementNode node) {
+    for (ParseNode child : node.getChildren()) {
+      if (child.getType() == PrimitiveType.VOID) {
+        printVoidTError(node);
+        return;
+      }
+    }
+  }
+  
+  ///////////////////////////////////////////////////////////////////////////
   // Declaration
   @Override
   public void visitLeave(DeclarationNode node) {
@@ -233,12 +245,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
         (node.getStaticToken() != null || node.getParent() instanceof GlobalDefinitionNode);
 
     Scope scope = identifier.getLocalScope();
-    // if (isStatic) {
-    // scope = identifier.getRootScope();
-    // } else {
-    // scope = identifier.getLocalScope();
-    // }
-
     Type declarationType = initializer.getType();
 
     if (declarationType == PrimitiveType.VOID) {
@@ -322,10 +328,6 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     // The type checking is done in BlockStatement
     assert node.nChildren() == 3;
   }
-
-  // PrintStatement
-  @Override
-  public void visitLeave(PrintStatementNode node) {}
 
   // ReleaseStatement
   @Override
@@ -820,6 +822,10 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
 
   private void forStatementSequenceTypeError(ParseNode node) {
     logError(node.getToken().getLexeme() + " for statement have a wrong type of sequence Error");
+  }
+  
+  private void printVoidTError(ParseNode node) {
+    logError(node.getToken().getLexeme() + " find unprintable void Error");
   }
 
   public static void logError(String message) {
