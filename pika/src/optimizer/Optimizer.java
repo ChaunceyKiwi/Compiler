@@ -18,8 +18,6 @@ public class Optimizer {
     
     code.append(basicHeaderManager.printAllChunksInBasicHeaders());
     code.append(basicBlockManager.printAllChunksInBasicBlocks());
-    code.append(header);
-    code.append(fragment);
     return code;
   }
 

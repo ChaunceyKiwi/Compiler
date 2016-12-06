@@ -86,6 +86,8 @@ public class CodeFolder {
             newValue = op1Value - op2Value;
           } else if (operator.equals("Multiply")) {
             newValue = op1Value * op2Value;
+          } else if (operator.equals("Divide")) {
+            newValue = op1Value / op2Value;
           }
           ASMInstruction instruction = new ASMInstruction(ASMOpcode.PushI, newValue);
           replaceSet.add(new Triplet<Integer, Integer, ASMInstruction>(lineNumCount,
@@ -158,6 +160,8 @@ public class CodeFolder {
             newValue = op1Value - op2Value;
           } else if (operator.equals("FMultiply")) {
             newValue = op1Value * op2Value;
+          } else if (operator.equals("FDivide")) {
+            newValue = op1Value / op2Value;
           }
           ASMInstruction instruction = new ASMInstruction(ASMOpcode.PushF, newValue);
           replaceSet.add(new Triplet<Integer, Integer, ASMInstruction>(lineNumCount,
