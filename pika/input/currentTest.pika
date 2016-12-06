@@ -1,16 +1,8 @@
-# Global variable are visible throughout the global scope, even before declarad
-
-var a := 1.
-
-func funcA <int para1>->void {
-  print a, _n_.
-  print b;c,_n_.
-}
-
-var b := 2.
-var c := 3.
-
 exec {
-  var my_lambda := <int para1>->void {print para1.}.
-  print my_lambda(3).
+  const aa := [1,2,3,4,5].
+  for index i of aa {
+    static var billyJoeBob := 15.
+    print billyJoeBob,_n_.
+  }
+  print billyJoeBob,_n_.
 }

@@ -55,9 +55,14 @@ public class SymbolTable {
 
   ///////////////////////////////////////////////////////////////////////
   // error reporting
-
   public void errorIfAlreadyDefined(Token token) {
     if (containsKey(token.getLexeme(), false)) {
+      multipleDefinitionError(token);
+    }
+  }
+  
+  public void errorIfAlreadyDefined(String lexeme, Token token) {
+    if (containsKey(lexeme, false)) {
       multipleDefinitionError(token);
     }
   }
@@ -66,7 +71,11 @@ public class SymbolTable {
     PikaLogger log = PikaLogger.getLogger("compiler.symbolTable");
     log.severe("variable \"" + token.getLexeme() + "\" multiply defined at " + token.getLocation());
   }
-
+  
+  protected static void multipleDefinitionError(String lexeme, Token token) {
+    PikaLogger log = PikaLogger.getLogger("compiler.symbolTable");
+    log.severe("variable \"" + lexeme + "\" multiply defined at " + token.getLocation());
+  }
   ///////////////////////////////////////////////////////////////////////
   // toString
 

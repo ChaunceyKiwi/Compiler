@@ -93,22 +93,17 @@ public class Scope {
   // bindings
   public Binding createBinding(IdentifierNode identifierNode, Type type, boolean ismutable, boolean isStatic) {
     Token token = identifierNode.getToken();
-
-    if (!ismutable) {
-      symbolTable.errorIfAlreadyDefined(token);
-    }
-
-    String lexeme;
+    String lexeme = token.getLexeme();
     Binding binding;
-    
+        
     if(isStatic) {
-      lexeme = token.getLexeme();
       Sequencer sequencer = new Sequencer(lexeme);
       String lexemeWithSequence = sequencer.getLabel();
+      symbolTable.errorIfAlreadyDefined(lexemeWithSequence, token);
       binding = allocateNewBinding(type, token.getLocation(), lexemeWithSequence, ismutable, isStatic);
       symbolTable.install(lexemeWithSequence, binding);
     } else {
-      lexeme = token.getLexeme();
+      symbolTable.errorIfAlreadyDefined(token);
       binding = allocateNewBinding(type, token.getLocation(), lexeme, ismutable, isStatic);
       symbolTable.install(lexeme, binding);
     }
