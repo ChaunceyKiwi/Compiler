@@ -11,7 +11,7 @@ import asmCodeGenerator.codeStorage.ASMOpcode;
 
 public class CodeFolder {
   private Set<Tuple<String, Integer>> pushISet = new HashSet<Tuple<String, Integer>>();
-  private Set<Tuple<String, Integer>> pushFSet = new HashSet<Tuple<String, Integer>>();
+  private Set<Tuple<Double, Integer>> pushFSet = new HashSet<Tuple<Double, Integer>>();
   private Set<Tuple<String, Integer>> duplicateSet = new HashSet<Tuple<String, Integer>>();
   private Set<Tuple<String, Integer>> jumpFalseOrFZeroSet = new HashSet<Tuple<String, Integer>>();
   private Set<Tuple<String, Integer>> integerBinaryOperatorSet =
@@ -146,14 +146,14 @@ public class CodeFolder {
     int lineNumCount = 1;
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
-        String op1 = getTupleSet(lineNumCount, pushFSet);
-        String op2 = getTupleSet(lineNumCount + 1, pushFSet);
+        Double op1 = getDoubleTupleSet(lineNumCount, pushFSet);
+        Double op2 = getDoubleTupleSet(lineNumCount + 1, pushFSet);
         String operator = getTupleSet(lineNumCount + 2, floatBinaryOperatorSet);
 
         if (op1 != null && op2 != null && operator != null) {
-          float op1Value = Float.parseFloat(op1);
-          float op2Value = Float.parseFloat(op2);
-          float newValue = 0;
+          Double op1Value = op1;
+          Double op2Value = op2;
+          Double newValue = (double) 0;
           if (operator.equals("FAdd")) {
             newValue = op1Value + op2Value;
           } else if (operator.equals("FSubtract")) {
@@ -174,8 +174,8 @@ public class CodeFolder {
           operator = getTupleSet(lineNumCount + 4, floatBinaryOperatorSet);
           if (op1 != null && op2 != null && duplicate != null && jump != null && operator != null) {
             if (operator.equals("FDivide")) {
-              float op1Value = Float.parseFloat(op1);
-              float op2Value = Float.parseFloat(op2);
+              Double op1Value = op1;
+              Double op2Value = op2;
               if (op2Value == 0) {
                 ASMInstruction instruction = new ASMInstruction(ASMOpcode.Jump, jump);
                 replaceSet.add(new Triplet<Integer, Integer, ASMInstruction>(lineNumCount,
@@ -193,17 +193,17 @@ public class CodeFolder {
             }
           }
         }
-        op2 = getTupleSet(lineNumCount + 1, floatUnaryOperatorSet);
-        if (op1 != null && op2 != null) {
-          float op1Value = Float.parseFloat(op1);
-          if (op2.equals("FNegate")) {
+        String op2string = getTupleSet(lineNumCount + 1, floatUnaryOperatorSet);
+        if (op1 != null && op2string != null) {
+          Double op1Value = op1;
+          if (op2string.equals("FNegate")) {
             ASMInstruction instruction = new ASMInstruction(ASMOpcode.PushF, -1 * op1Value);
             replaceSet.add(new Triplet<Integer, Integer, ASMInstruction>(lineNumCount,
                 lineNumCount + 1, instruction));
             lineNumCount += 2;
             continue;
-          } else if (op2.equals("ConvertI")) {
-            ASMInstruction instruction = new ASMInstruction(ASMOpcode.PushI, (int) op1Value);
+          } else if (op2string.equals("ConvertI")) {
+            ASMInstruction instruction = new ASMInstruction(ASMOpcode.PushI, op1Value.intValue());
             replaceSet.add(new Triplet<Integer, Integer, ASMInstruction>(lineNumCount,
                 lineNumCount + 1, instruction));
             lineNumCount += 2;
@@ -217,6 +217,15 @@ public class CodeFolder {
 
   private String getTupleSet(int lineNumber, Set<Tuple<String, Integer>> set) {
     for (Tuple<String, Integer> elem : set) {
+      if (elem.y == lineNumber) {
+        return elem.x;
+      }
+    }
+    return null;
+  }
+  
+  private Double getDoubleTupleSet(int lineNumber, Set<Tuple<Double, Integer>> set) {
+    for (Tuple<Double, Integer> elem : set) {
       if (elem.y == lineNumber) {
         return elem.x;
       }
@@ -304,7 +313,7 @@ public class CodeFolder {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.PushF) {
           pushFSet
-              .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
+              .add(new Tuple<Double, Integer>((Double)instruction.getArgument(), lineNumCount));
         }
         lineNumCount++;
       }
