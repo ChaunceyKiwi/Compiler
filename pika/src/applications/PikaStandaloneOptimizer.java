@@ -14,7 +14,7 @@ public class PikaStandaloneOptimizer extends PikaApplication {
   public static void main(String[] args) throws FileNotFoundException {
     checkArguments(args, className());
     Tokens.setPrintLevel(Tokens.Level.FULL);
-    optimize(args[0]);
+    optimize("/Users/Chauncey/Desktop/OptimizationExp/real.asm");
   }
 
   public static void optimize(String filename) throws FileNotFoundException {

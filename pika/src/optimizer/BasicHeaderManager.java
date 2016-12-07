@@ -15,6 +15,7 @@ import asmCodeGenerator.codeStorage.ASMOpcode;
 public class BasicHeaderManager {
   private List<BasicHeader> headers;
   private Set<Tuple<String, Integer>> labelDSet;
+  private Set<Tuple<String, Integer>> dataDSet;
   private Set<String>  labelDStringSet;
   private Set<Integer> headerStartSet;
   private Set<Integer> headerEndSet;
@@ -24,6 +25,7 @@ public class BasicHeaderManager {
   public BasicHeaderManager() {
     this.headers = new ArrayList<BasicHeader>();
     this.labelDSet = new HashSet<Tuple<String, Integer>>();
+    this.dataDSet = new HashSet<Tuple<String, Integer>>();
     this.headerStartSet = new HashSet<Integer>();
     this.headerEndSet = new HashSet<Integer>();
     this.headerSet = new HashSet<Triplet<Integer, Integer, Integer>>();
@@ -33,6 +35,7 @@ public class BasicHeaderManager {
 
   public void generateBasicHeaders(ASMCodeFragment fragment, Set<String> pushDSet) {
     buildLabelDSet(fragment);
+    buildDataDSet(fragment);
     buildHeaderStartEndSet();
     buildHeaderSet(fragment);
     buildHeaders(fragment, pushDSet);
@@ -181,10 +184,15 @@ public class BasicHeaderManager {
   private void buildHeaderStartEndSet() {
     // The first instruction is always a header start
     headerStartSet.add(1);
-
+    
     for (Tuple<String, Integer> label : labelDSet) {
       headerStartSet.add(label.y);
       headerEndSet.add(label.y - 1);
+    }
+    
+    for (Tuple<String, Integer> label : dataDSet) {
+      headerStartSet.add(label.y);
+      headerEndSet.add(label.y);
     }
   }
 
@@ -221,6 +229,26 @@ public class BasicHeaderManager {
         
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.DLabel) {
+          labelDSet
+              .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
+        }
+        lineNumCount++;
+      }
+    }
+  }
+  
+  private void buildDataDSet(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        
+        if ((i == fragment.chunks.size() - 1)
+            && (j == fragment.chunks.get(i).instructions.size() - 1)) {
+          headerEndSet.add(lineNumCount);
+        }
+        
+        ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        if (instruction.getOpcode() == ASMOpcode.DataD) {
           labelDSet
               .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
         }
