@@ -24,7 +24,6 @@ public class ArrayHelper {
     String endHeaderCreationLabel = labeller.newLabel("array-header-creation-end");
     String beginElementZipLabel = labeller.newLabel("array-element-zip-begin");
     String endElementZipLabel = labeller.newLabel("array-element-zip-end");
-    String sizeLabel = labeller.newLabel("array-zip-size");
     String typeLabel = labeller.newLabel("array-zip-type");
     String statusLabel = labeller.newLabel("array-zip-status");
     String subTypeSizeLabel = labeller.newLabel("array-zip-subtype-size");
