@@ -883,11 +883,12 @@ public class ASMCodeGenerator {
         } else if (node.nChildren() == 3) {
           // If it's a fold with base, then second child is not lambda but base
           // Give lambda to base and set value for real lambda
+          Type baseType = lambda.getType();
           ASMCodeFragment baseCode = lambdaCode;
           lambda = node.child(2);
           lambdaCode = removeValueCode(lambda);
           code.append(ArrayHelper.arrayFoldWithLambdaAndBase(originalArrayType, originalArrayCode,
-              baseCode, lambdaCode, reg1, reg2));
+              baseType, baseCode, lambdaCode, reg1, reg2));
         }
       }
     }

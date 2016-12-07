@@ -27,7 +27,7 @@ public class PikaCompiler extends PikaApplication {
     ParseNode syntaxTree = Parser.parse(scanner);
     ParseNode decoratedTree = SemanticAnalyzer.analyze(syntaxTree);
 
-    generateCodeIfNoErrors(filename, decoratedTree, true);
+    generateCodeIfNoErrors(filename, decoratedTree, false);
   }
 
   private static void generateCodeIfNoErrors(String filename, ParseNode decoratedTree,

@@ -211,7 +211,7 @@ public class ArrayHelper {
 
 
   public static ASMCodeFragment arrayFoldWithLambdaAndBase(ArrayType originalArrayType,
-      ASMCodeFragment originalArray, ASMCodeFragment base, ASMCodeFragment lambda,
+      ASMCodeFragment originalArray, Type baseType, ASMCodeFragment base, ASMCodeFragment lambda,
        String counter, String originArrayMemoryPointer) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VALUE);
 
@@ -284,11 +284,11 @@ public class ArrayHelper {
     }
 
     code.add(Exchange);
-    code.append(pushElementToFrameStack(originalArrayType.getSubType()));
+    code.append(pushElementToFrameStack(baseType));
     code.append(pushElementToFrameStack(originalArrayType.getSubType()));
     code.append(lambda);
     code.add(CallV);
-    code.append(popElementFromFrameToASMStack(originalArrayType.getSubType()));
+    code.append(popElementFromFrameToASMStack(baseType));
 
     // move originArrayMemoryPointer to next address of element
     code.add(PushD, originArrayMemoryPointer);

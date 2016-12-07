@@ -60,6 +60,18 @@ public class Binding {
     this.bindingType = BindingType.FUNCTION;
     this.lambdaName = lambdaName;
   }
+  
+  public Binding(Type type, TextLocation location, String lexeme, String lambdaName, boolean isStatic) {
+    super();
+    this.type = type;
+    this.textLocation = location;
+    this.memoryLocation = null;
+    this.lexeme = lexeme;
+    this.isMutable = false;
+    this.isStatic = isStatic;
+    this.bindingType = BindingType.FUNCTION;
+    this.lambdaName = lambdaName;
+  }
 
   public String toString() {
     return "[" + lexeme + " " + type + // " " + textLocation +

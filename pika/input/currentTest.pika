@@ -1,3 +1,10 @@
+func asciiStringFor <int x> -> char {
+  return [x + 96|char].
+} 
+
 exec {
-  print 4/0.
+  var numbers := [1, 5, 3, 9, 2].
+  var catNumber := <string s, int x>->string { return s + ^ ^ + asciiStringFor(x). }.
+  var numList := numbers fold [ "list:"] catNumber.
+  print numList.
 }

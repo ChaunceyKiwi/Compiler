@@ -171,7 +171,7 @@ public class FunctionSignatures extends ArrayList<FunctionSignature> {
     List<Type> parameterForFoldWithBase = new ArrayList<Type>();
     parameterForFoldWithBase.add(typeVariableU);
     parameterForFoldWithBase.add(typeVariable);
-    LambdaType lambdaTypeForFoldWithBase = new LambdaType(parameterForFoldWithBase, typeVariable);
+    LambdaType lambdaTypeForFoldWithBase = new LambdaType(parameterForFoldWithBase, typeVariableU);
 
     List<Type> parameterForZip = new ArrayList<Type>();
     parameterForZip.add(typeVariableS);
