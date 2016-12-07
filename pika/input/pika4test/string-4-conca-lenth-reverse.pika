@@ -1,0 +1,12 @@
+exec {
+  var s := "Hello World!".
+  var t := "You're Crazy!".
+  var c := ^A^.
+  print s + t,_n_.              #Hello World!You're Crazy!
+  print s + c,_n_.              #Hello World!A
+  print c + s,_n_.              #AHello World!
+  print reverse s,_n_.          #!dlroW olleH
+  print reverse t,_n_.          #!yzarC er'uoY
+  print reverse s + t,_n_.      #!dlroW olleHYou're Crazy! 
+  print reverse (s + t),_n_.    #!yzarC er'uoY!dlroW olleH
+}

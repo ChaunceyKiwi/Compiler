@@ -1,0 +1,12 @@
+exec {
+  static var x := 14.
+
+  static var h := <>->void {print x,_n_.}.
+  var e := <>->void {call h().}.            # 14
+  var f := <>->void {x:= 13. call h().}.    # 13
+  var g := <>->void {x:= 12. call h().}.    # 12
+
+  call e().
+  call f().
+  call g().
+}

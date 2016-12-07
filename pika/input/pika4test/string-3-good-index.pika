@@ -1,0 +1,11 @@
+exec {
+  var a := "Hello World!".
+  var aa := a + a.
+  var b := ^K^.
+  var aab := aa + b.
+  print aab,_n_.                        # Hello World!Hello World!K
+  print aab[0, 1], aab[0],_n_.          # HH
+  print aab[0, 2], aab[0], aab[1],_n_.  # HeHe
+  print aab[0, length aab - 1],_n_.     # Hello World!Hello World!
+  print aab[0, length aab],_n_.         # Hello World!Hello World!K
+}

@@ -1,0 +1,13 @@
+static var cool := 49.
+
+exec {
+  var test := <> -> void {
+    print cool,_n_.
+  }.
+
+  var cool := 33.
+  call test().
+
+  cool := 69.
+  call test().
+}

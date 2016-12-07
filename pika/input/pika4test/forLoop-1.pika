@@ -1,0 +1,14 @@
+# Expression is evaluated only once in each loop
+
+func getArray <>->[int] {
+  print "Evaluate expression!",_n_.
+  return [1,2,3,4,5].
+}
+
+exec {
+  for elem i of getArray() {
+    for elem j of getArray() {
+      print i;j,_n_.
+    }
+  }
+}

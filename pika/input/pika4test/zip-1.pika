@@ -1,0 +1,7 @@
+exec {
+  var nn := [1, 5, 3, 9, 2].
+  var ff := [2.1, -3.3, 4.2, 5.0, 17.79].
+  var ratIt := <int n, float f> -> rat {return n // [f|int].}.
+  var numList := zip nn,ff,ratIt.
+  print numList,_n_.
+}

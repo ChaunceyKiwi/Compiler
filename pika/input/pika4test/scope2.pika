@@ -1,0 +1,11 @@
+exec {
+  static const x := 14.
+  static var h := <>->void {print x,_n_.}.
+  var e := <>->void {call h().}.                  
+  var f := <>->void {const x:= 13. call h().}.   
+  var g := <>->void {const x:= 12. call h().}. 
+
+  call e(). # 14
+  call f(). # 14 
+  call g(). # 14
+}

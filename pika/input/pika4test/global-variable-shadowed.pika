@@ -1,0 +1,9 @@
+# Global variable are shadowed in a lambda by a static variable declared outside the lambda.
+
+var a := 1.
+
+exec {
+  static var a:= 233.
+  var my_lambda := <int para1>->void {print a,_n_.}.
+  call my_lambda(3).
+}

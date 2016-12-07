@@ -1,0 +1,18 @@
+# Global variable are also visible within lambdas if not shadowed by a variable in the lambda. 
+# Global variable are not shadowed in a lambda by a non-static variable declared outside the lambda.
+
+var a := 1.
+
+func funcA <int para1>->void {
+  print a, _n_.
+  print b;c,_n_.
+}
+
+var b := 2.
+var c := 3.
+
+exec {
+  var a:= 233.
+  var my_lambda := <int para1>->void {print a,_n_.}. # Should be 1, rather than 233
+  call my_lambda(3).
+}

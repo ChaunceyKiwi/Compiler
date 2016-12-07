@@ -1,0 +1,8 @@
+static var a := 6666.
+
+exec {
+  var a := 2333.
+  print a,_n_.  # 2333
+  const lambda2 := <>->void {print a,_n_.}. # 6666
+  call lambda2().
+}
