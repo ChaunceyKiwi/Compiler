@@ -102,11 +102,11 @@ public class BasicHeaderManager {
     int currentState = 0; // -1 as end, 1 as start, 0 as none, 2 as both
     boolean isLastInstr = false;
 
-
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         currentState = 0;
         
+        // Set flag if last instruction
         if ((i == fragment.chunks.size() - 1)
             && (j == fragment.chunks.get(i).instructions.size() - 1)) {
           isLastInstr = true;
@@ -118,14 +118,19 @@ public class BasicHeaderManager {
           // If it's the last instruction and it's a start,
           // then set it as a one-line-block
           if (isLastInstr) {
-            headerSet.add(
-                new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, headerIndex++));
+            boolean result = addToBlockSet(headerSet, lineNumCount, lineNumCount, headerIndex);
+            if (result) {
+              headerIndex++;
+            }
           }
           
           // If find two continuous starts, set first one as one-line-block
           if (previousState == 1 || previousState == 2) {
-            headerSet.add(new Triplet<Integer, Integer, Integer>(lineNumCount - 1, lineNumCount - 1,
-                headerIndex++));
+            boolean result =
+                addToBlockSet(headerSet, lineNumCount - 1, lineNumCount - 1, headerIndex);
+            if (result) {
+              headerIndex++;
+            }
           }
           begin = lineNumCount;
         }
@@ -138,22 +143,39 @@ public class BasicHeaderManager {
           
           // If find two continuous ends, set latter one as one-line-block 
           if (previousState == 2 || previousState == -1) {
-            headerSet.add(
-                new Triplet<Integer, Integer, Integer>(lineNumCount, lineNumCount, headerIndex++));
+            boolean result = addToBlockSet(headerSet, lineNumCount, lineNumCount, headerIndex);
+            if (result) {
+              headerIndex++;
+            }
           }
           end = lineNumCount;
           
           // If find an end, and there is a begin aviliable, and make a blockSet
           if (headerStartSet.contains(begin)) {
-            headerSet.add(new Triplet<Integer, Integer, Integer>(begin, end, headerIndex++));
-            begin++;
-            end++;
+            boolean result = addToBlockSet(headerSet, begin, end, headerIndex);
+            if (result) {
+              headerIndex++;
+              begin++;
+              end++;
+            }
           }
         }
         lineNumCount++;
         previousState = currentState;
       }
     }
+  }
+  
+  // only be used for buildBlockSet()
+  public boolean addToBlockSet(Set<Triplet<Integer, Integer, Integer>> set, int arg0, int arg1,
+      int arg2) {
+    for (Triplet<Integer, Integer, Integer> item : set) {
+      if (item.x == arg0 && item.y == arg1) {
+        return false;
+      }
+    }
+    set.add(new Triplet<Integer, Integer, Integer>(arg0, arg1, arg2));
+    return true;
   }
 
   private void buildHeaderStartEndSet() {
@@ -191,6 +213,12 @@ public class BasicHeaderManager {
     int lineNumCount = 1;
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        
+        if ((i == fragment.chunks.size() - 1)
+            && (j == fragment.chunks.get(i).instructions.size() - 1)) {
+          headerEndSet.add(lineNumCount);
+        }
+        
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
         if (instruction.getOpcode() == ASMOpcode.DLabel) {
           labelDSet

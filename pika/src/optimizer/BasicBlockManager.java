@@ -579,6 +579,11 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         ASMInstruction instruction = fragment.chunks.get(i).instructions.get(j);
+        
+        if ((i == fragment.chunks.size() - 1)
+            && (j == fragment.chunks.get(i).instructions.size() - 1)) {
+          blockEndSet.add(lineNumCount);
+        }
         if (instruction.getOpcode() == ASMOpcode.Label) {
           labelSet
               .add(new Tuple<String, Integer>(instruction.getArgument().toString(), lineNumCount));
@@ -737,10 +742,6 @@ public class BasicBlockManager {
     for (int i = 0; i < fragment.chunks.size(); i++) {
       for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
         currentState = 0;
-
-        if (lineNumCount == 438) {
-          lineNumCount = lineNumCount + 1 - 1;
-        }
 
         // Set flag if last instruction
         if ((i == fragment.chunks.size() - 1)
