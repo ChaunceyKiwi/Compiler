@@ -1,14 +1,7 @@
 exec {
-  var str := "rabbit".
-  for index i of str {
-    for index j of str {
-      print "(" , str[i] , ",", str[j], ")",_n_.
-    }
+  var a := 3.
+  while (a > 5) {
+    print a.
   }
 
-  for elem i of str {
-    for elem j of str {
-      print "(" , i , ",", j, ")",_n_.
-    }
-  }
 }
