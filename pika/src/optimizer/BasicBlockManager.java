@@ -16,7 +16,6 @@ public class BasicBlockManager {
   private List<BasicBlock> blocks;
   private List<BasicBlock> startBlocks;
   private int sizeInBlocks = 0;
-  private int countLineNumber = 0;
 
   private Set<Tuple<String, Integer>> labelSet = new HashSet<Tuple<String, Integer>>();
   private Set<Tuple<String, Integer>> jumpSet = new HashSet<Tuple<String, Integer>>();
@@ -64,7 +63,6 @@ public class BasicBlockManager {
 
   // Builder function
   public void generateBasicBlocks(ASMCodeFragment fragment) {
-    countLineNumber = countLineNumber(fragment); 
     buildLabelSet(fragment);
     buildJumpSet(fragment);
     buildBranchSet(fragment);
