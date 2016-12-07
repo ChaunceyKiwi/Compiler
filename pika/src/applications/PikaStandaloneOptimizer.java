@@ -14,7 +14,7 @@ public class PikaStandaloneOptimizer extends PikaApplication {
   public static void main(String[] args) throws FileNotFoundException {
     checkArguments(args, className());
     Tokens.setPrintLevel(Tokens.Level.FULL);
-    optimize("/Users/Chauncey/Desktop/optimizer/good_blockMerging1.asmt");
+    optimize(args[0]);
   }
 
   public static void optimize(String filename) throws FileNotFoundException {
