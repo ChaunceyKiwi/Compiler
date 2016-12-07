@@ -84,7 +84,7 @@ public class BasicHeaderManager {
     for (Triplet<Integer, Integer, Integer> tuple : headerSet) {
       BasicHeader header = new BasicHeader(getCodeInRange(fragment, tuple.x, tuple.y), tuple.z);
       String getDLabelOfHeader = header.getDLabel();
-      if(pushDSet.contains(getDLabelOfHeader)) {
+      if (pushDSet.contains(getDLabelOfHeader) || getDLabelOfHeader.equals("$eat-location-zero")) {
         this.add(header);
         headerRange.add(new Triplet<Integer, Integer, BasicHeader>(tuple.x, tuple.y, header));
         labelDStringSet.add(getDLabelOfHeader);

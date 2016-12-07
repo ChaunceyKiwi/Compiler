@@ -19,7 +19,7 @@ public class Optimizer {
       basicBlockManager.generateBasicBlocks(fragment);
       basicHeaderManager.generateBasicHeaders(header, basicBlockManager.getPushDSet()); 
       code.append(basicHeaderManager.printAllChunksInBasicHeaders());
-      code.append(basicBlockManager.printAllChunksInBasicBlocks());
+      code.append(repeatedlyFoldCode(basicBlockManager.printAllChunksInBasicBlocks()));
     } else {
       code.append(header);
       code.append(fragment);
