@@ -1003,7 +1003,7 @@ public class ASMCodeGenerator {
         ArrayType targetArrayType = (ArrayType) (node.getType());
 
         code.append(ArrayHelper.arrayZipWithLambda(arrayAType, arrayBType, targetArrayType,
-            arrayACode, arrayBCode, lambdaCode, reg1, reg2, reg3, reg4));
+            arrayACode, arrayBCode, lambdaCode, reg1, reg2, reg3, reg4, reg5));
       }
     }
 

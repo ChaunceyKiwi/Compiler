@@ -12,7 +12,7 @@ import static asmCodeGenerator.codeStorage.ASMOpcode.*;
 public class ArrayHelper {
   public static ASMCodeFragment arrayZipWithLambda(ArrayType arrayAType, ArrayType arrayBType,
       ArrayType targetArrayType, ASMCodeFragment arrayACode, ASMCodeFragment arrayBCode,
-      ASMCodeFragment lambda, String counter, String arrayAPointer,
+      ASMCodeFragment lambda, String counter1, String counter2, String arrayAPointer,
       String arrayBPointer, String newArrayPointer) {
     Labeller labeller = new Labeller("-array-zip-with-lambda-");
 
@@ -42,7 +42,8 @@ public class ArrayHelper {
     
     // Backup register
     code.add(Label, backupRegisterBeginLabel);
-    code.append(backupRegister(counter));
+    code.append(backupRegister(counter1));
+    code.append(backupRegister(counter2));
     code.append(backupRegister(arrayAPointer));
     code.append(backupRegister(arrayBPointer));
     code.append(backupRegister(newArrayPointer)); 
@@ -51,25 +52,36 @@ public class ArrayHelper {
     // Get the address of arrayB
     // Store it in the arrayBPointer
     code.append(arrayBCode);
+    code.add(Duplicate);
     Macros.storeITo(code, arrayBPointer);
 
+    // Get the length of array and set as counter2
+    code.append(pushArrayLength());
+    Macros.storeITo(code, counter2);
+    
     // Get the address of arrayA
     // Store it in the arrayAPointer
     code.append(arrayACode);
     code.add(Duplicate);
     Macros.storeITo(code, arrayAPointer);
 
-    // Get the length of array and set as counter
-    code.add(Label, sizeLabel);
+    // Get the length of array and set as counter1
     code.append(pushArrayLength());
     code.add(Duplicate);
-    Macros.storeITo(code, counter);
+    Macros.storeITo(code, counter1);
 
     // length * size + headSize = whole size for new array
     code.add(PushI, targetArraySubtypeSize);
     code.add(Multiply);
     code.add(PushI, arrayAType.getHeaderSize());
     code.add(Add);
+    
+    code.add(PushD, counter1);
+    code.add(LoadI);
+    code.add(PushD, counter2);
+    code.add(LoadI);
+    code.add(Subtract);
+    code.add(JumpTrue, RunTime.ZIP_OPERATOR_ARRAY_DIFF_LENGTH);
 
     // Get the address for the new array
     code.add(Call, MemoryManager.MEM_MANAGER_ALLOCATE);
@@ -138,7 +150,7 @@ public class ArrayHelper {
     code.add(StoreI);
 
     code.add(Label, beginElementZipLabel);
-    code.add(PushD, counter);
+    code.add(PushD, counter1);
     code.add(LoadI);
     code.add(JumpFalse, endElementZipLabel);
 
@@ -188,7 +200,7 @@ public class ArrayHelper {
     code.add(StoreI);
 
     // Decrement the counter by 1
-    Macros.decrementInteger(code, counter);
+    Macros.decrementInteger(code, counter1);
     code.add(Jump, beginElementZipLabel);
     code.add(Label, endElementZipLabel);
 
@@ -201,7 +213,9 @@ public class ArrayHelper {
     code.add(Exchange);
     code.append(restoreRegister(arrayAPointer));
     code.add(Exchange);
-    code.append(restoreRegister(counter)); 
+    code.append(restoreRegister(counter2));
+    code.add(Exchange);
+    code.append(restoreRegister(counter1)); 
     code.add(Label, restoreRegisterEndLabel);
     
     code.add(Label, endLabel);

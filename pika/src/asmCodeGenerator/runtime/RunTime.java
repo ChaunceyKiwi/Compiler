@@ -46,7 +46,9 @@ public class RunTime {
   public static final String RATIONAL_DENOMINATOR_ZERO_ERROR = "$$rational-denominator-zero";
 
   // New Operator Related
-  public static final String FOLD_OPERATOR_ARRAY_ZERO_LENGTH = "$$fold-operator-array-zero-length";
+  public static final String FOLD_OPERATOR_ARRAY_ZERO_LENGTH = "$$fold-operator-array-zero-length";  
+  public static final String ZIP_OPERATOR_ARRAY_DIFF_LENGTH = "$$zip-operator-array-diff-length";
+
 
   private ASMCodeFragment environmentASM() {
     ASMCodeFragment result = new ASMCodeFragment(GENERATES_VOID);
@@ -115,6 +117,7 @@ public class RunTime {
     arrayIndexExceedBoundError(frag);
     rationalDenominatorZeroError(frag);
     foldOperatorZeroLengthError(frag);
+    zipOperatorZeroLengthError(frag);
     return frag;
   }
 
@@ -144,6 +147,15 @@ public class RunTime {
     frag.add(DataS, "fold operator cannot have a zero length array");
     frag.add(Label, FOLD_OPERATOR_ARRAY_ZERO_LENGTH);
     frag.add(PushD, foldOperatorZeroLengthMessage);
+    frag.add(Jump, GENERAL_RUNTIME_ERROR);
+  }
+  
+  private void zipOperatorZeroLengthError(ASMCodeFragment frag) {
+    String zipOperatorDiffLengthMessage = "$errors-zip-operator-array-diff-length";
+    frag.add(DLabel, zipOperatorDiffLengthMessage);
+    frag.add(DataS, "zip operator cannot have two different length array");
+    frag.add(Label, ZIP_OPERATOR_ARRAY_DIFF_LENGTH);
+    frag.add(PushD, zipOperatorDiffLengthMessage);
     frag.add(Jump, GENERAL_RUNTIME_ERROR);
   }
 
