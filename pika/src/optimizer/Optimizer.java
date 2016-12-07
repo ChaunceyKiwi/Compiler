@@ -5,6 +5,7 @@ import asmCodeGenerator.codeStorage.ASMCodeFragment;
 
 public class Optimizer {
   private ASMCodeFragment fragment;
+  private final static int lineNumberLimit = 4100;
   
   public static ASMCodeFragment optimize(ASMCodeFragment fragment) {
     ASMCodeFragment code = new ASMCodeFragment(GENERATES_VOID);
@@ -13,11 +14,16 @@ public class Optimizer {
     
     ASMCodeFragment header = basicHeaderManager.separateOutDataDirectives(fragment);
     fragment = repeatedlyFoldCode(fragment);
-    basicBlockManager.generateBasicBlocks(fragment);
-    basicHeaderManager.generateBasicHeaders(header, basicBlockManager.getPushDSet());
-    
-    code.append(header);
-    code.append(fragment);
+    int lineNumber = basicBlockManager.countLineNumber(fragment);
+    if (lineNumber < lineNumberLimit) {
+      basicBlockManager.generateBasicBlocks(fragment);
+      basicHeaderManager.generateBasicHeaders(header, basicBlockManager.getPushDSet()); 
+      code.append(basicHeaderManager.printAllChunksInBasicHeaders());
+      code.append(basicBlockManager.printAllChunksInBasicBlocks());
+    } else {
+      code.append(header);
+      code.append(fragment);
+    }
     return code;
   }
 
