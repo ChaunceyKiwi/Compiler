@@ -63,6 +63,10 @@ public class BasicBlockManager {
 
   // Builder function
   public void generateBasicBlocks(ASMCodeFragment fragment) {
+    int countLineNumber = countLineNumber(fragment); 
+    if (countLineNumber > 4100) {
+      return;
+    }
     buildLabelSet(fragment);
     buildJumpSet(fragment);
     buildBranchSet(fragment);
@@ -586,6 +590,16 @@ public class BasicBlockManager {
         lineNumCount++;
       }
     }
+  }
+  
+  private int countLineNumber(ASMCodeFragment fragment) {
+    int lineNumCount = 1;
+    for (int i = 0; i < fragment.chunks.size(); i++) {
+      for (int j = 0; j < fragment.chunks.get(i).instructions.size(); j++) {
+        lineNumCount++;
+      }
+    }
+    return lineNumCount;
   }
 
   private void buildJumpSet(ASMCodeFragment fragment) {
