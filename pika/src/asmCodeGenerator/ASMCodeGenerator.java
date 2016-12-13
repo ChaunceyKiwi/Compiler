@@ -355,7 +355,7 @@ public class ASMCodeGenerator {
 
         // Decrement SP by the size of return value and store it
         code.add(Label, decrementSP);
-        decrementStackPointer(4);
+        decrementStackPointer(resultType.getSize());
         Macros.loadIFrom(code, RunTime.STACK_POINTER);
 
         code.add(Exchange);
