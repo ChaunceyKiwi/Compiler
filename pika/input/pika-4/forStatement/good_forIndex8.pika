@@ -1,0 +1,12 @@
+exec {
+	const B := [[1.1, 2.2, 3.3], [2.2, 3.3], [3.3, 4.4, 5.5]].
+	
+	
+	for index a of B {
+		for index b of B {
+			print "[a, b]: ", [a, b], _n_.
+		}
+	}	
+	
+	print B, _n_.
+}

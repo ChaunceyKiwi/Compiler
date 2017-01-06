@@ -1,0 +1,12 @@
+exec {
+	static var r := "root".
+	var t := r.
+	var a := 42.
+	
+	print r; t; a, _n_.
+	
+	r := "beer".
+	
+	print r; t; a, _n_.
+}
+

@@ -1,0 +1,13 @@
+func reciSum <rat a, int b> -> rat {
+	return a + 1 // b.
+}
+
+
+exec {
+	const B := [2, 4, 8, 16].
+	print B, _n_.
+
+	const C := B fold [ 0 // 2 ] reciSum.
+	print C, _n_.
+}
+

@@ -1,0 +1,17 @@
+func warren <rat a, rat b> -> rat {
+	return a * b.
+} 
+
+
+exec {
+	const B := [4//31, 12//5, 49//71, 171//43, 20//3].
+	print B, _n_.
+
+	const C := [7//2, 15//3, 17//3, 91//22, -4//7].
+	print C, _n_.
+	
+	
+	const R := zip B, C, warren.
+	print R, _n_.
+}
+

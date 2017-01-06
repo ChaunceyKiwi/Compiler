@@ -1,0 +1,15 @@
+exec {
+	const str := "albatross".
+	
+	var sIndex := 0.
+	while (sIndex < length str) {
+		if(str[sIndex] == ^a^) {
+			print sIndex; str[sIndex], _n_.
+		}
+		print sIndex; str[sIndex], _n_.
+		sIndex := sIndex + 1.
+	}
+	
+	print "done.", _n_.
+}
+

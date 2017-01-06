@@ -1,0 +1,20 @@
+func L <[float] x> -> int {
+	return length x.
+}
+
+func parityString <int a>->string {
+    if ((a/2)*2 == a) {
+         return "even".
+    }
+    else {
+         return "odd".
+    }
+} 
+
+exec {
+	const S := [[1.1, 2.2], [2.2, 3.3, 4.4, 5.5], [3.3, 4.4], [4.4]].
+	
+	print S, _n_.
+	print S map L map parityString, _n_.
+}
+

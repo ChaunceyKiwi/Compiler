@@ -1,0 +1,6 @@
+exec {
+	const B := new [string](0).
+	
+	print B map <string s> -> string { return s + ", Bob.".}, _n_.
+}
+

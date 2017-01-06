@@ -1,0 +1,30 @@
+const bigInteger := 1024 * 1024 * 1024.
+
+func min <int a, int b> -> int {
+	if (a < b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+func max <int a, int b> -> int {
+	if (a > b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+
+func minmax <[int] mm, int b> -> [int] {
+	return [min(mm[0], b), max(mm[1], b)].
+}
+
+exec {
+	const B := [17, 15, 72, 39, 9, 41, 56].
+	print B, _n_.
+
+	print B fold [[bigInteger, 0]] minmax, _n_.
+}
+

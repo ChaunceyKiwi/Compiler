@@ -1,0 +1,9 @@
+exec {
+	const B := [^a^, ^e^, ^i^, ^o^, ^u^].
+	
+	for index a of B {
+		print a, _n_.
+	}	
+	print B, _n_.
+}
+

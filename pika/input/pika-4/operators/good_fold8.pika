@@ -1,0 +1,32 @@
+const bigInteger := 1024 * 1024 * 1024.
+
+func min <int a, int b> -> int {
+	if (a < b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+func max <int a, int b> -> int {
+	if (a > b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+
+exec {	
+	const S := [[18, 32, 21], [23, 3, 44, 27], [32, 14, 19, 33, 37], [40, 35, 25, 5, 30]].
+	print S, _n_.
+
+	var T := S map <[int] x> -> int { return x fold min.}
+	           fold max.
+	print T, _n_ .
+	
+	var U := S map <[int] x> -> int { return x fold max.}
+	           fold min.
+	print U, _n_ .
+}
+

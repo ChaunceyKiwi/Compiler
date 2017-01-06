@@ -1,0 +1,7 @@
+exec {
+	var s := "hello".
+	print s; reverse "how do you do?";_n_.
+	
+	print reverse "very well, thank you."; _n_.
+}
+

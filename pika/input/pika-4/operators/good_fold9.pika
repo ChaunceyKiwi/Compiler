@@ -1,0 +1,40 @@
+const bigInteger := 1024 * 1024 * 1024.
+
+func min <int a, int b> -> int {
+	if (a < b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+func max <int a, int b> -> int {
+	if (a > b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+func incrementSquareArray <[int] A, int n> -> [int] {
+	const result := new [int](length A + 1).
+	
+	for index i of A {
+		result[i] := A[i] + 1.
+	}
+	result[length A] := n * n.
+	return result.
+}
+
+exec {	
+	const S := [2, 8, 5, 11, 13, 4, 3, 7].
+	print S, _n_.
+
+	var T := S fold [new [int](0)] incrementSquareArray.
+	print T, _n_ .
+	
+	var U := S fold [new [int](0)] incrementSquareArray
+	           fold min.
+	print U, _n_ .
+}
+

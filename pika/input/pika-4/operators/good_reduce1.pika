@@ -1,0 +1,15 @@
+func isOdd <int a> -> bool {
+	return (a / 2) * 2 != a.
+}
+
+
+exec {
+	const B := [1, 4, 9, 13, 18, 27].
+	
+	print B, _n_.
+
+	const C := B reduce isOdd.
+	
+	print C, _n_.
+}
+

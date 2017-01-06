@@ -1,0 +1,14 @@
+var r := "root".
+
+exec {
+	var s := "".
+	var t := r.
+	var a := 42.
+	
+	print r; t; a, _n_.
+	
+	r := "beer".
+	
+	print r; t; a, _n_.
+}
+

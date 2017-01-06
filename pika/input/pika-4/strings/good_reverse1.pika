@@ -1,0 +1,10 @@
+exec {
+	var s := "hello".
+	print s; reverse s;_n_.
+	
+	var t := "goodbye".
+	print t; reverse t; _n_.
+
+	print reverse s; reverse t; _n_.
+}
+

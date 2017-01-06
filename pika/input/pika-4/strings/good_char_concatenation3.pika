@@ -1,0 +1,9 @@
+exec {
+	var s := ^a^.
+	var c := "moral".
+	
+	print s; c; s + c, _n_.
+	
+	print s; c; s + c, _n_.
+}
+

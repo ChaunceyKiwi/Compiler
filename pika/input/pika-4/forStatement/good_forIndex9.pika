@@ -1,0 +1,33 @@
+# i must be nonnegative.
+func print3places <int i> -> void {
+	if(i < 100) {
+		print " ".
+	}
+	if(i < 10) {
+	    print " ".
+	}
+	print i.
+	return.
+}
+
+func trumpet <string indent, int moo> -> void {
+	if(moo == 5) {
+		return.
+	}
+	
+	const D := [moo, moo*moo, moo*moo*moo].
+	for index e of D {
+		print indent.
+		call print3places(e).
+		print _n_.
+		
+		call trumpet(indent + "    ", moo + 1 ).
+	}
+	return.
+}
+
+exec {
+    call trumpet("", 1).
+	
+	print _n_, "done", _n_.
+}

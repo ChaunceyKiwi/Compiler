@@ -1,0 +1,12 @@
+func sum <int a, int b> -> int {
+	return a + b.
+}
+
+
+exec {
+	const B := [9].
+	print B, _n_.
+
+	print B fold sum, _n_.
+}
+

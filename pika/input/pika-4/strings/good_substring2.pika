@@ -1,0 +1,15 @@
+exec {
+	var str := "abcdefghijklmnopqrstuvwxyz".
+
+	var i := 0.
+	while( i < length str) {
+		var j := i.
+		while( j <= length str) {
+			print str[i, j], _n_.
+			j := j + 2.
+		}
+		i := i + 3.
+	}
+
+}
+

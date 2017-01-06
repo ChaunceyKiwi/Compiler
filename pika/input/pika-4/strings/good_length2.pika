@@ -1,0 +1,10 @@
+func size <string s> -> int {
+	return length s.
+}
+
+exec {
+	print size("hello"), _n_.
+	print size("boot"), _n_.
+	print size("are"), _n_.
+}
+

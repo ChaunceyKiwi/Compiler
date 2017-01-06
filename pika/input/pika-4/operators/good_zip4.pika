@@ -1,0 +1,23 @@
+func addNStars <string s, int b> -> string {
+	var result := s.
+	var i := 0.
+	while (i < b) {
+		result := result + "*".
+		i := i + 1.
+	}
+	return result.
+} 
+
+
+exec {
+	const B := ["aaa"].
+	print B, _n_.
+
+	const C := [1].
+	print C, _n_.
+	
+	
+	const R := zip B, C, addNStars.
+	print R, _n_.
+}
+

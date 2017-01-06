@@ -1,0 +1,10 @@
+exec {
+	var s := "doo".
+	var t := "dad".
+	var a := 42.
+	
+	print s; s + "", _n_.
+	
+	print s; s + ""; a ; _n_.
+}
+

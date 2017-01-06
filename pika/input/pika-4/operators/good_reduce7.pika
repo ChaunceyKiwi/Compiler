@@ -1,0 +1,19 @@
+func S <[int] x> -> bool {
+	return length x < 3.
+}
+func F <[int] b> -> bool { 
+			return b[0] + b[1] == 4.
+}
+	
+exec {
+	const B := [[1, 3], [2, -1, -4], [2, 2], [4, 3], [3, -1], [1, 2, 3, 4], [0, -2], [0, 4, 8], [3, 1], [1, 3, 5, 7, 9, 11]].
+	print B, _n_.
+	var k := 22.
+	var l := "yippee!".
+	
+	const C := B reduce S reduce F.
+	print C, _n_.
+	
+	
+	print k; l, _n_.
+}

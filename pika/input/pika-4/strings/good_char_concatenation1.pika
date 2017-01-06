@@ -1,0 +1,9 @@
+exec {
+	var s := "doo".
+	var c := ^d^.
+	
+	print s; c; s + c, _n_.
+	
+	print s; c; s + c, _n_.
+}
+

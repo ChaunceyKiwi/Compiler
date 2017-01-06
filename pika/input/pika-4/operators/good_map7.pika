@@ -1,0 +1,16 @@
+func L <[float] x> -> int {
+	return length x.
+}
+
+exec {
+	const S := [[1.1, 2.2], [2.2, 3.3, 4.4, 5.5], [3.3, 4.4], [4.4]].
+	
+	var k := 22.
+	var l := "yippee!".
+	
+	print S, _n_.
+	print S map L, _n_.
+	
+	print k; l, _n_.
+}
+

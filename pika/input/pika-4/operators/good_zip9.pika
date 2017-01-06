@@ -1,0 +1,32 @@
+func addNStars <string s, rat b> -> string {
+	var result := s.
+	var i := 1.
+	while (i <= b) {
+		result := result + "*".
+		i := i + 1.
+	}
+	return result.
+} 
+
+
+exec {
+
+	const a := 41//4.
+	const b := addNStars.
+	const c := 8192.
+	
+	print a; b; c, _n_.
+	
+	const B := ["abc", "def", "ghi", "klm", "nop"].
+	print B, _n_.
+
+	const C := [7//2, 15//3, 17//3, 91//22, -4//7].
+	print C, _n_.
+	
+	
+	const R := zip B, C, addNStars.
+	print R, _n_.
+	
+	print a; b; c, _n_.
+}
+

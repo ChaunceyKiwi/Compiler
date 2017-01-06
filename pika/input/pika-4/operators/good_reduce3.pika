@@ -1,0 +1,14 @@
+func isShort <string s> -> bool {
+	return length s < 4.
+} 
+
+exec {
+	const B := ["perhaps", "I", "would", "eat", "humongous", "plates", "piled", "with", "bbq", "moose", "meat"].
+	print B, _n_.
+	
+	const C := B reduce <string s> -> bool { 
+			return s[0] == ^p^ || s[0] == ^m^.
+		}.	
+	print C, _n_.
+}
+

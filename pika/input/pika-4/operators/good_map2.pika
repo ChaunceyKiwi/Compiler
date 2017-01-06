@@ -1,0 +1,13 @@
+func makeHalves <int a>->rat {
+    return a // 2.
+} 
+
+
+exec {
+	const B := [1, 4, 9, 13, 18, 27].
+	print B, _n_.
+
+	const C := B map makeHalves.
+	print C, _n_.
+}
+

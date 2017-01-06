@@ -1,0 +1,37 @@
+func ziggle <int s> -> int {
+	const f := <int x> -> int {
+		return zoot(x, firstTime).
+	}.
+	
+	return f(s).
+}
+static const firstTime := 9.
+
+func zoot <int s, int t> -> int {
+	if(s <= 1) {
+		return t.
+	}
+	return min(s * t * zoot(s - 1, t), s * (s - 1) * zoot(s - t, t)).
+}
+
+func min <int a, int b> -> int {
+	if(a < b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+
+exec {
+	call ziggle(4).
+	
+	var a := 0.
+	while(a < 10) {
+		print a; ziggle(a); _n_.
+		a := a + 1.
+	}
+
+	print "done.", _n_.
+}
+

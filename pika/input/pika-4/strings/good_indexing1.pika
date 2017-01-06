@@ -1,0 +1,6 @@
+exec {
+	print "hello"[1], _n_.
+	print "boot"[3], _n_.
+	print "are"[2], _n_.
+}
+

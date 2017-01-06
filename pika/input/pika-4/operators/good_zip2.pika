@@ -1,0 +1,18 @@
+func pair <string s, int b>->[int] {
+	var a := [s[0] | int].
+	return [a, b].
+} 
+
+
+exec {
+	const B := ["aaa", "bbb", "ccc", "ddd", "eee", "fff"].
+	print B, _n_.
+
+	const C := [1, 4, 9, 16, 25, 36].
+	print C, _n_.
+	
+	
+	const R := zip B, C, pair.
+	print R, _n_.
+}
+

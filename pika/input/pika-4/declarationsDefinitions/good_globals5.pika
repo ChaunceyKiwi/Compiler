@@ -1,0 +1,51 @@
+var r := 12.2.
+
+func addS <int a> -> int {
+	return a + [s | int].
+}
+func addT <int a> -> int {
+	return a + t.
+}
+func addU <int a> -> float {
+ 	return a + u.
+}
+
+var s := r * min(2, 3).
+
+func min <int a, int b> -> int {
+	if(a < b) {
+		return a.
+	}
+	else {
+		return b.
+	}
+}
+
+var t := 21.
+var u := 2.1.
+
+exec {
+	var a := 42.
+	print r; s; t; u; a, _n_.
+	
+	print addS(0); addT(0); _n_.
+	print addU(10); _n_.
+	
+	r := 15.5.
+	print r; s; t; u; a, _n_.
+	
+	s := t * 0.3.
+	print r; s; t; u; a, _n_.
+	
+	t := [r / s | int].
+	print r; s; t; u; a, _n_.
+	
+	u :=  s / 2*r.
+	print r; s; t; u; a, _n_.
+	
+	a := [r | int] / [s | int].
+	print r; s; t; u; a, _n_.
+	
+	print min(2, 3); addS(2); addU(13); _n_.
+}
+

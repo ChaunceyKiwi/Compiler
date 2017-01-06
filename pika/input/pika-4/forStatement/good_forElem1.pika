@@ -1,0 +1,9 @@
+exec {
+	const B := [1, 5, 9, 13, 19, 27].
+	
+	for elem a of B {
+		print a, _n_.
+	}	
+	print B, _n_.
+}
+

@@ -1,0 +1,29 @@
+func L <[float] x> -> int {
+	return length x.
+}
+
+func parityString <int a>->string {
+    if ((a/2)*2 == a) {
+         return "even".
+    }
+    else {
+         return "odd".
+    }
+} 
+func square <float n> -> float {
+	return n*n.
+}
+
+exec {
+	const S := [[1.1, 2.2], [2.2, 3.3, 4.4, 5.5], [3.3, 4.4], [4.4]].
+	
+	const x := 42.
+	const y := 21.
+	const z := 64.
+	
+	print S, _n_.
+	print S map <[float] A> -> [float] { return A map square.}.
+	print _n_.
+	print x; y; z, _n_.
+}
+

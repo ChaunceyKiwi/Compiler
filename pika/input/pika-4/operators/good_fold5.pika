@@ -1,0 +1,18 @@
+func parityString <string s, int b> -> string {
+	if((b/2)*2 != b) {
+	    return s + "o".
+	}
+	else {
+	    return s + "e".
+	}
+}
+
+
+exec {
+	const B := new [int](0).
+	print B, _n_.
+
+	const C := B fold [ "abcd" ] parityString.
+	print C, _n_.
+}
+

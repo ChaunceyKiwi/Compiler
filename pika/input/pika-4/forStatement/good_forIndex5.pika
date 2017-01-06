@@ -1,0 +1,9 @@
+exec {
+	const B := new [int](0).
+	
+	for index a of B {
+		print "a: ", a, _n_.
+	}	
+	print B, _n_.
+}
+

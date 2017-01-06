@@ -1,0 +1,10 @@
+exec {
+	var s := ^a^.
+	var c := "moral".
+	const t := s + c.
+	
+	print s; c; t, _n_.
+	
+	print s; c; t, _n_.
+}
+

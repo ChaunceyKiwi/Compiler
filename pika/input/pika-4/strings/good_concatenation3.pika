@@ -1,0 +1,10 @@
+exec {
+	var s := "".
+	var t := "dad".
+	var a := 42.
+	
+	print t; s + t, _n_.
+	
+	print t; s + t; a ; _n_.
+}
+

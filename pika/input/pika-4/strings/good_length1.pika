@@ -1,0 +1,9 @@
+exec {
+	print length "hello", _n_.
+	
+	var s := "berlin".
+	print length s, _n_.
+	
+	s := "synedoche".
+	print length s, _n_.
+}

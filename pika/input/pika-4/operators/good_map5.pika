@@ -1,0 +1,16 @@
+func Alice <string s> -> string { 
+	return s + ", Alice.".
+}
+func Bob <string s> -> string { 
+	return s + ", Bob.".
+}
+func AB <string s> -> [string] {
+	return [Alice(s), Bob(s)].
+}
+
+exec {
+	const S := ["Thanks", "Hi", "Sure", "Give it a rest", "Goodbye"].
+	
+	print S map AB, _n_.
+}
+
