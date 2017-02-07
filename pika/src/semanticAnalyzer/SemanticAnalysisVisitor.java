@@ -154,14 +154,16 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
   // 3. AssignmentNode
   // 4. ReturnStatementNode
   public void visitEnter(LambdaNode node) {
-    ParseNode parent = node.getParent();
-    if (parent instanceof FunctionDefinitionNode || parent instanceof DeclarationNode
-        || parent instanceof FunctionInvocationNode || parent instanceof AssignmentStatementNode
-        || parent instanceof ReturnStatementNode || parent instanceof ExpressionListNode) {
-      enterScope(node);
-    } else {
-      lambdaNodeWrongEnterMethodError(node);
-    }
+//    ParseNode parent = node.getParent();
+//    if (parent instanceof FunctionDefinitionNode || parent instanceof DeclarationNode
+//        || parent instanceof FunctionInvocationNode || parent instanceof AssignmentStatementNode
+//        || parent instanceof ReturnStatementNode || parent instanceof ExpressionListNode) {
+//      enterScope(node);
+//    } else {
+//      lambdaNodeWrongEnterMethodError(node);
+//    }
+    
+    enterScope(node);
   }
 
   public void visitLeave(LambdaNode node) {
@@ -823,9 +825,9 @@ public class SemanticAnalysisVisitor extends ParseNodeVisitor.Default {
     logError(node.getToken().getLexeme() + " assignment to constant Error");
   }
 
-  private void lambdaNodeWrongEnterMethodError(ParseNode node) {
-    logError(node.getToken().getLexeme() + " lambdaNode wrong enter method Error");
-  }
+//  private void lambdaNodeWrongEnterMethodError(ParseNode node) {
+//    logError(node.getToken().getLexeme() + " lambdaNode wrong enter method Error");
+//  }
 
   private void lambdaNodeLackReturnStatementError(ParseNode node) {
     logError(node.getToken().getLexeme() + " lambdaNode lack return statement Error");

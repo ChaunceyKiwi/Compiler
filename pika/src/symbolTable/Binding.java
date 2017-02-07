@@ -6,9 +6,6 @@ import semanticAnalyzer.types.PrimitiveType;
 import semanticAnalyzer.types.Type;
 
 public class Binding {
-  public enum BindingType {
-    VARIABLE, FUNCTION,
-  }
 
   private Type type;
   private TextLocation textLocation;
@@ -17,7 +14,6 @@ public class Binding {
   private String lambdaName;
   private boolean isMutable;
   private boolean isStatic;
-  private BindingType bindingType;
 
   // Binding for variable
   public Binding(Type type, TextLocation location, MemoryLocation memoryLocation, String lexeme,
@@ -29,48 +25,11 @@ public class Binding {
     this.lexeme = lexeme;
     this.isMutable = ismutable;
     this.isStatic = isStatic;
-    this.bindingType = BindingType.VARIABLE;
     this.lambdaName = null;
   }
   
   public boolean isStatic() {
     return this.isStatic;
-  }
-
-  // Binding for function
-  public Binding(Type type, TextLocation location, String lexeme) {
-    super();
-    this.type = type;
-    this.textLocation = location;
-    this.memoryLocation = null;
-    this.lexeme = lexeme;
-    this.isMutable = false;
-    this.bindingType = BindingType.FUNCTION;
-    this.lambdaName = null;
-  }
-
-  public Binding(Type type, TextLocation location, String lexeme, String lambdaName) {
-    super();
-    this.type = type;
-    this.textLocation = location;
-    this.memoryLocation = null;
-    this.lexeme = lexeme;
-    this.isMutable = false;
-    this.isStatic = false;
-    this.bindingType = BindingType.FUNCTION;
-    this.lambdaName = lambdaName;
-  }
-  
-  public Binding(Type type, TextLocation location, String lexeme, String lambdaName, boolean isStatic) {
-    super();
-    this.type = type;
-    this.textLocation = location;
-    this.memoryLocation = null;
-    this.lexeme = lexeme;
-    this.isMutable = false;
-    this.isStatic = isStatic;
-    this.bindingType = BindingType.FUNCTION;
-    this.lambdaName = lambdaName;
   }
 
   public String toString() {
@@ -106,15 +65,9 @@ public class Binding {
     return memoryLocation;
   }
 
-  public BindingType getBindingType() {
-    return bindingType;
-  }
-
   public void generateAddress(ASMCodeFragment code) {
     memoryLocation.generateAddress(code, "%% " + lexeme);
   }
-
-
 
   ////////////////////////////////////////////////////////////////////////////////////
   // Null Binding object

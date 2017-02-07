@@ -3,6 +3,7 @@ package semanticAnalyzer;
 import parseTree.ParseNode;
 import parseTree.ParseNodeVisitor;
 import parseTree.nodeTypes.*;
+import semanticAnalyzer.types.Type;
 import symbolTable.Scope;
 import symbolTable.Binding;
 
@@ -49,7 +50,8 @@ public class SemanticAnalysisPreVisitor extends ParseNodeVisitor.Default {
   @Override
   public void visitEnter(FunctionDefinitionNode node) {
     node.setLambdaType();
-    setBinding(node);
+    IdentifierNode identifierNode = (IdentifierNode)node.child(0);
+    addBinding(identifierNode, node.getLambdaType(), false, true);
   }
 
   public void visitEnter(LambdaNode node) {
@@ -58,12 +60,27 @@ public class SemanticAnalysisPreVisitor extends ParseNodeVisitor.Default {
     node.setType(node.getLambdaType());
   }
 
-  private void setBinding(FunctionDefinitionNode node) {
-    Scope scope = node.getRootScope();
-    IdentifierNode identifierNode = (IdentifierNode) node.child(0);
-    scope.getSymbolTable().errorIfAlreadyDefined(identifierNode.getToken());
-    Binding binding = scope.createFunctionBinding(node);
-    identifierNode.setBinding(binding);
+//  private void setBinding(FunctionDefinitionNode node) {
+//    Scope scope = node.getRootScope();
+//    IdentifierNode identifierNode = (IdentifierNode) node.child(0);
+//    scope.getSymbolTable().errorIfAlreadyDefined(identifierNode.getToken());
+//    Binding binding = scope.createBinding(identifierNode, node.getLambdaType(), false, true);
+//    identifierNode.setBinding(binding);
+//  }
+  
+  private void addBinding(IdentifierNode identifierNode, Type type, boolean isMutable,
+      boolean isStatic) {
+    if (isStatic) {
+      Scope localScope = identifierNode.getLocalScope();
+      Scope globalScope = identifierNode.getRootScope();
+      Binding binding = globalScope.createBinding(identifierNode, type, isMutable, isStatic);
+      localScope.getSymbolTable().install(identifierNode.getToken().getLexeme(), binding);
+      identifierNode.setBinding(binding);
+    } else {
+      Scope scope = identifierNode.getLocalScope();
+      Binding binding = scope.createBinding(identifierNode, type, isMutable, isStatic);
+      identifierNode.setBinding(binding);
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////

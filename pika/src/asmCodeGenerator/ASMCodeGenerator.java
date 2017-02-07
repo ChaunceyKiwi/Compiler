@@ -17,7 +17,6 @@ import parseTree.*;
 import parseTree.nodeTypes.*;
 import semanticAnalyzer.types.*;
 import symbolTable.Binding;
-import symbolTable.Binding.BindingType;
 import symbolTable.Scope;
 import static asmCodeGenerator.codeStorage.ASMCodeFragment.CodeType.*;
 import static asmCodeGenerator.codeStorage.ASMOpcode.*;
@@ -252,27 +251,23 @@ public class ASMCodeGenerator {
       }
     }
 
-    public void visitLeave(FunctionDefinitionNode node) {
+    public void visitLeave(FunctionDefinitionNode node) {            
       newVoidCode(node);
-      code.append(removeVoidCode(node.child(1)));
+      Type type = node.getLambdaType();
+      ASMCodeFragment lvalue = removeAddressCode(node.child(0));
+      ASMCodeFragment rvalue = removeValueCode(node.child(1));
+      code.append(lvalue);
+      code.append(rvalue);
+      code.add(opcodeForStore(type));
     }
 
     public void visitLeave(LambdaNode node) {
-      ParseNode parentNode = node.getParent();
       Labeller labeller = new Labeller("lambda-definition");
       String endLabel = labeller.newLabel("end");
-      String functionName = null;
+      String functionName = labeller.newLabel("Lambda");;
       Type resultType = node.getLambdaType().getResultType();
-
-      // FunctionDefinitionNode or DeclarationNode
-      if (parentNode instanceof FunctionDefinitionNode) {
-        newVoidCode(node);
-        functionName = parentNode.child(0).getToken().getLexeme();
-      } else {
-        newValueCode(node);
-        functionName = labeller.newLabel("Lambda");
-      }
-
+      
+      newValueCode(node);
       node.setFunctionLabel(functionPrefix + functionName);
       code.add(Jump, endLabel);
       code.add(Label, functionPrefix + functionName);
@@ -280,9 +275,7 @@ public class ASMCodeGenerator {
       functionProcess(labeller, node);
       functionLaterStage(labeller, node, resultType);
       code.add(Label, endLabel);
-      if (!(node.getParent() instanceof FunctionDefinitionNode)) {
-        code.add(PushD, node.getFunctionLabel());
-      }
+      code.add(PushD, node.getFunctionLabel());
     }
 
     public void functionPreparation(Labeller labeller) {
@@ -355,7 +348,7 @@ public class ASMCodeGenerator {
 
         // Decrement SP by the size of return value and store it
         code.add(Label, decrementSP);
-        decrementStackPointer(resultType.getSize());
+        decrementStackPointer(4);
         Macros.loadIFrom(code, RunTime.STACK_POINTER);
 
         code.add(Exchange);
@@ -411,12 +404,6 @@ public class ASMCodeGenerator {
       if (expressionNode instanceof LambdaNode) {
         code.append(removeValueCode(expressionNode));
         code.add(Call, ((LambdaNode) expressionNode).getFunctionLabel());
-      }
-      // functionInvocation -> Identifier (expressionList)
-      // Identifier here should be declared in global statement
-      else if (expressionNode instanceof IdentifierNode && ((IdentifierNode) expressionNode)
-          .getBinding().getBindingType() == Binding.BindingType.FUNCTION) {
-        code.append(removeVoidCode(expressionNode));
       }
 
       // ArrayElement, some other identifer that is not declared in global scope
@@ -1134,16 +1121,9 @@ public class ASMCodeGenerator {
     // leaf nodes
 
     public void visit(IdentifierNode node) {
-      BindingType bindingType = node.getBinding().getBindingType();
-      if (bindingType == Binding.BindingType.VARIABLE) {
-        newAddressCode(node);
-        Binding binding = node.getBinding();
-        binding.generateAddress(code);
-      } else if (bindingType == Binding.BindingType.FUNCTION) {
-        newVoidCode(node);
-        String functionName = node.getBinding().getLambdaName();
-        code.add(Call, functionPrefix + functionName);
-      }
+      newAddressCode(node);
+      Binding binding = node.getBinding();
+      binding.generateAddress(code);
     }
 
     public void visit(BooleanConstantNode node) {
